@@ -23,6 +23,8 @@ import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
 import java.security.InvalidKeyException;
 import java.security.PrivilegedExceptionAction;
@@ -75,6 +77,8 @@ import org.apache.hadoop.hdds.utils.IOUtils;
 import org.apache.hadoop.io.ByteBufferPool;
 import org.apache.hadoop.io.ElasticByteBufferPool;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.io.compress.CompressionCodec;
+import org.apache.hadoop.io.compress.CompressionInputStream;
 import org.apache.hadoop.ozone.OzoneAcl;
 import org.apache.hadoop.ozone.OzoneConfigKeys;
 import org.apache.hadoop.ozone.OzoneConsts;
@@ -93,11 +97,14 @@ import org.apache.hadoop.ozone.client.TenantArgs;
 import org.apache.hadoop.ozone.client.VolumeArgs;
 import org.apache.hadoop.ozone.client.io.BlockInputStreamFactory;
 import org.apache.hadoop.ozone.client.io.BlockInputStreamFactoryImpl;
+import org.apache.hadoop.ozone.client.io.CompressedOutputStream;
 import org.apache.hadoop.ozone.client.io.ECKeyOutputStream;
+import org.apache.hadoop.ozone.client.io.EncodedInputStream;
 import org.apache.hadoop.ozone.client.io.KeyInputStream;
 import org.apache.hadoop.ozone.client.io.KeyOutputStream;
 import org.apache.hadoop.ozone.client.io.LengthInputStream;
-import org.apache.hadoop.ozone.client.io.MultipartCryptoKeyInputStream;
+import org.apache.hadoop.ozone.client.io.MultipartKeyInputStream;
+import org.apache.hadoop.ozone.client.io.OzoneCompressedInputStream;
 import org.apache.hadoop.ozone.client.io.OzoneCryptoInputStream;
 import org.apache.hadoop.ozone.client.io.OzoneInputStream;
 import org.apache.hadoop.ozone.client.io.OzoneOutputStream;
@@ -645,6 +652,13 @@ public class RpcClient implements ClientProtocol {
     }
 
     OmBucketInfo.Builder builder = OmBucketInfo.newBuilder();
+    String compressionType = bucketArgs.getCompressionType();
+
+    if (compressionType != null) {
+      //validate compression type, throw an exception if the value is not valid
+      OzoneCompressionCodecFactory.getCompressionCodec(conf, compressionType);
+    }
+
     builder.setVolumeName(volumeName)
         .setBucketName(bucketName)
         .setIsVersionEnabled(isVersionEnabled)
@@ -656,6 +670,7 @@ public class RpcClient implements ClientProtocol {
         .setQuotaInNamespace(bucketArgs.getQuotaInNamespace())
         .setAcls(listOfAcls.stream().distinct().collect(Collectors.toList()))
         .setBucketLayout(bucketLayout)
+        .setCompressionType(compressionType)
         .setOwner(owner);
 
     if (bek != null) {
@@ -672,9 +687,11 @@ public class RpcClient implements ClientProtocol {
         ? "with bucket layout " + bucketLayout
         : "with server-side default bucket layout";
     LOG.info("Creating Bucket: {}/{}, {}, {} as owner, Versioning {}, " +
-            "Storage Type set to {} and Encryption set to {} ",
+            "Storage Type set to {} and Encryption set to {}, " +
+            "compression type is {} ",
         volumeName, bucketName, layoutMsg, owner, isVersionEnabled,
-        storageType, bek != null);
+        storageType, bek != null,
+        compressionType != null ? compressionType : "not set");
     ozoneManagerClient.createBucket(builder.build());
   }
 
@@ -1085,6 +1102,7 @@ public class RpcClient implements ClientProtocol {
         bucketInfo.getMetadata(),
         bucketInfo.getEncryptionKeyInfo() != null ? bucketInfo
             .getEncryptionKeyInfo().getKeyName() : null,
+        bucketInfo.getCompressionType(),
         bucketInfo.getSourceVolume(),
         bucketInfo.getSourceBucket(),
         bucketInfo.getUsedBytes(),
@@ -1116,6 +1134,7 @@ public class RpcClient implements ClientProtocol {
         bucket.getMetadata(),
         bucket.getEncryptionKeyInfo() != null ? bucket
             .getEncryptionKeyInfo().getKeyName() : null,
+        bucket.getCompressionType(),
         bucket.getSourceVolume(),
         bucket.getSourceBucket(),
         bucket.getUsedBytes(),
@@ -1434,6 +1453,7 @@ public class RpcClient implements ClientProtocol {
         keyInfo.getModificationTime(), ozoneKeyLocations,
         keyInfo.getReplicationConfig(), keyInfo.getMetadata(),
         keyInfo.getFileEncryptionInfo(),
+        keyInfo.getCompressionType(),
         getInputStream);
   }
 
@@ -1528,15 +1548,18 @@ public class RpcClient implements ClientProtocol {
         openKey.getKeyInfo().getLatestVersionLocations(),
         openKey.getOpenVersion());
     FileEncryptionInfo feInfo = openKey.getKeyInfo().getFileEncryptionInfo();
+    String compressionType = openKey.getKeyInfo().getCompressionType();
     if (feInfo != null) {
       KeyProvider.KeyVersion decrypted = getDEK(feInfo);
       final CryptoOutputStream cryptoOut =
           new CryptoOutputStream(keyOutputStream,
               OzoneKMSUtil.getCryptoCodec(conf, feInfo),
               decrypted.getMaterial(), feInfo.getIV());
-      return new OzoneOutputStream(cryptoOut);
+      return new OzoneOutputStream(
+          compressIfNeeded(compressionType, cryptoOut));
     } else {
-      return new OzoneOutputStream(keyOutputStream);
+      return new OzoneOutputStream(
+          compressIfNeeded(compressionType, keyOutputStream));
     }
   }
 
@@ -1817,66 +1840,180 @@ public class RpcClient implements ClientProtocol {
     return ozoneManagerClient.getAcl(obj);
   }
 
+  private boolean isGDPRKey(OmKeyInfo keyInfo) {
+    return Boolean.parseBoolean(
+        keyInfo.getMetadata().get(OzoneConsts.GDPR_FLAG));
+  }
+
+  private static Cipher createGDPRCipher(OmKeyInfo keyInfo) throws Exception {
+    Map<String, String> keyInfoMetadata = keyInfo.getMetadata();
+    GDPRSymmetricKey gk = new GDPRSymmetricKey(
+        keyInfoMetadata.get(OzoneConsts.GDPR_SECRET),
+        keyInfoMetadata.get(OzoneConsts.GDPR_ALGORITHM)
+    );
+    gk.getCipher().init(Cipher.DECRYPT_MODE, gk.getSecretKey());
+    return gk.getCipher();
+  }
+
   private OzoneInputStream createInputStream(
       OmKeyInfo keyInfo, Function<OmKeyInfo, OmKeyInfo> retryFunction)
       throws IOException {
-    // When Key is not MPU or when Key is MPU and encryption is not enabled
-    // Need to revisit for GDP.
-    FileEncryptionInfo feInfo = keyInfo.getFileEncryptionInfo();
 
+    if (keyInfo.getLatestVersionLocations().isMultipartKey()) {
+      return createInputStreamForMultipartKey(keyInfo, retryFunction);
+    } else {
+      return createInputStreamForRegularKey(keyInfo, retryFunction);
+    }
+  }
+
+
+  @NotNull
+  private OzoneInputStream createInputStreamForRegularKey(
+      OmKeyInfo keyInfo, Function<OmKeyInfo, OmKeyInfo> retryFunction)
+      throws IOException {
+    FileEncryptionInfo feInfo = keyInfo.getFileEncryptionInfo();
+    String compressionType = keyInfo.getCompressionType();
+
+    LengthInputStream lengthInputStream = KeyInputStream
+        .getFromOmKeyInfo(keyInfo, xceiverClientManager,
+            clientConfig.isChecksumVerify(), retryFunction,
+            blockInputStreamFactory);
     if (feInfo == null) {
-      LengthInputStream lengthInputStream = KeyInputStream
-          .getFromOmKeyInfo(keyInfo, xceiverClientManager,
-              clientConfig.isChecksumVerify(), retryFunction,
-              blockInputStreamFactory);
+      //no encryption
       try {
-        Map< String, String > keyInfoMetadata = keyInfo.getMetadata();
-        if (Boolean.valueOf(keyInfoMetadata.get(OzoneConsts.GDPR_FLAG))) {
-          GDPRSymmetricKey gk = new GDPRSymmetricKey(
-              keyInfoMetadata.get(OzoneConsts.GDPR_SECRET),
-              keyInfoMetadata.get(OzoneConsts.GDPR_ALGORITHM)
-          );
-          gk.getCipher().init(Cipher.DECRYPT_MODE, gk.getSecretKey());
+        if (isGDPRKey(keyInfo)) {
+          Cipher cipher = createGDPRCipher(keyInfo);
+          CipherInputStream stream =
+              new CipherInputStream(lengthInputStream, cipher);
           return new OzoneInputStream(
-              new CipherInputStream(lengthInputStream, gk.getCipher()));
+              decompressIfNeeded(compressionType, stream));
         }
       } catch (Exception ex) {
         throw new IOException(ex);
       }
-      return new OzoneInputStream(lengthInputStream.getWrappedStream());
-    } else if (!keyInfo.getLatestVersionLocations().isMultipartKey()) {
-      // Regular Key with FileEncryptionInfo
-      LengthInputStream lengthInputStream = KeyInputStream
-          .getFromOmKeyInfo(keyInfo, xceiverClientManager,
-              clientConfig.isChecksumVerify(), retryFunction,
-              blockInputStreamFactory);
+      return new OzoneInputStream(
+          decompressIfNeeded(compressionType,
+              lengthInputStream.getWrappedStream()));
+    } else {
+      //with FileEncryptionInfo
       final KeyProvider.KeyVersion decrypted = getDEK(feInfo);
       final CryptoInputStream cryptoIn =
           new CryptoInputStream(lengthInputStream.getWrappedStream(),
               OzoneKMSUtil.getCryptoCodec(conf, feInfo),
               decrypted.getMaterial(), feInfo.getIV());
-      return new OzoneInputStream(cryptoIn);
-    } else {
-      // Multipart Key with FileEncryptionInfo
-      List<LengthInputStream> lengthInputStreams = KeyInputStream
-          .getStreamsFromKeyInfo(keyInfo, xceiverClientManager,
-              clientConfig.isChecksumVerify(), retryFunction,
-              blockInputStreamFactory);
-      final KeyProvider.KeyVersion decrypted = getDEK(feInfo);
-
-      List<OzoneCryptoInputStream> cryptoInputStreams = new ArrayList<>();
-      for (int i = 0; i < lengthInputStreams.size(); i++) {
-        LengthInputStream lengthInputStream = lengthInputStreams.get(i);
-        final OzoneCryptoInputStream ozoneCryptoInputStream =
-            new OzoneCryptoInputStream(lengthInputStream,
-                OzoneKMSUtil.getCryptoCodec(conf, feInfo),
-                decrypted.getMaterial(), feInfo.getIV(),
-                keyInfo.getKeyName(), i);
-        cryptoInputStreams.add(ozoneCryptoInputStream);
-      }
-      return new MultipartCryptoKeyInputStream(keyInfo.getKeyName(),
-          cryptoInputStreams);
+      return new OzoneInputStream(
+          decompressIfNeeded(compressionType, cryptoIn));
     }
+  }
+
+  @NotNull
+  private OzoneInputStream createInputStreamForMultipartKey(
+      OmKeyInfo keyInfo,
+      Function<OmKeyInfo, OmKeyInfo> retryFunction) throws IOException {
+    FileEncryptionInfo feInfo = keyInfo.getFileEncryptionInfo();
+    String compressionType = keyInfo.getCompressionType();
+
+    if (feInfo == null) {
+      if (compressionType == null) {
+        // MPU key input stream construction is the same as for the regular key
+        // when no compression and encryption is set
+        return createInputStreamForRegularKey(keyInfo, retryFunction);
+      } else {
+        //no encryption, compression
+        return createInputStreamForMultipartKey(keyInfo, retryFunction,
+            (stream, partNumber) -> {
+              CompressionInputStream decompressed =
+                  decompress(compressionType, stream);
+              return new OzoneCompressedInputStream(
+                  decompressed, stream.getLength());
+            });
+      }
+    } else {
+      //with FileEncryptionInfo
+      final KeyProvider.KeyVersion decrypted = getDEK(feInfo);
+      if (compressionType == null) {
+        return createInputStreamForMultipartKey(keyInfo, retryFunction,
+            (stream, partNumber) ->
+                new OzoneCryptoInputStream(stream,
+                    OzoneKMSUtil.getCryptoCodec(conf, feInfo),
+                    decrypted.getMaterial(), feInfo.getIV(),
+                    keyInfo.getKeyName(), partNumber));
+      } else {
+        //with FileEncryptionInfo, compression
+        return createInputStreamForMultipartKey(keyInfo, retryFunction,
+            (stream, partNumber) -> {
+              OzoneCryptoInputStream ozoneCryptoInputStream =
+                  new OzoneCryptoInputStream(stream,
+                      OzoneKMSUtil.getCryptoCodec(conf, feInfo),
+                      decrypted.getMaterial(), feInfo.getIV(),
+                      keyInfo.getKeyName(), partNumber);
+              CompressionInputStream decompressed =
+                  decompress(compressionType, ozoneCryptoInputStream);
+              return new OzoneCompressedInputStream(
+                  decompressed, stream.getLength());
+            });
+      }
+    }
+  }
+
+  private OzoneInputStream createInputStreamForMultipartKey(
+      OmKeyInfo keyInfo,
+      Function<OmKeyInfo, OmKeyInfo> retryFunction,
+      ConversionFunction<LengthInputStream, Integer,
+          EncodedInputStream> converter
+  ) throws IOException {
+    List<LengthInputStream> lengthInputStreams = KeyInputStream
+        .getStreamsFromKeyInfo(keyInfo, xceiverClientManager,
+            clientConfig.isChecksumVerify(), retryFunction,
+            blockInputStreamFactory);
+    List<EncodedInputStream> cryptoInputStreams = new ArrayList<>();
+    for (int i = 0; i < lengthInputStreams.size(); i++) {
+      LengthInputStream lengthInputStream = lengthInputStreams.get(i);
+      EncodedInputStream stream = converter.apply(lengthInputStream, i);
+      cryptoInputStreams.add(stream);
+    }
+    return new MultipartKeyInputStream(keyInfo.getKeyName(),
+        cryptoInputStreams);
+  }
+
+
+  private InputStream decompressIfNeeded(
+      String compressionType, InputStream lengthInputStream)
+      throws IOException {
+
+    if (compressionType != null) {
+      return decompress(compressionType, lengthInputStream);
+    }
+    return lengthInputStream;
+  }
+
+  private CompressionInputStream decompress(
+      String compressionType, InputStream lengthInputStream)
+      throws IOException {
+
+    CompressionCodec codec =
+        OzoneCompressionCodecFactory.getCompressionCodec(conf, compressionType);
+    return codec.createInputStream(lengthInputStream);
+  }
+
+  private OutputStream compressIfNeeded(
+      String compressionType,
+      OutputStream outputStream) throws IOException {
+
+    if (compressionType != null) {
+      return compress(compressionType, outputStream);
+    }
+    return outputStream;
+  }
+
+  private CompressedOutputStream compress(
+      String compressionType, OutputStream outputStream)
+      throws IOException {
+
+    CompressionCodec codec =
+        OzoneCompressionCodecFactory.getCompressionCodec(conf, compressionType);
+    return new CompressedOutputStream(
+        codec.createOutputStream(outputStream), outputStream);
   }
 
   private OzoneOutputStream createOutputStream(OpenKeySession openKey,
@@ -1890,13 +2027,15 @@ public class RpcClient implements ClientProtocol {
             openKey.getOpenVersion());
     final FileEncryptionInfo feInfo =
         openKey.getKeyInfo().getFileEncryptionInfo();
+    String compressionType = openKey.getKeyInfo().getCompressionType();
     if (feInfo != null) {
       KeyProvider.KeyVersion decrypted = getDEK(feInfo);
       final CryptoOutputStream cryptoOut =
           new CryptoOutputStream(keyOutputStream,
               OzoneKMSUtil.getCryptoCodec(conf, feInfo),
               decrypted.getMaterial(), feInfo.getIV());
-      return new OzoneOutputStream(cryptoOut);
+      return new OzoneOutputStream(
+          compressIfNeeded(compressionType, cryptoOut));
     } else {
       try {
         GDPRSymmetricKey gk;
@@ -1909,13 +2048,15 @@ public class RpcClient implements ClientProtocol {
           );
           gk.getCipher().init(Cipher.ENCRYPT_MODE, gk.getSecretKey());
           return new OzoneOutputStream(
-              new CipherOutputStream(keyOutputStream, gk.getCipher()));
+              compressIfNeeded(compressionType,
+                  new CipherOutputStream(keyOutputStream, gk.getCipher())));
         }
       }  catch (Exception ex) {
         throw new IOException(ex);
       }
 
-      return new OzoneOutputStream(keyOutputStream);
+      return new OzoneOutputStream(
+          compressIfNeeded(compressionType, keyOutputStream));
     }
   }
 

@@ -439,6 +439,8 @@ enum Status {
     TENANT_NOT_EMPTY = 85;
 
     FEATURE_NOT_ENABLED = 86;
+
+    COMPRESSION_NOT_SUPPORTED = 87;
 }
 
 /**
@@ -631,6 +633,7 @@ message BucketInfo {
     optional BucketLayoutProto bucketLayout = 18;
     optional string owner = 19;
     optional hadoop.hdds.DefaultReplicationConfig defaultReplicationConfig = 20;
+    optional string compressionType = 21;
 }
 
 enum StorageTypeProto {
@@ -872,6 +875,7 @@ message KeyArgs {
     optional hadoop.hdds.ECReplicationConfig ecReplicationConfig = 19;
     // Force OM to update container cache location from SCL
     optional bool forceUpdateContainerCacheFromSCM = 20;
+    optional string compressionType = 21;
 }
 
 message KeyLocation {
@@ -953,6 +957,7 @@ message KeyInfo {
     optional uint64 parentID = 16;
     optional hadoop.hdds.ECReplicationConfig ecReplicationConfig = 17;
     optional FileChecksumProto fileChecksum = 18;
+    optional string compressionType = 19;
 }
 
 message DirectoryInfo {

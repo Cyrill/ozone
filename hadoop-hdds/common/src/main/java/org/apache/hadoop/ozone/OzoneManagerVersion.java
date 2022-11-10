@@ -34,6 +34,8 @@ public enum OzoneManagerVersion implements ComponentVersion {
       "New S3G persistent connection support is present in OM."),
   ERASURE_CODED_STORAGE_SUPPORT(2, "OzoneManager version that supports"
       + "ECReplicationConfig"),
+  COMPRESSION_SUPPORT(3, "OzoneManager version that supports"
+      + "Transparent Compression"),
 
   FUTURE_VERSION(-1, "Used internally in the client when the server side is "
       + " newer and an unknown server version has arrived to the client.");

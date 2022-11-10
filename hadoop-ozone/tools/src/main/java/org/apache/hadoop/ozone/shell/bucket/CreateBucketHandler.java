@@ -28,7 +28,6 @@ import org.apache.hadoop.ozone.client.OzoneClient;
 import org.apache.hadoop.ozone.client.OzoneVolume;
 import org.apache.hadoop.ozone.om.helpers.BucketLayout;
 import org.apache.hadoop.ozone.shell.OzoneAddress;
-
 import org.apache.hadoop.ozone.shell.SetSpaceQuotaOptions;
 import org.apache.hadoop.ozone.shell.ShellReplicationOptions;
 import org.apache.hadoop.security.UserGroupInformation;
@@ -48,6 +47,10 @@ public class CreateBucketHandler extends BucketHandler {
   @Option(names = {"--bucketkey", "-k"},
       description = "bucket encryption key name")
   private String bekName;
+
+  @Option(names = {"--compression", "-c"},
+      description = "Bucket Compression Type")
+  private String compressionType;
 
   @Option(names = {"--enforcegdpr", "-g"},
       description = "if true, indicates GDPR enforced bucket, " +
@@ -90,6 +93,8 @@ public class CreateBucketHandler extends BucketHandler {
           BucketLayout.fromString(allowedBucketLayout.toString());
       bb.setBucketLayout(bucketLayout);
     }
+
+    bb.setCompressionType(compressionType);
     // TODO: New Client talking to old server, will it create a LEGACY bucket?
 
     if (isGdprEnforced != null) {

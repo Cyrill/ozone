@@ -1356,6 +1356,7 @@ public class KeyManagerImpl implements KeyManager {
         .setDataSize(0)
         .setReplicationConfig(keyInfo.getReplicationConfig())
         .setFileEncryptionInfo(encInfo)
+        .setCompressionType(bucketInfo.getCompressionType())
         .setAcls(keyInfo.getAcls())
         .build();
   }
