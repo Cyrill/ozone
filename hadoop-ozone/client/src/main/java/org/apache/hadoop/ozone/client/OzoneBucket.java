@@ -127,6 +127,8 @@ public class OzoneBucket extends WithMetadata {
    */
   private String encryptionKeyName;
 
+  private String compressionType;
+
   private OzoneObj ozoneObj;
 
   private String sourceVolume;
@@ -170,7 +172,7 @@ public class OzoneBucket extends WithMetadata {
   public OzoneBucket(ConfigurationSource conf, ClientProtocol proxy,
       String volumeName, String bucketName, StorageType storageType,
       Boolean versioning, long creationTime, Map<String, String> metadata,
-      String encryptionKeyName,
+      String encryptionKeyName, String compressionType,
       String sourceVolume, String sourceBucket) {
     this(conf, volumeName, bucketName, proxy);
     this.storageType = storageType;
@@ -179,6 +181,7 @@ public class OzoneBucket extends WithMetadata {
     this.creationTime = Instant.ofEpochMilli(creationTime);
     this.metadata = metadata;
     this.encryptionKeyName = encryptionKeyName;
+    this.compressionType = compressionType;
     this.sourceVolume = sourceVolume;
     this.sourceBucket = sourceBucket;
     modificationTime = Instant.now();
@@ -193,9 +196,11 @@ public class OzoneBucket extends WithMetadata {
       String volumeName, String bucketName, StorageType storageType,
       Boolean versioning, long creationTime, long modificationTime,
       Map<String, String> metadata, String encryptionKeyName,
+      String compressionType,
       String sourceVolume, String sourceBucket) {
     this(conf, proxy, volumeName, bucketName, storageType, versioning,
-        creationTime, metadata, encryptionKeyName, sourceVolume, sourceBucket);
+        creationTime, metadata, encryptionKeyName, compressionType,
+        sourceVolume, sourceBucket);
     this.modificationTime = Instant.ofEpochMilli(modificationTime);
   }
 
@@ -204,10 +209,12 @@ public class OzoneBucket extends WithMetadata {
       String volumeName, String bucketName, StorageType storageType,
       Boolean versioning, long creationTime, long modificationTime,
       Map<String, String> metadata, String encryptionKeyName,
+      String compressionType,
       String sourceVolume, String sourceBucket, long usedBytes,
       long usedNamespace, long quotaInBytes, long quotaInNamespace) {
     this(conf, proxy, volumeName, bucketName, storageType, versioning,
-        creationTime, metadata, encryptionKeyName, sourceVolume, sourceBucket);
+        creationTime, metadata, encryptionKeyName, compressionType,
+        sourceVolume, sourceBucket);
     this.usedBytes = usedBytes;
     this.usedNamespace = usedNamespace;
     this.modificationTime = Instant.ofEpochMilli(modificationTime);
@@ -220,11 +227,13 @@ public class OzoneBucket extends WithMetadata {
       String volumeName, String bucketName, StorageType storageType,
       Boolean versioning, long creationTime, long modificationTime,
       Map<String, String> metadata, String encryptionKeyName,
+      String compressionType,
       String sourceVolume, String sourceBucket, long usedBytes,
       long usedNamespace, long quotaInBytes, long quotaInNamespace,
       BucketLayout bucketLayout) {
     this(conf, proxy, volumeName, bucketName, storageType, versioning,
         creationTime, modificationTime, metadata, encryptionKeyName,
+        compressionType,
         sourceVolume, sourceBucket, usedBytes, usedNamespace, quotaInBytes,
         quotaInNamespace);
     this.bucketLayout = bucketLayout;
@@ -235,12 +244,14 @@ public class OzoneBucket extends WithMetadata {
       String volumeName, String bucketName, StorageType storageType,
       Boolean versioning, long creationTime, long modificationTime,
       Map<String, String> metadata, String encryptionKeyName,
+      String compressionType,
       String sourceVolume, String sourceBucket, long usedBytes,
       long usedNamespace, long quotaInBytes, long quotaInNamespace,
       BucketLayout bucketLayout, String owner,
       DefaultReplicationConfig defaultReplicationConfig) {
     this(conf, proxy, volumeName, bucketName, storageType, versioning,
         creationTime, modificationTime, metadata, encryptionKeyName,
+        compressionType,
         sourceVolume, sourceBucket, usedBytes, usedNamespace, quotaInBytes,
         quotaInNamespace, bucketLayout, owner);
     this.bucketLayout = bucketLayout;
@@ -262,11 +273,13 @@ public class OzoneBucket extends WithMetadata {
        String volumeName, String bucketName, StorageType storageType,
        Boolean versioning, long creationTime, long modificationTime,
        Map<String, String> metadata, String encryptionKeyName,
+       String compressionType,
        String sourceVolume, String sourceBucket, long usedBytes,
        long usedNamespace, long quotaInBytes, long quotaInNamespace,
        BucketLayout bucketLayout, String owner) {
     this(conf, proxy, volumeName, bucketName, storageType, versioning,
         creationTime, modificationTime, metadata, encryptionKeyName,
+        compressionType,
         sourceVolume, sourceBucket, usedBytes, usedNamespace, quotaInBytes,
         quotaInNamespace, bucketLayout);
     this.owner = owner;
@@ -408,6 +421,10 @@ public class OzoneBucket extends WithMetadata {
    */
   public String getEncryptionKeyName() {
     return encryptionKeyName;
+  }
+
+  public String getCompressionType() {
+    return compressionType;
   }
 
   public String getSourceVolume() {

@@ -64,11 +64,24 @@ public class OzoneOutputStream extends OutputStream {
   public OmMultipartCommitUploadPartInfo getCommitUploadPartInfo() {
     if (outputStream instanceof KeyOutputStream) {
       return ((KeyOutputStream) outputStream).getCommitUploadPartInfo();
-    } else  if (outputStream instanceof CryptoOutputStream) {
+    } else if (outputStream instanceof CryptoOutputStream) {
       OutputStream wrappedStream =
           ((CryptoOutputStream) outputStream).getWrappedStream();
       if (wrappedStream instanceof KeyOutputStream) {
         return ((KeyOutputStream) wrappedStream).getCommitUploadPartInfo();
+      }
+    } else if (outputStream instanceof CompressedOutputStream) {
+      OutputStream wrappedStream =
+          ((CompressedOutputStream) outputStream).getWrappedStream();
+      if (wrappedStream instanceof KeyOutputStream) {
+        return ((KeyOutputStream) wrappedStream).getCommitUploadPartInfo();
+      } else if (wrappedStream instanceof CryptoOutputStream) {
+        OutputStream wrappedCryptoStream =
+            ((CryptoOutputStream) wrappedStream).getWrappedStream();
+        if (wrappedCryptoStream instanceof KeyOutputStream) {
+          return ((KeyOutputStream) wrappedCryptoStream)
+              .getCommitUploadPartInfo();
+        }
       }
     }
     // Otherwise return null.

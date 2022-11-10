@@ -17,22 +17,6 @@
  */
 package org.apache.hadoop.ozone.client.rpc;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
-import java.security.NoSuchAlgorithmException;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.TreeMap;
-import java.util.UUID;
-import java.util.Collection;
-
 import com.google.common.cache.Cache;
 import org.apache.hadoop.conf.StorageUnit;
 import org.apache.hadoop.crypto.key.KeyProvider;
@@ -62,6 +46,8 @@ import org.apache.hadoop.ozone.client.io.OzoneInputStream;
 import org.apache.hadoop.ozone.client.io.OzoneOutputStream;
 import org.apache.hadoop.ozone.om.OMMetadataManager;
 import org.apache.hadoop.ozone.om.OzoneManager;
+import org.apache.hadoop.ozone.om.helpers.BucketLayout;
+import org.apache.hadoop.ozone.om.helpers.CompressionType;
 import org.apache.hadoop.ozone.om.helpers.OmKeyArgs;
 import org.apache.hadoop.ozone.om.helpers.OmKeyInfo;
 import org.apache.hadoop.ozone.om.helpers.OmKeyLocationInfo;
@@ -69,13 +55,7 @@ import org.apache.hadoop.ozone.om.helpers.OmMultipartCommitUploadPartInfo;
 import org.apache.hadoop.ozone.om.helpers.OmMultipartInfo;
 import org.apache.hadoop.ozone.om.helpers.OmMultipartUploadCompleteInfo;
 import org.apache.hadoop.ozone.om.helpers.RepeatedOmKeyInfo;
-import org.apache.hadoop.ozone.om.helpers.BucketLayout;
 import org.apache.ozone.test.GenericTestUtils;
-
-import static org.apache.hadoop.hdds.HddsConfigKeys.OZONE_METADATA_DIRS;
-import static org.apache.hadoop.hdds.client.ReplicationFactor.ONE;
-import static org.apache.hadoop.hdds.client.ReplicationType.RATIS;
-
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -84,11 +64,31 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.mockito.Mockito;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.security.NoSuchAlgorithmException;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.TreeMap;
+import java.util.UUID;
+
+import static org.apache.hadoop.hdds.HddsConfigKeys.OZONE_METADATA_DIRS;
+import static org.apache.hadoop.hdds.client.ReplicationFactor.ONE;
+import static org.apache.hadoop.hdds.client.ReplicationType.RATIS;
+
 /**
  * This class is to test all the public facing APIs of Ozone Client.
  */
 @RunWith(Parameterized.class)
-public class TestOzoneAtRestEncryption {
+public class TestOzoneCompressionWithEncryption {
 
   @Parameterized.Parameters
   public static Collection<BucketLayout> data() {
@@ -120,7 +120,7 @@ public class TestOzoneAtRestEncryption {
   // hadoop.security.crypto.buffer.size)
   private final BucketLayout bucketLayout;
 
-  public TestOzoneAtRestEncryption(BucketLayout layout) {
+  public TestOzoneCompressionWithEncryption(BucketLayout layout) {
     bucketLayout = layout;
   }
 
@@ -204,11 +204,12 @@ public class TestOzoneAtRestEncryption {
     OzoneVolume volume = store.getVolume(volumeName);
     BucketArgs bucketArgs = BucketArgs.newBuilder()
         .setBucketLayout(bucketLayout)
+        .setCompressionType(CompressionType.SNAPPY.getCodecName())
         .setBucketEncryptionKey(TEST_KEY).build();
     volume.createBucket(bucketName, bucketArgs);
     OzoneBucket bucket = volume.getBucket(bucketName);
 
-    createAndVerifyKeyData(bucket);
+    createAndVerifyKeyData(bucket, CompressionType.SNAPPY.getCodecName());
   }
 
   @Test
@@ -217,7 +218,8 @@ public class TestOzoneAtRestEncryption {
     String bucketName = UUID.randomUUID().toString();
 
     // Create source volume/bucket.
-    createVolumeAndBucket(volumeName, bucketName);
+    createVolumeAndBucket(volumeName, bucketName,
+        CompressionType.SNAPPY.getCodecName());
 
     // Create link volume/bucket.
     String linkVolumeName = UUID.randomUUID().toString();
@@ -225,11 +227,13 @@ public class TestOzoneAtRestEncryption {
     OzoneBucket linkBucket = createLinkVolumeAndBucket(volumeName, bucketName,
         linkVolumeName, linkBucketName);
 
-    createAndVerifyKeyData(linkBucket);
+    createAndVerifyKeyData(linkBucket, CompressionType.SNAPPY.getCodecName());
   }
 
 
-  private void createAndVerifyKeyData(OzoneBucket bucket) throws Exception {
+  private void createAndVerifyKeyData(OzoneBucket bucket,
+                                      String expectedCompression)
+      throws Exception {
     Instant testStartTime = Instant.now();
     String keyName = UUID.randomUUID().toString();
     String value = "sample value";
@@ -246,7 +250,9 @@ public class TestOzoneAtRestEncryption {
 
     // Check file encryption info is set,
     // if set key will use this encryption info and encrypt data.
-    Assert.assertTrue(key.getFileEncryptionInfo() != null);
+    Assert.assertNotNull(key.getFileEncryptionInfo());
+    Assert.assertNotNull(key.getCompressionType());
+    Assert.assertEquals(expectedCompression, key.getCompressionType());
 
     byte[] fileContent;
     int len = 0;
@@ -267,11 +273,12 @@ public class TestOzoneAtRestEncryption {
   }
 
   private OzoneBucket createVolumeAndBucket(String volumeName,
-      String bucketName) throws Exception {
+      String bucketName, String compressionType) throws Exception {
     store.createVolume(volumeName);
     OzoneVolume volume = store.getVolume(volumeName);
     BucketArgs bucketArgs = BucketArgs.newBuilder()
         .setBucketEncryptionKey(TEST_KEY)
+        .setCompressionType(compressionType)
         .setBucketLayout(bucketLayout).build();
     volume.createBucket(bucketName, bucketArgs);
     return volume.getBucket(bucketName);
@@ -308,6 +315,7 @@ public class TestOzoneAtRestEncryption {
     //Bucket with Encryption & GDPR enforced
     BucketArgs bucketArgs = BucketArgs.newBuilder()
         .setBucketEncryptionKey(TEST_KEY)
+        .setCompressionType(CompressionType.GZIP.getCodecName())
         .addMetadata(OzoneConsts.GDPR_FLAG, "true")
         .setBucketLayout(bucketLayout).build();
     volume.createBucket(bucketName, bucketArgs);
@@ -348,6 +356,9 @@ public class TestOzoneAtRestEncryption {
     Assert.assertEquals("true", key.getMetadata().get(OzoneConsts.GDPR_FLAG));
     //As TDE is enabled, the TDE encryption details should not be null.
     Assert.assertNotNull(key.getFileEncryptionInfo());
+    Assert.assertNotNull(key.getCompressionType());
+    Assert.assertEquals(CompressionType.GZIP.getCodecName(),
+        key.getCompressionType());
 
     //Step 3
     bucket.deleteKey(key.getName());
@@ -420,7 +431,8 @@ public class TestOzoneAtRestEncryption {
   public void testMPUwithOnePart() throws Exception {
     String volumeName = UUID.randomUUID().toString();
     String bucketName = UUID.randomUUID().toString();
-    OzoneBucket bucket = createVolumeAndBucket(volumeName, bucketName);
+    OzoneBucket bucket = createVolumeAndBucket(volumeName, bucketName,
+        CompressionType.SNAPPY.getCodecName());
     testMultipartUploadWithEncryption(bucket, 1);
   }
 
@@ -428,7 +440,8 @@ public class TestOzoneAtRestEncryption {
   public void testMPUwithTwoParts() throws Exception {
     String volumeName = UUID.randomUUID().toString();
     String bucketName = UUID.randomUUID().toString();
-    OzoneBucket bucket = createVolumeAndBucket(volumeName, bucketName);
+    OzoneBucket bucket = createVolumeAndBucket(volumeName, bucketName,
+        CompressionType.SNAPPY.getCodecName());
     testMultipartUploadWithEncryption(bucket, 2);
   }
 
@@ -436,7 +449,8 @@ public class TestOzoneAtRestEncryption {
   public void testMPUwithThreePartsOverride() throws Exception {
     String volumeName = UUID.randomUUID().toString();
     String bucketName = UUID.randomUUID().toString();
-    OzoneBucket bucket = createVolumeAndBucket(volumeName, bucketName);
+    OzoneBucket bucket = createVolumeAndBucket(volumeName, bucketName,
+        CompressionType.SNAPPY.getCodecName());
     testMultipartUploadWithEncryption(bucket, 3);
 
     // override the key and check content
@@ -448,7 +462,8 @@ public class TestOzoneAtRestEncryption {
   public void testMPUwithLinkBucket() throws Exception {
     String volumeName = UUID.randomUUID().toString();
     String bucketName = UUID.randomUUID().toString();
-    createVolumeAndBucket(volumeName, bucketName);
+    createVolumeAndBucket(volumeName, bucketName,
+        CompressionType.SNAPPY.getCodecName());
 
     String linkVolumeName = UUID.randomUUID().toString();
     String linkBucketName = UUID.randomUUID().toString();
@@ -505,38 +520,6 @@ public class TestOzoneAtRestEncryption {
     Assert.assertEquals(bytesRead, keySize);
     Assert.assertArrayEquals(inputData, completeRead);
 
-    // Read different data lengths and starting from different offsets and
-    // verify the data matches.
-    Random random = new Random();
-    int randomSize = random.nextInt(keySize / 2);
-    int randomOffset = random.nextInt(keySize - randomSize);
-
-    int[] readDataSizes = {keySize, keySize / 3 + 1, BLOCK_SIZE,
-        BLOCK_SIZE * 2 + 1, CHUNK_SIZE, CHUNK_SIZE / 4 - 1,
-        DEFAULT_CRYPTO_BUFFER_SIZE, DEFAULT_CRYPTO_BUFFER_SIZE / 2, 1,
-        randomSize};
-
-    int[] readFromPositions = {0, DEFAULT_CRYPTO_BUFFER_SIZE + 10, CHUNK_SIZE,
-        BLOCK_SIZE - DEFAULT_CRYPTO_BUFFER_SIZE + 1, BLOCK_SIZE, keySize / 3,
-        keySize - 1, randomOffset};
-
-    for (int readDataLen : readDataSizes) {
-      for (int readFromPosition : readFromPositions) {
-        // Check that offset + buffer size does not exceed the key size
-        if (readFromPosition + readDataLen > keySize) {
-          continue;
-        }
-
-        byte[] readData = new byte[readDataLen];
-        inputStream.seek(readFromPosition);
-        int actualReadLen = inputStream.read(readData, 0, readDataLen);
-
-        assertReadContent(inputData, readData, readFromPosition);
-        Assert.assertEquals(readFromPosition + readDataLen,
-            inputStream.getPos());
-        Assert.assertEquals(readDataLen, actualReadLen);
-      }
-    }
   }
 
   private static byte[] generateRandomData(int length) {
@@ -583,15 +566,6 @@ public class TestOzoneAtRestEncryption {
         .getVolumeName());
     Assert.assertEquals(omMultipartUploadCompleteInfo.getKey(), keyName);
     Assert.assertNotNull(omMultipartUploadCompleteInfo.getHash());
-  }
-
-  private static void assertReadContent(byte[] inputData, byte[] readData,
-      int offset) {
-    byte[] inputDataForComparison = Arrays.copyOfRange(inputData, offset,
-        offset + readData.length);
-    Assert.assertArrayEquals("Read data does not match input data at offset " +
-        offset + " and length " + readData.length,
-        inputDataForComparison, readData);
   }
 
   @Test

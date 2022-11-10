@@ -176,7 +176,8 @@ public class OMFileCreateRequestWithFSO extends OMFileCreateRequest {
 
       OmKeyInfo omFileInfo = prepareFileInfo(omMetadataManager, keyArgs,
               dbFileInfo, keyArgs.getDataSize(), locations,
-              getFileEncryptionInfo(keyArgs), ozoneManager.getPrefixManager(),
+              getFileEncryptionInfo(keyArgs), getCompressionType(keyArgs),
+              ozoneManager.getPrefixManager(),
               bucketInfo, pathInfoFSO, trxnLogIndex,
               pathInfoFSO.getLeafNodeObjectId(),
               ozoneManager.isRatisEnabled(), repConfig);

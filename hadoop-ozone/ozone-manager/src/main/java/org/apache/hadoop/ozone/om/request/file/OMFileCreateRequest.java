@@ -151,7 +151,7 @@ public class OMFileCreateRequest extends OMKeyRequest {
         .map(info -> info.getProtobuf(getOmRequest().getVersion()))
         .collect(Collectors.toList()));
 
-    generateRequiredEncryptionInfo(keyArgs, newKeyArgs, ozoneManager);
+    fillEncryptionAndCompression(keyArgs, newKeyArgs, ozoneManager);
     CreateFileRequest.Builder newCreateFileRequest =
         createFileRequest.toBuilder().setKeyArgs(newKeyArgs)
             .setClientID(UniqueId.next());
@@ -254,6 +254,7 @@ public class OMFileCreateRequest extends OMKeyRequest {
 
       omKeyInfo = prepareKeyInfo(omMetadataManager, keyArgs, dbKeyInfo,
           keyArgs.getDataSize(), locations, getFileEncryptionInfo(keyArgs),
+          getCompressionType(keyArgs),
           ozoneManager.getPrefixManager(), omBucketInfo, trxnLogIndex,
           ozoneManager.getObjectIdFromTxId(trxnLogIndex),
           ozoneManager.isRatisEnabled(), repConfig);

@@ -395,6 +395,7 @@ public class S3MultipartUploadCompleteRequest extends OMKeyRequest {
           .setModificationTime(keyArgs.getModificationTime())
           .setDataSize(dataSize)
           .setFileEncryptionInfo(dbOpenKeyInfo.getFileEncryptionInfo())
+          .setCompressionType(dbOpenKeyInfo.getCompressionType())
           .setOmKeyLocationInfos(
               Collections.singletonList(keyLocationInfoGroup))
           .setAcls(dbOpenKeyInfo.getAcls());
@@ -421,6 +422,9 @@ public class S3MultipartUploadCompleteRequest extends OMKeyRequest {
       // will have it's own file encryption info.
       if (dbOpenKeyInfo.getFileEncryptionInfo() != null) {
         omKeyInfo.setFileEncryptionInfo(dbOpenKeyInfo.getFileEncryptionInfo());
+      }
+      if (dbOpenKeyInfo.getCompressionType() != null) {
+        omKeyInfo.setCompressionType(dbOpenKeyInfo.getCompressionType());
       }
       omKeyInfo.updateLocationInfoList(partLocationInfos, true, true);
       omKeyInfo.setModificationTime(keyArgs.getModificationTime());
