@@ -68,6 +68,12 @@ https://maven.apache.org/xsd/maven-4.0.0.xsd">
     </dependency>
 
     <dependency>
+      <groupId>org.lz4</groupId>
+      <artifactId>lz4-java</artifactId>
+      <version>1.7.1</version>
+    </dependency>
+
+    <dependency>
       <groupId>org.apache.ozone</groupId>
       <artifactId>ozone-s3gateway</artifactId>
     </dependency>

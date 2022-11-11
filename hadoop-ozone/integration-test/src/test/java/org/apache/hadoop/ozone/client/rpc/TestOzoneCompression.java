@@ -197,7 +197,7 @@ public class TestOzoneCompression {
 
     // Create source volume/bucket.
     createVolumeAndBucket(volumeName, bucketName,
-        CompressionType.GZIP.getCodecName());
+        CompressionType.LZ4.getCodecName());
 
     // Create link volume/bucket.
     String linkVolumeName = UUID.randomUUID().toString();
@@ -205,7 +205,7 @@ public class TestOzoneCompression {
     OzoneBucket linkBucket = createLinkVolumeAndBucket(volumeName, bucketName,
         linkVolumeName, linkBucketName);
 
-    createAndVerifyKeyData(linkBucket, CompressionType.GZIP.getCodecName());
+    createAndVerifyKeyData(linkBucket, CompressionType.LZ4.getCodecName());
   }
 
 
