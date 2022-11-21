@@ -78,9 +78,9 @@ public final class ContainerTestHelper {
    * @return ChunkInfo
    */
   public static ChunkInfo getChunk(long keyID, int seqNo, long offset,
-      long len) {
+      long len, long originalOffset, long originaLen) {
     return new ChunkInfo(String.format("%d.data.%d", keyID,
-        seqNo), offset, len);
+        seqNo), offset, len, originalOffset, originaLen);
   }
 
   /**
@@ -171,7 +171,7 @@ public final class ContainerTestHelper {
 
     writeRequest.setBlockID(blockID.getDatanodeBlockIDProtobuf());
 
-    ChunkInfo info = getChunk(blockID.getLocalID(), seq, 0, data.limit());
+    ChunkInfo info = getChunk(blockID.getLocalID(), seq, 0, data.limit(), 0, data.limit());
     setDataChecksum(info, data);
 
     writeRequest.setChunkData(info.getProtoBufMessage());
@@ -201,7 +201,7 @@ public final class ContainerTestHelper {
     ContainerProtos.PutSmallFileRequestProto.Builder smallFileRequest =
         ContainerProtos.PutSmallFileRequestProto.newBuilder();
     ChunkBuffer data = getData(dataLen);
-    ChunkInfo info = getChunk(blockID.getLocalID(), 0, 0, dataLen);
+    ChunkInfo info = getChunk(blockID.getLocalID(), 0, 0, dataLen, 0, dataLen);
     setDataChecksum(info, data);
 
 
@@ -572,6 +572,8 @@ public final class ContainerTestHelper {
             .setChunkName("dummy")
             .setOffset(0)
             .setLen(100)
+            .setOriginalOffset(0)
+            .setOriginalLen(100)
             .setChecksumData(ContainerProtos.ChecksumData.newBuilder()
                 .setBytesPerChecksum(1)
                 .setType(ChecksumType.CRC32)

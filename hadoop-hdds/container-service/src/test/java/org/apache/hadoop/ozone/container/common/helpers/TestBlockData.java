@@ -48,6 +48,8 @@ public class TestBlockData {
         .setChunkName(name)
         .setOffset(offset)
         .setLen(len)
+        .setOriginalOffset(offset)
+        .setOriginalLen(len)
         .setChecksumData(Checksum.getNoChecksumDataProto())
         .build();
   }

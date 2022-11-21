@@ -25,6 +25,7 @@ import org.apache.hadoop.hdds.scm.XceiverClientFactory;
 import org.apache.hadoop.hdds.scm.pipeline.Pipeline;
 import org.apache.hadoop.hdds.scm.storage.BlockExtendedInputStream;
 import org.apache.hadoop.hdds.scm.storage.BlockLocationInfo;
+import org.apache.hadoop.io.compress.CompressionCodec;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -348,7 +349,7 @@ public class TestECBlockInputStreamProxy {
   private ECBlockInputStreamProxy createBISProxy(ECReplicationConfig rConfig,
       BlockLocationInfo blockInfo) {
     return new ECBlockInputStreamProxy(
-        rConfig, blockInfo, true, null, null, streamFactory);
+        rConfig, blockInfo, true, null, null, streamFactory, null);
   }
 
   private static class TestECBlockInputStreamFactory
@@ -378,7 +379,8 @@ public class TestECBlockInputStreamProxy {
         List<DatanodeDetails> failedDatanodes,
         ReplicationConfig repConfig, BlockLocationInfo blockInfo,
         boolean verifyChecksum, XceiverClientFactory xceiverFactory,
-        Function<BlockID, Pipeline> refreshFunction) {
+        Function<BlockID, Pipeline> refreshFunction,
+        CompressionCodec compressionCodec) {
       this.failedLocations = failedDatanodes;
       ByteBuffer wrappedBuffer =
           ByteBuffer.wrap(data.array(), 0, data.capacity());

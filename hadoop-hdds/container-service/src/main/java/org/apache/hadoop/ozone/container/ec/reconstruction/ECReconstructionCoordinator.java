@@ -232,7 +232,7 @@ public class ECReconstructionCoordinator implements Closeable {
         repConfig, blockLocationInfo, true,
         this.containerOperationClient.getXceiverClientManager(), null,
         this.blockInputStreamFactory, byteBufferPool,
-        this.ecReconstructExecutor)) {
+        this.ecReconstructExecutor, null)) {
 
       ECBlockOutputStream[] targetBlockStreams =
           new ECBlockOutputStream[toReconstructIndexes.size()];
@@ -253,7 +253,8 @@ public class ECReconstructionCoordinator implements Closeable {
                 this.containerOperationClient.getXceiverClientManager(),
                 this.containerOperationClient
                     .singleNodePipeline(datanodeDetails, repConfig), bufferPool,
-                configuration, blockLocationInfo.getToken(), clientMetrics);
+                configuration, blockLocationInfo.getToken(), clientMetrics,
+                null);
         bufs[i] = byteBufferPool.getBuffer(false, repConfig.getEcChunkSize());
         // Make sure it's clean. Don't want to reuse the erroneously returned
         // buffers from the pool.

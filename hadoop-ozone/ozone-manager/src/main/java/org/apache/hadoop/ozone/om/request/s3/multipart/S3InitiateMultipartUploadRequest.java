@@ -95,7 +95,7 @@ public class S3InitiateMultipartUploadRequest extends OMKeyRequest {
                 UniqueId.next()).setModificationTime(Time.now())
             .setKeyName(keyPath);
 
-    generateRequiredEncryptionInfo(keyArgs, newKeyArgs, ozoneManager);
+    fillEncryptionAndCompression(keyArgs, newKeyArgs, ozoneManager);
 
     return getOmRequest().toBuilder()
         .setUserInfo(getUserInfo())
@@ -207,6 +207,7 @@ public class S3InitiateMultipartUploadRequest extends OMKeyRequest {
               ozoneManager.getPrefixManager()))
           .setObjectID(objectID)
           .setUpdateID(transactionLogIndex)
+          .setCompressionType(getCompressionType(keyArgs))
           .setFileEncryptionInfo(keyArgs.hasFileEncryptionInfo() ?
               OMPBHelper.convert(keyArgs.getFileEncryptionInfo()) : null)
           .build();

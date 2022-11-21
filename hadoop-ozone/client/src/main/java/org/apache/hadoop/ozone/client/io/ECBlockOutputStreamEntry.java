@@ -31,6 +31,7 @@ import org.apache.hadoop.hdds.scm.storage.BlockOutputStream;
 import org.apache.hadoop.hdds.scm.storage.BufferPool;
 import org.apache.hadoop.hdds.scm.storage.ECBlockOutputStream;
 import org.apache.hadoop.hdds.security.token.OzoneBlockTokenIdentifier;
+import org.apache.hadoop.io.compress.CompressionCodec;
 import org.apache.hadoop.security.token.Token;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,9 +77,10 @@ public class ECBlockOutputStreamEntry extends BlockOutputStreamEntry {
   ECBlockOutputStreamEntry(BlockID blockID, String key,
       XceiverClientFactory xceiverClientManager, Pipeline pipeline, long length,
       BufferPool bufferPool, Token<OzoneBlockTokenIdentifier> token,
-      OzoneClientConfig config, ContainerClientMetrics clientMetrics) {
+      OzoneClientConfig config, ContainerClientMetrics clientMetrics,
+      CompressionCodec compressionCodec) {
     super(blockID, key, xceiverClientManager, pipeline, length, bufferPool,
-        token, config, clientMetrics);
+        token, config, clientMetrics, compressionCodec);
     assertInstanceOf(
         pipeline.getReplicationConfig(), ECReplicationConfig.class);
     this.replicationConfig =
@@ -97,7 +99,8 @@ public class ECBlockOutputStreamEntry extends BlockOutputStreamEntry {
         blockOutputStreams[i] =
             new ECBlockOutputStream(getBlockID(), getXceiverClientManager(),
                 createSingleECBlockPipeline(getPipeline(), nodes.get(i), i + 1),
-                getBufferPool(), getConf(), getToken(), getClientMetrics());
+                getBufferPool(), getConf(), getToken(), getClientMetrics(),
+                getCompressionCodec());
       }
     }
   }
@@ -397,6 +400,7 @@ public class ECBlockOutputStreamEntry extends BlockOutputStreamEntry {
     private Token<OzoneBlockTokenIdentifier> token;
     private OzoneClientConfig config;
     private ContainerClientMetrics clientMetrics;
+    private CompressionCodec compressionCodec;
 
     public ECBlockOutputStreamEntry.Builder setBlockID(BlockID bID) {
       this.blockID = bID;
@@ -448,6 +452,11 @@ public class ECBlockOutputStreamEntry extends BlockOutputStreamEntry {
       return this;
     }
 
+    public Builder setCompressionCodec(CompressionCodec codec) {
+      this.compressionCodec = codec;
+      return this;
+    }
+
     public ECBlockOutputStreamEntry build() {
       return new ECBlockOutputStreamEntry(blockID,
           key,
@@ -455,7 +464,7 @@ public class ECBlockOutputStreamEntry extends BlockOutputStreamEntry {
           pipeline,
           length,
           bufferPool,
-          token, config, clientMetrics);
+          token, config, clientMetrics, compressionCodec);
     }
   }
 }

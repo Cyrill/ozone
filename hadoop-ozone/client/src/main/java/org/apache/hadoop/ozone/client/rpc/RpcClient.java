@@ -46,6 +46,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.hadoop.crypto.CryptoInputStream;
 import org.apache.hadoop.crypto.CryptoOutputStream;
 import org.apache.hadoop.crypto.key.KeyProvider;
@@ -75,6 +76,7 @@ import org.apache.hadoop.hdds.utils.IOUtils;
 import org.apache.hadoop.io.ByteBufferPool;
 import org.apache.hadoop.io.ElasticByteBufferPool;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.io.compress.CompressionCodec;
 import org.apache.hadoop.ozone.OzoneAcl;
 import org.apache.hadoop.ozone.OzoneConfigKeys;
 import org.apache.hadoop.ozone.OzoneConsts;
@@ -97,7 +99,7 @@ import org.apache.hadoop.ozone.client.io.ECKeyOutputStream;
 import org.apache.hadoop.ozone.client.io.KeyInputStream;
 import org.apache.hadoop.ozone.client.io.KeyOutputStream;
 import org.apache.hadoop.ozone.client.io.LengthInputStream;
-import org.apache.hadoop.ozone.client.io.MultipartCryptoKeyInputStream;
+import org.apache.hadoop.ozone.client.io.MultipartKeyInputStream;
 import org.apache.hadoop.ozone.client.io.OzoneCryptoInputStream;
 import org.apache.hadoop.ozone.client.io.OzoneInputStream;
 import org.apache.hadoop.ozone.client.io.OzoneOutputStream;
@@ -662,6 +664,13 @@ public class RpcClient implements ClientProtocol {
     }
 
     OmBucketInfo.Builder builder = OmBucketInfo.newBuilder();
+    String compressionType = bucketArgs.getCompressionType();
+
+    if (compressionType != null) {
+      //validate compression type, throw an exception if the value is not valid
+      OzoneCompressionCodecFactory.getCompressionCodec(conf, compressionType);
+    }
+
     builder.setVolumeName(volumeName)
         .setBucketName(bucketName)
         .setIsVersionEnabled(isVersionEnabled)
@@ -673,6 +682,7 @@ public class RpcClient implements ClientProtocol {
         .setQuotaInNamespace(bucketArgs.getQuotaInNamespace())
         .setAcls(listOfAcls.stream().distinct().collect(Collectors.toList()))
         .setBucketLayout(bucketLayout)
+        .setCompressionType(compressionType)
         .setOwner(owner);
 
     if (bek != null) {
@@ -689,9 +699,11 @@ public class RpcClient implements ClientProtocol {
         ? "with bucket layout " + bucketLayout
         : "with server-side default bucket layout";
     LOG.info("Creating Bucket: {}/{}, {}, {} as owner, Versioning {}, " +
-            "Storage Type set to {} and Encryption set to {} ",
+            "Storage Type set to {} and Encryption set to {}, " +
+            "compression type is {} ",
         volumeName, bucketName, layoutMsg, owner, isVersionEnabled,
-        storageType, bek != null);
+        storageType, bek != null,
+        compressionType != null ? compressionType : "not set");
     ozoneManagerClient.createBucket(builder.build());
   }
 
@@ -1102,6 +1114,7 @@ public class RpcClient implements ClientProtocol {
         bucketInfo.getMetadata(),
         bucketInfo.getEncryptionKeyInfo() != null ? bucketInfo
             .getEncryptionKeyInfo().getKeyName() : null,
+        bucketInfo.getCompressionType(),
         bucketInfo.getSourceVolume(),
         bucketInfo.getSourceBucket(),
         bucketInfo.getUsedBytes(),
@@ -1133,6 +1146,7 @@ public class RpcClient implements ClientProtocol {
         bucket.getMetadata(),
         bucket.getEncryptionKeyInfo() != null ? bucket
             .getEncryptionKeyInfo().getKeyName() : null,
+        bucket.getCompressionType(),
         bucket.getSourceVolume(),
         bucket.getSourceBucket(),
         bucket.getUsedBytes(),
@@ -1458,6 +1472,7 @@ public class RpcClient implements ClientProtocol {
         keyInfo.getModificationTime(), ozoneKeyLocations,
         keyInfo.getReplicationConfig(), keyInfo.getMetadata(),
         keyInfo.getFileEncryptionInfo(),
+        keyInfo.getCompressionType(),
         getInputStream);
   }
 
@@ -1909,12 +1924,15 @@ public class RpcClient implements ClientProtocol {
     // When Key is not MPU or when Key is MPU and encryption is not enabled
     // Need to revisit for GDP.
     FileEncryptionInfo feInfo = keyInfo.getFileEncryptionInfo();
-
+    String compressionType = keyInfo.getCompressionType();
+    CompressionCodec codec = StringUtils.isNotEmpty(compressionType) ?
+        OzoneCompressionCodecFactory.getCompressionCodec(conf, compressionType) :
+        null;
     if (feInfo == null) {
       LengthInputStream lengthInputStream = KeyInputStream
           .getFromOmKeyInfo(keyInfo, xceiverClientManager,
               clientConfig.isChecksumVerify(), retryFunction,
-              blockInputStreamFactory);
+              blockInputStreamFactory, codec);
       try {
         Map< String, String > keyInfoMetadata = keyInfo.getMetadata();
         if (Boolean.valueOf(keyInfoMetadata.get(OzoneConsts.GDPR_FLAG))) {
@@ -1935,7 +1953,7 @@ public class RpcClient implements ClientProtocol {
       LengthInputStream lengthInputStream = KeyInputStream
           .getFromOmKeyInfo(keyInfo, xceiverClientManager,
               clientConfig.isChecksumVerify(), retryFunction,
-              blockInputStreamFactory);
+              blockInputStreamFactory, codec);
       final KeyProvider.KeyVersion decrypted = getDEK(feInfo);
       final CryptoInputStream cryptoIn =
           new CryptoInputStream(lengthInputStream.getWrappedStream(),
@@ -1947,7 +1965,7 @@ public class RpcClient implements ClientProtocol {
       List<LengthInputStream> lengthInputStreams = KeyInputStream
           .getStreamsFromKeyInfo(keyInfo, xceiverClientManager,
               clientConfig.isChecksumVerify(), retryFunction,
-              blockInputStreamFactory);
+              blockInputStreamFactory, codec);
       final KeyProvider.KeyVersion decrypted = getDEK(feInfo);
 
       List<OzoneCryptoInputStream> cryptoInputStreams = new ArrayList<>();
@@ -1960,7 +1978,7 @@ public class RpcClient implements ClientProtocol {
                 keyInfo.getKeyName(), i);
         cryptoInputStreams.add(ozoneCryptoInputStream);
       }
-      return new MultipartCryptoKeyInputStream(keyInfo.getKeyName(),
+      return new MultipartKeyInputStream(keyInfo.getKeyName(),
           cryptoInputStreams);
     }
   }
@@ -2006,7 +2024,7 @@ public class RpcClient implements ClientProtocol {
   }
 
   private KeyOutputStream.Builder createKeyOutputStream(OpenKeySession openKey,
-      String requestId) {
+      String requestId) throws IOException {
     KeyOutputStream.Builder builder;
 
     ReplicationConfig replicationConfig =
@@ -2020,13 +2038,17 @@ public class RpcClient implements ClientProtocol {
       builder = new KeyOutputStream.Builder()
         .setReplicationConfig(replicationConfig);
     }
-
+    String compressionType = openKey.getKeyInfo().getCompressionType();
+    CompressionCodec codec = StringUtils.isNotEmpty(compressionType) ?
+        OzoneCompressionCodecFactory.getCompressionCodec(conf, compressionType) :
+        null;
     return builder.setHandler(openKey)
         .setXceiverClientManager(xceiverClientManager)
         .setOmClient(ozoneManagerClient)
         .setRequestID(requestId)
         .enableUnsafeByteBufferConversion(unsafeByteBufferConversion)
         .setConfig(clientConfig)
+        .setCompressionCodec(codec)
         .setClientMetrics(clientMetrics);
   }
 

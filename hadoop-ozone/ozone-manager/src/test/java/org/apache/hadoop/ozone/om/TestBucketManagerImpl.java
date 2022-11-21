@@ -31,6 +31,7 @@ import org.apache.hadoop.hdds.server.ServerUtils;
 import org.apache.hadoop.ozone.om.exceptions.OMException;
 import org.apache.hadoop.ozone.om.exceptions.OMException.ResultCodes;
 
+import org.apache.hadoop.ozone.om.helpers.CompressionType;
 import org.apache.hadoop.ozone.om.helpers.OmBucketArgs;
 import org.apache.hadoop.ozone.om.helpers.OmBucketInfo;
 import org.apache.hadoop.ozone.om.helpers.OmKeyArgs;
@@ -119,7 +120,7 @@ public class TestBucketManagerImpl {
   }
 
   @Test
-  public void testCreateBucket() throws Exception {
+  public void testCreateEncryptedBucket() throws Exception {
     createSampleVol();
     KeyProviderCryptoExtension kmsProvider = omTestManagers.kmsProviderInit();
 
@@ -150,9 +151,8 @@ public class TestBucketManagerImpl {
         .equals(bucketInfo.getEncryptionKeyInfo().getKeyName()));
   }
 
-
   @Test
-  public void testCreateEncryptedBucket() throws Exception {
+  public void testCreateBucket() throws Exception {
     createSampleVol();
 
     BucketManager bucketManager = omTestManagers.getBucketManager();
@@ -163,6 +163,27 @@ public class TestBucketManagerImpl {
     writeClient.createBucket(bucketInfo);
     Assert.assertNotNull(bucketManager.getBucketInfo("sample-vol",
         "bucket-one"));
+  }
+
+  @Test
+  public void testCreateCompressedBucket() throws Exception {
+    createSampleVol();
+
+    BucketManager bucketManager = omTestManagers.getBucketManager();
+    OmBucketInfo bucketInfo = OmBucketInfo.newBuilder()
+        .setVolumeName("sample-vol")
+        .setBucketName("bucket-one")
+        .setCompressionType(CompressionType.SNAPPY.getCodecName())
+        .build();
+    writeClient.createBucket(bucketInfo);
+
+    OmBucketInfo bucketInfoRead =
+        bucketManager.getBucketInfo("sample-vol", "bucket-one");
+
+    Assert.assertNotNull(bucketInfoRead);
+
+    Assert.assertEquals(CompressionType.SNAPPY.getCodecName(),
+        bucketInfoRead.getCompressionType());
   }
 
   @Test

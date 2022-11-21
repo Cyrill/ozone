@@ -26,6 +26,7 @@ import org.apache.hadoop.hdds.scm.pipeline.Pipeline;
 import org.apache.hadoop.hdds.scm.storage.BlockExtendedInputStream;
 import org.apache.hadoop.hdds.scm.storage.BlockLocationInfo;
 import org.apache.hadoop.hdds.scm.storage.ByteReaderStrategy;
+import org.apache.hadoop.io.compress.CompressionCodec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,6 +53,7 @@ public class ECBlockInputStreamProxy extends BlockExtendedInputStream {
   private final boolean verifyChecksum;
   private final XceiverClientFactory xceiverClientFactory;
   private final Function<BlockID, Pipeline> refreshFunction;
+  private final CompressionCodec compressionCodec;
   private final BlockLocationInfo blockInfo;
   private final ECBlockInputStreamFactory ecBlockInputStreamFactory;
 
@@ -99,13 +101,15 @@ public class ECBlockInputStreamProxy extends BlockExtendedInputStream {
   public ECBlockInputStreamProxy(ECReplicationConfig repConfig,
       BlockLocationInfo blockInfo, boolean verifyChecksum,
       XceiverClientFactory xceiverClientFactory, Function<BlockID,
-      Pipeline> refreshFunction, ECBlockInputStreamFactory streamFactory) {
+      Pipeline> refreshFunction, ECBlockInputStreamFactory streamFactory,
+      CompressionCodec compressionCodec) {
     this.repConfig = repConfig;
     this.verifyChecksum = verifyChecksum;
     this.blockInfo = blockInfo;
     this.ecBlockInputStreamFactory = streamFactory;
     this.xceiverClientFactory = xceiverClientFactory;
     this.refreshFunction = refreshFunction;
+    this.compressionCodec = compressionCodec;
 
     setReaderType();
     createBlockReader();
@@ -124,7 +128,7 @@ public class ECBlockInputStreamProxy extends BlockExtendedInputStream {
     }
     blockReader = ecBlockInputStreamFactory.create(reconstructionReader,
         failedLocations, repConfig, blockInfo, verifyChecksum,
-        xceiverClientFactory, refreshFunction);
+        xceiverClientFactory, refreshFunction, compressionCodec);
   }
 
   @Override

@@ -36,6 +36,8 @@ public enum OzoneManagerVersion implements ComponentVersion {
       + "ECReplicationConfig"),
   OPTIMIZED_GET_KEY_INFO(3, "OzoneManager version that supports optimized"
       + " key lookups using cached container locations."),
+  COMPRESSION_SUPPORT(4, "OzoneManager version that supports"
+      + "Transparent Compression"),
 
   FUTURE_VERSION(-1, "Used internally in the client when the server side is "
       + " newer and an unknown server version has arrived to the client.");

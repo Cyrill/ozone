@@ -40,6 +40,7 @@ import org.apache.hadoop.hdds.scm.storage.ByteArrayReader;
 import org.apache.hadoop.hdds.scm.storage.ByteBufferReader;
 import org.apache.hadoop.hdds.scm.storage.ByteReaderStrategy;
 import org.apache.hadoop.hdds.scm.storage.ExtendedInputStream;
+import org.apache.hadoop.io.compress.CompressionCodec;
 import org.apache.hadoop.ozone.om.helpers.OmKeyInfo;
 import org.apache.hadoop.ozone.om.helpers.OmKeyLocationInfo;
 
@@ -92,14 +93,15 @@ public class KeyInputStream extends ExtendedInputStream {
   public static LengthInputStream getFromOmKeyInfo(OmKeyInfo keyInfo,
       XceiverClientFactory xceiverClientFactory,
       boolean verifyChecksum,  Function<OmKeyInfo, OmKeyInfo> retryFunction,
-      BlockInputStreamFactory blockStreamFactory) {
+      BlockInputStreamFactory blockStreamFactory,
+      CompressionCodec compressionCodec) {
     List<OmKeyLocationInfo> keyLocationInfos = keyInfo
         .getLatestVersionLocations().getBlocksLatestVersionOnly();
 
     KeyInputStream keyInputStream = new KeyInputStream();
     keyInputStream.initialize(keyInfo, keyLocationInfos,
         xceiverClientFactory, verifyChecksum, retryFunction,
-        blockStreamFactory);
+        blockStreamFactory, compressionCodec);
 
     return new LengthInputStream(keyInputStream, keyInputStream.length);
   }
@@ -107,7 +109,8 @@ public class KeyInputStream extends ExtendedInputStream {
   public static List<LengthInputStream> getStreamsFromKeyInfo(OmKeyInfo keyInfo,
       XceiverClientFactory xceiverClientFactory, boolean verifyChecksum,
       Function<OmKeyInfo, OmKeyInfo> retryFunction,
-      BlockInputStreamFactory blockStreamFactory) {
+      BlockInputStreamFactory blockStreamFactory,
+      CompressionCodec compressionCodec) {
     List<OmKeyLocationInfo> keyLocationInfos = keyInfo
         .getLatestVersionLocations().getBlocksLatestVersionOnly();
 
@@ -139,7 +142,7 @@ public class KeyInputStream extends ExtendedInputStream {
       KeyInputStream keyInputStream = new KeyInputStream();
       keyInputStream.initialize(keyInfo, entry.getValue(),
           xceiverClientFactory, verifyChecksum, retryFunction,
-          blockStreamFactory);
+          blockStreamFactory, compressionCodec);
       lengthInputStreams.add(new LengthInputStream(keyInputStream,
           partsLengthMap.get(entry.getKey())));
     }
@@ -151,7 +154,8 @@ public class KeyInputStream extends ExtendedInputStream {
       List<OmKeyLocationInfo> blockInfos,
       XceiverClientFactory xceiverClientFactory,
       boolean verifyChecksum,  Function<OmKeyInfo, OmKeyInfo> retryFunction,
-      BlockInputStreamFactory blockStreamFactory) {
+      BlockInputStreamFactory blockStreamFactory,
+      CompressionCodec compressionCodec) {
     this.key = keyInfo.getKeyName();
     this.blockOffsets = new long[blockInfos.size()];
     long keyLength = 0;
@@ -180,7 +184,7 @@ public class KeyInputStream extends ExtendedInputStream {
             } else {
               return null;
             }
-          }, blockStreamFactory);
+          }, blockStreamFactory, compressionCodec);
 
       this.blockOffsets[i] = keyLength;
       keyLength += omKeyLocationInfo.getLength();
@@ -198,11 +202,12 @@ public class KeyInputStream extends ExtendedInputStream {
       OmKeyLocationInfo blockInfo,
       XceiverClientFactory xceiverClientFactory, boolean verifyChecksum,
       Function<OmKeyLocationInfo, Pipeline> refreshPipelineFunction,
-      BlockInputStreamFactory blockStreamFactory) {
+      BlockInputStreamFactory blockStreamFactory,
+      CompressionCodec compressionCodec) {
     blockStreams.add(blockStreamFactory.create(repConfig, blockInfo,
         blockInfo.getPipeline(), blockInfo.getToken(),
         verifyChecksum, xceiverClientFactory,
-        blockID -> refreshPipelineFunction.apply(blockInfo)));
+        blockID -> refreshPipelineFunction.apply(blockInfo), compressionCodec));
   }
 
   @VisibleForTesting

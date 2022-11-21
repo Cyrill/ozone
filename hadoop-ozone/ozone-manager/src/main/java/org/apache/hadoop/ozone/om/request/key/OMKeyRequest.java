@@ -390,13 +390,15 @@ public abstract class OMKeyRequest extends OMClientRequest {
   }
 
   /**
-   * Generate EncryptionInfo and set in to newKeyArgs.
+   * Set CompressionType and generate EncryptionInfo
+   * based on a Bucket and set these values to newKeyArgs.
    * @param keyArgs
    * @param newKeyArgs
    * @param ozoneManager
    */
-  protected void generateRequiredEncryptionInfo(KeyArgs keyArgs,
-      KeyArgs.Builder newKeyArgs, OzoneManager ozoneManager)
+  protected void fillEncryptionAndCompression(KeyArgs keyArgs,
+                                              KeyArgs.Builder newKeyArgs,
+                                              OzoneManager ozoneManager)
       throws IOException {
 
     String volumeName = keyArgs.getVolumeName();
@@ -413,44 +415,44 @@ public abstract class OMKeyRequest extends OMClientRequest {
     // If KMS is not enabled, follow the normal approach of execution of not
     // reading DB in pre-execute.
 
-    OmBucketInfo bucketInfo = null;
-    if (ozoneManager.getKmsProvider() != null) {
-      try {
-        acquireLock = omMetadataManager.getLock().acquireReadLock(
-            BUCKET_LOCK, volumeName, bucketName);
+    OmBucketInfo bucketInfo;
+
+    try {
+      acquireLock = omMetadataManager.getLock().acquireReadLock(
+          BUCKET_LOCK, volumeName, bucketName);
+
+      bucketInfo = omMetadataManager.getBucketTable().get(
+          omMetadataManager.getBucketKey(volumeName,
+              bucketName));
+
+      // If bucket is symlink, resolveBucketLink to figure out real
+      // volume/bucket.
+      if (bucketInfo != null && bucketInfo.isLink()) {
+        ResolvedBucket resolvedBucket = ozoneManager.resolveBucketLink(
+            Pair.of(keyArgs.getVolumeName(), keyArgs.getBucketName()));
 
         bucketInfo = omMetadataManager.getBucketTable().get(
-            omMetadataManager.getBucketKey(volumeName,
-                bucketName));
-
-        // If bucket is symlink, resolveBucketLink to figure out real
-        // volume/bucket.
-        if (bucketInfo.isLink()) {
-          ResolvedBucket resolvedBucket = ozoneManager.resolveBucketLink(
-              Pair.of(keyArgs.getVolumeName(), keyArgs.getBucketName()));
-
-          bucketInfo = omMetadataManager.getBucketTable().get(
-              omMetadataManager.getBucketKey(resolvedBucket.realVolume(),
-                  resolvedBucket.realBucket()));
-        }
-
-      } finally {
-        if (acquireLock) {
-          omMetadataManager.getLock().releaseReadLock(
-              BUCKET_LOCK, volumeName, bucketName);
-        }
+            omMetadataManager.getBucketKey(resolvedBucket.realVolume(),
+                resolvedBucket.realBucket()));
       }
 
-      // Don't throw exception of bucket not found when bucketinfo is
-      // null. If bucketinfo is null, later when request
-      // is submitted and if bucket does not really exist it will fail in
-      // applyTransaction step. Why we are doing this is if OM thinks it is
-      // the leader, but it is not, we don't want to fail request in this
-      // case. As anyway when it submits request to ratis it will fail with
-      // not leader exception, and client will retry on correct leader and
-      // request will be executed.
+    } finally {
+      if (acquireLock) {
+        omMetadataManager.getLock().releaseReadLock(
+            BUCKET_LOCK, volumeName, bucketName);
+      }
+    }
 
-      if (bucketInfo != null) {
+    // Don't throw exception of bucket not found when bucketinfo is
+    // null. If bucketinfo is null, later when request
+    // is submitted and if bucket does not really exist it will fail in
+    // applyTransaction step. Why we are doing this is if OM thinks it is
+    // the leader, but it is not, we don't want to fail request in this
+    // case. As anyway when it submits request to ratis it will fail with
+    // not leader exception, and client will retry on correct leader and
+    // request will be executed.
+    if (bucketInfo != null) {
+      if (ozoneManager.getKmsProvider() != null) {
         Optional<FileEncryptionInfo> encryptionInfo =
             getFileEncryptionInfo(ozoneManager, bucketInfo);
         if (encryptionInfo.isPresent()) {
@@ -458,47 +460,55 @@ public abstract class OMKeyRequest extends OMClientRequest {
               OMPBHelper.convert(encryptionInfo.get()));
         }
       }
+      if (bucketInfo.getCompressionType() != null) {
+        newKeyArgs.setCompressionType(bucketInfo.getCompressionType());
+      }
     }
   }
 
-  protected void getFileEncryptionInfoForMpuKey(KeyArgs keyArgs,
-      KeyArgs.Builder newKeyArgs, OzoneManager ozoneManager)
+  protected void fillEncryptionAndCompressionForMpu(KeyArgs keyArgs,
+                                                    KeyArgs.Builder newKeyArgs,
+                                                    OzoneManager ozoneManager)
       throws IOException {
 
     String volumeName = keyArgs.getVolumeName();
     String bucketName = keyArgs.getBucketName();
 
-    boolean acquireLock = false;
+    boolean acquireLock;
     OMMetadataManager omMetadataManager = ozoneManager.getMetadataManager();
 
-    if (ozoneManager.getKmsProvider() != null) {
-      acquireLock = omMetadataManager.getLock().acquireReadLock(
-          BUCKET_LOCK, volumeName, bucketName);
-      try {
-        ResolvedBucket resolvedBucket = ozoneManager.resolveBucketLink(
-            Pair.of(keyArgs.getVolumeName(), keyArgs.getBucketName()));
+    acquireLock = omMetadataManager.getLock().acquireReadLock(
+        BUCKET_LOCK, volumeName, bucketName);
+    try {
+      ResolvedBucket resolvedBucket = ozoneManager.resolveBucketLink(
+          Pair.of(keyArgs.getVolumeName(), keyArgs.getBucketName()));
 
-        // Get the DB key name for looking up keyInfo in OpenKeyTable with
-        // resolved volume/bucket.
-        String dbMultipartOpenKey =
-            getDBMultipartOpenKey(resolvedBucket.realVolume(),
-                resolvedBucket.realBucket(), keyArgs.getKeyName(),
-                keyArgs.getMultipartUploadID(), omMetadataManager);
+      // Get the DB key name for looking up keyInfo in OpenKeyTable with
+      // resolved volume/bucket.
+      String dbMultipartOpenKey =
+          getDBMultipartOpenKey(resolvedBucket.realVolume(),
+              resolvedBucket.realBucket(), keyArgs.getKeyName(),
+              keyArgs.getMultipartUploadID(), omMetadataManager);
 
-        OmKeyInfo omKeyInfo =
-            omMetadataManager.getOpenKeyTable(getBucketLayout())
-                .get(dbMultipartOpenKey);
-
-        if (omKeyInfo != null && omKeyInfo.getFileEncryptionInfo() != null) {
+      OmKeyInfo omKeyInfo =
+          omMetadataManager.getOpenKeyTable(getBucketLayout())
+              .get(dbMultipartOpenKey);
+      if (omKeyInfo != null) {
+        if (ozoneManager.getKmsProvider() != null
+            && omKeyInfo.getFileEncryptionInfo() != null) {
           newKeyArgs.setFileEncryptionInfo(
               OMPBHelper.convert(omKeyInfo.getFileEncryptionInfo()));
         }
-      } finally {
-        if (acquireLock) {
-          omMetadataManager.getLock()
-              .releaseReadLock(BUCKET_LOCK, volumeName, bucketName);
+        if (omKeyInfo.getCompressionType() != null) {
+          newKeyArgs.setCompressionType(omKeyInfo.getCompressionType());
         }
       }
+    } finally {
+      if (acquireLock) {
+        omMetadataManager.getLock()
+            .releaseReadLock(BUCKET_LOCK, volumeName, bucketName);
+      }
+
     }
   }
 
@@ -513,6 +523,10 @@ public abstract class OMKeyRequest extends OMClientRequest {
       encryptionInfo = OMPBHelper.convert(keyArgs.getFileEncryptionInfo());
     }
     return encryptionInfo;
+  }
+
+  protected String getCompressionType(KeyArgs keyArgs) {
+    return keyArgs.hasCompressionType() ? keyArgs.getCompressionType() : null;
   }
 
   /**
@@ -614,6 +628,7 @@ public abstract class OMKeyRequest extends OMClientRequest {
           @Nonnull KeyArgs keyArgs, OmKeyInfo dbKeyInfo, long size,
           @Nonnull List<OmKeyLocationInfo> locations,
           @Nullable FileEncryptionInfo encInfo,
+          @Nullable String compressionType,
           @Nonnull PrefixManager prefixManager,
           @Nullable OmBucketInfo omBucketInfo,
           long transactionLogIndex, long objectID, boolean isRatisEnabled,
@@ -621,8 +636,8 @@ public abstract class OMKeyRequest extends OMClientRequest {
           throws IOException {
 
     return prepareFileInfo(omMetadataManager, keyArgs, dbKeyInfo, size,
-            locations, encInfo, prefixManager, omBucketInfo, null,
-            transactionLogIndex, objectID, isRatisEnabled, replicationConfig);
+        locations, encInfo, compressionType, prefixManager, omBucketInfo, null,
+        transactionLogIndex, objectID, isRatisEnabled, replicationConfig);
   }
 
   /**
@@ -636,6 +651,7 @@ public abstract class OMKeyRequest extends OMClientRequest {
           @Nonnull KeyArgs keyArgs, OmKeyInfo dbKeyInfo, long size,
           @Nonnull List<OmKeyLocationInfo> locations,
           @Nullable FileEncryptionInfo encInfo,
+          @Nullable String compressionType,
           @Nonnull PrefixManager prefixManager,
           @Nullable OmBucketInfo omBucketInfo,
           OMFileRequest.OMPathInfoWithFSO omPathInfo,
@@ -644,8 +660,8 @@ public abstract class OMKeyRequest extends OMClientRequest {
           throws IOException {
     if (keyArgs.getIsMultipartKey()) {
       return prepareMultipartFileInfo(omMetadataManager, keyArgs,
-              size, locations, encInfo, prefixManager, omBucketInfo,
-              omPathInfo, transactionLogIndex, objectID);
+          size, locations, encInfo, compressionType, prefixManager,
+          omBucketInfo, omPathInfo, transactionLogIndex, objectID);
       //TODO args.getMetadata
     }
     if (dbKeyInfo != null) {
@@ -670,7 +686,7 @@ public abstract class OMKeyRequest extends OMClientRequest {
     // the key does not exist, create a new object.
     // Blocks will be appended as version 0.
     return createFileInfo(keyArgs, locations, replicationConfig,
-            keyArgs.getDataSize(), encInfo, prefixManager,
+            keyArgs.getDataSize(), encInfo, compressionType, prefixManager,
             omBucketInfo, omPathInfo, transactionLogIndex, objectID);
   }
 
@@ -684,6 +700,7 @@ public abstract class OMKeyRequest extends OMClientRequest {
       @Nonnull ReplicationConfig replicationConfig,
       long size,
       @Nullable FileEncryptionInfo encInfo,
+      @Nullable String compressionType,
       @Nonnull PrefixManager prefixManager,
       @Nullable OmBucketInfo omBucketInfo,
       OMFileRequest.OMPathInfoWithFSO omPathInfo,
@@ -699,6 +716,7 @@ public abstract class OMKeyRequest extends OMClientRequest {
             .setDataSize(size)
             .setReplicationConfig(replicationConfig)
             .setFileEncryptionInfo(encInfo)
+            .setCompressionType(compressionType)
             .setAcls(getAclsForKey(keyArgs, omBucketInfo, prefixManager))
             .addAllMetadata(KeyValueUtil.getFromProtobuf(
                     keyArgs.getMetadataList()))
@@ -724,7 +742,9 @@ public abstract class OMKeyRequest extends OMClientRequest {
           @Nonnull OMMetadataManager omMetadataManager,
           @Nonnull KeyArgs args, long size,
           @Nonnull List<OmKeyLocationInfo> locations,
-          FileEncryptionInfo encInfo,  @Nonnull PrefixManager prefixManager,
+          FileEncryptionInfo encInfo,
+          @Nullable String compressionType,
+          @Nonnull PrefixManager prefixManager,
           @Nullable OmBucketInfo omBucketInfo,
           OMFileRequest.OMPathInfoWithFSO omPathInfo,
           @Nonnull long transactionLogIndex, long objectID)
@@ -763,8 +783,8 @@ public abstract class OMKeyRequest extends OMClientRequest {
     // For this upload part we don't need to check in KeyTable. As this
     // is not an actual key, it is a part of the key.
     return createFileInfo(args, locations, partKeyInfo.getReplicationConfig(),
-            size, encInfo, prefixManager, omBucketInfo, omPathInfo,
-            transactionLogIndex, objectID);
+        size, encInfo, compressionType, prefixManager, omBucketInfo,
+        omPathInfo, transactionLogIndex, objectID);
   }
 
   /**

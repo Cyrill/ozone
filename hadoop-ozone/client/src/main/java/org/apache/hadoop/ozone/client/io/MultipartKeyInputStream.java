@@ -19,12 +19,9 @@
 package org.apache.hadoop.ozone.client.io;
 
 import com.google.common.base.Preconditions;
-import org.apache.hadoop.crypto.CryptoInputStream;
 import org.apache.hadoop.fs.CanUnbuffer;
 import org.apache.hadoop.fs.FSExceptionMessages;
 import org.apache.hadoop.fs.Seekable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -32,22 +29,20 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * {@link OzoneInputStream} for accessing MPU keys in encrypted buckets.
+ * {@link OzoneInputStream} for accessing MPU keys
+ * in encrypted/compressed buckets.
  */
-public class MultipartCryptoKeyInputStream extends OzoneInputStream
+public class MultipartKeyInputStream extends OzoneInputStream
     implements Seekable, CanUnbuffer {
-
-  private static final Logger LOG =
-      LoggerFactory.getLogger(MultipartCryptoKeyInputStream.class);
 
   private static final int EOF = -1;
 
-  private String key;
+  private final String key;
   private long length = 0L;
   private boolean closed = false;
 
   // List of OzoneCryptoInputStream, one for each part of the key
-  private List<OzoneCryptoInputStream> partStreams;
+  private final List<? extends EncodedInputStream> partStreams;
 
   // partOffsets[i] stores the index of the first data byte in
   // partStream w.r.t the whole key data.
@@ -55,18 +50,18 @@ public class MultipartCryptoKeyInputStream extends OzoneInputStream
   // data from indices 0 - 199, part[1] from indices 200 - 399 and so on.
   // Then, partOffsets[0] = 0 (the offset of the first byte of data in
   // part[0]), partOffsets[1] = 200 and so on.
-  private long[] partOffsets;
+  private final long[] partOffsets;
 
   // Index of the partStream corresponding to the current position of the
-  // MultipartCryptoKeyInputStream.
+  // MultipartKeyInputStream.
   private int partIndex = 0;
 
   // Tracks the partIndex corresponding to the last seeked position so that it
   // can be reset if a new position is seeked.
   private int prevPartIndex = 0;
 
-  public MultipartCryptoKeyInputStream(String keyName,
-      List<OzoneCryptoInputStream> inputStreams) {
+  public MultipartKeyInputStream(String keyName,
+      List<? extends EncodedInputStream> inputStreams) {
 
     Preconditions.checkNotNull(inputStreams);
 
@@ -76,9 +71,9 @@ public class MultipartCryptoKeyInputStream extends OzoneInputStream
     // Calculate and update the partOffsets
     this.partOffsets = new long[inputStreams.size()];
     int i = 0;
-    for (OzoneCryptoInputStream ozoneCryptoInputStream : inputStreams) {
+    for (EncodedInputStream stream : inputStreams) {
       this.partOffsets[i++] = length;
-      length += ozoneCryptoInputStream.getLength();
+      length += stream.getLength();
     }
   }
 
@@ -118,7 +113,7 @@ public class MultipartCryptoKeyInputStream extends OzoneInputStream
       }
 
       // Get the current partStream and read data from it
-      OzoneCryptoInputStream current = partStreams.get(partIndex);
+      EncodedInputStream current = partStreams.get(partIndex);
       int numBytesRead = current.read(b, off, len);
       totalReadLen += numBytesRead;
       off += numBytesRead;
@@ -128,17 +123,16 @@ public class MultipartCryptoKeyInputStream extends OzoneInputStream
           ((partIndex + 1) < partStreams.size())) {
         partIndex += 1;
       }
-
     }
     return totalReadLen;
   }
 
   /**
    * Seeks the InputStream to the specified position. This involves 2 steps:
-   *    1. Updating the partIndex to the partStream corresponding to the
-   *    seeked position.
-   *    2. Seeking the corresponding partStream to the adjusted position.
-   *
+   * 1. Updating the partIndex to the partStream corresponding to the
+   * seeked position.
+   * 2. Seeking the corresponding partStream to the adjusted position.
+   * <p>
    * For example, let’s say the part sizes are 200 bytes and part[0] stores
    * data from indices 0 - 199, part[1] from indices 200 - 399 and so on.
    * Let’s say we seek to position 240. In the first step, the partIndex
@@ -198,7 +192,7 @@ public class MultipartCryptoKeyInputStream extends OzoneInputStream
   }
 
   @Override
-  public boolean seekToNewSource(long targetPos) throws IOException {
+  public boolean seekToNewSource(long targetPos) {
     return false;
   }
 
@@ -211,8 +205,8 @@ public class MultipartCryptoKeyInputStream extends OzoneInputStream
 
   @Override
   public void unbuffer() {
-    for (CryptoInputStream cryptoInputStream : partStreams) {
-      cryptoInputStream.unbuffer();
+    for (EncodedInputStream stream : partStreams) {
+      stream.unbuffer();
     }
   }
 
@@ -230,7 +224,7 @@ public class MultipartCryptoKeyInputStream extends OzoneInputStream
   @Override
   public synchronized void close() throws IOException {
     closed = true;
-    for (OzoneCryptoInputStream partStream : partStreams) {
+    for (EncodedInputStream partStream : partStreams) {
       partStream.close();
     }
   }
@@ -238,6 +232,7 @@ public class MultipartCryptoKeyInputStream extends OzoneInputStream
   /**
    * Verify that the input stream is open. Non blocking; this gives
    * the last state of the volatile {@link #closed} field.
+   *
    * @throws IOException if the connection is closed.
    */
   private void checkOpen() throws IOException {

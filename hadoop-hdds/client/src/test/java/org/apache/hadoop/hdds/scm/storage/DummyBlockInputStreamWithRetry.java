@@ -32,6 +32,7 @@ import org.apache.hadoop.hdds.scm.container.common.helpers.StorageContainerExcep
 import org.apache.hadoop.hdds.scm.pipeline.Pipeline;
 import org.apache.hadoop.hdds.scm.pipeline.PipelineID;
 import org.apache.hadoop.hdds.security.token.OzoneBlockTokenIdentifier;
+import org.apache.hadoop.io.compress.CompressionCodec;
 import org.apache.hadoop.security.token.Token;
 
 import static org.apache.hadoop.hdds.protocol.datanode.proto.ContainerProtos.Result.CONTAINER_NOT_FOUND;
@@ -56,7 +57,8 @@ final class DummyBlockInputStreamWithRetry
       XceiverClientFactory xceiverClientManager,
       List<ChunkInfo> chunkList,
       Map<String, byte[]> chunkMap,
-      AtomicBoolean isRerfreshed, IOException ioException) {
+      AtomicBoolean isRerfreshed, IOException ioException,
+      CompressionCodec compressionCodec) {
     super(blockId, blockLen, pipeline, token, verifyChecksum,
         xceiverClientManager, blockID -> {
           isRerfreshed.set(true);
@@ -67,7 +69,7 @@ final class DummyBlockInputStreamWithRetry
                   ReplicationFactor.ONE))
               .setNodes(Collections.emptyList())
               .build();
-        }, chunkList, chunkMap);
+        }, chunkList, chunkMap, compressionCodec);
     this.ioException  = ioException;
   }
 

@@ -42,6 +42,7 @@ import org.apache.hadoop.hdds.scm.container.common.helpers.StorageContainerExcep
 import org.apache.hadoop.hdds.scm.pipeline.Pipeline;
 import org.apache.hadoop.hdds.security.exception.SCMSecurityException;
 import org.apache.hadoop.hdds.security.token.OzoneBlockTokenIdentifier;
+import org.apache.hadoop.io.compress.CompressionCodec;
 import org.apache.hadoop.io.retry.RetryPolicy;
 import org.apache.hadoop.security.token.Token;
 
@@ -104,11 +105,13 @@ public class BlockInputStream extends BlockExtendedInputStream {
   private int chunkIndexOfPrevPosition;
 
   private final Function<BlockID, Pipeline> refreshPipelineFunction;
+  private final CompressionCodec compressionCodec;
 
   public BlockInputStream(BlockID blockId, long blockLen, Pipeline pipeline,
       Token<OzoneBlockTokenIdentifier> token, boolean verifyChecksum,
       XceiverClientFactory xceiverClientFactory,
-      Function<BlockID, Pipeline> refreshPipelineFunction) {
+      Function<BlockID, Pipeline> refreshPipelineFunction,
+      CompressionCodec compressionCodec) {
     this.blockID = blockId;
     this.length = blockLen;
     this.pipeline = pipeline;
@@ -116,15 +119,17 @@ public class BlockInputStream extends BlockExtendedInputStream {
     this.verifyChecksum = verifyChecksum;
     this.xceiverClientFactory = xceiverClientFactory;
     this.refreshPipelineFunction = refreshPipelineFunction;
+    this.compressionCodec = compressionCodec;
   }
 
   public BlockInputStream(BlockID blockId, long blockLen, Pipeline pipeline,
                           Token<OzoneBlockTokenIdentifier> token,
                           boolean verifyChecksum,
-                          XceiverClientFactory xceiverClientFactory
+                          XceiverClientFactory xceiverClientFactory,
+                          CompressionCodec compressionCodec
   ) {
     this(blockId, blockLen, pipeline, token, verifyChecksum,
-        xceiverClientFactory, null);
+        xceiverClientFactory, null, compressionCodec);
   }
   /**
    * Initialize the BlockInputStream. Get the BlockData (list of chunks) from
@@ -178,7 +183,7 @@ public class BlockInputStream extends BlockExtendedInputStream {
       for (int i = 0; i < chunks.size(); i++) {
         addStream(chunks.get(i));
         chunkOffsets[i] = tempOffset;
-        tempOffset += chunks.get(i).getLen();
+        tempOffset += chunks.get(i).getOriginalLen();
       }
 
       initialized = true;
@@ -272,7 +277,8 @@ public class BlockInputStream extends BlockExtendedInputStream {
 
   protected ChunkInputStream createChunkInputStream(ChunkInfo chunkInfo) {
     return new ChunkInputStream(chunkInfo, blockID,
-        xceiverClientFactory, () -> pipeline, verifyChecksum, token);
+        xceiverClientFactory, () -> pipeline, verifyChecksum, token,
+        compressionCodec);
   }
 
   @Override

@@ -351,7 +351,7 @@ public class TestSchemaTwoBackwardsCompatibility {
     String chunkName = blockID.getLocalID() + "_chunk_" + (chunkIndex + 1);
     ChunkBuffer chunkData = ChunkBuffer.wrap(ByteBuffer.wrap(SAMPLE_DATA));
     ChunkInfo chunkInfo = new ChunkInfo(chunkName,
-        chunkIndex * CHUNK_LENGTH, CHUNK_LENGTH);
+        chunkIndex * CHUNK_LENGTH, CHUNK_LENGTH, chunkIndex * CHUNK_LENGTH, CHUNK_LENGTH);
     chunkManager
         .writeChunk(container, blockID, chunkInfo, chunkData, WRITE_STAGE);
     chunkManager

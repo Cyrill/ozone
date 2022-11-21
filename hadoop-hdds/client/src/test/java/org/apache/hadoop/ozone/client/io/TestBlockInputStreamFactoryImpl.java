@@ -52,7 +52,7 @@ public class TestBlockInputStreamFactoryImpl {
 
     BlockExtendedInputStream stream =
         factory.create(repConfig, blockInfo, blockInfo.getPipeline(),
-            blockInfo.getToken(), true, null, null);
+            blockInfo.getToken(), true, null, null, null);
     Assertions.assertTrue(stream instanceof BlockInputStream);
     Assertions.assertEquals(stream.getBlockID(), blockInfo.getBlockID());
     Assertions.assertEquals(stream.getLength(), blockInfo.getLength());
@@ -69,7 +69,7 @@ public class TestBlockInputStreamFactoryImpl {
 
     BlockExtendedInputStream stream =
         factory.create(repConfig, blockInfo, blockInfo.getPipeline(),
-            blockInfo.getToken(), true, null, null);
+            blockInfo.getToken(), true, null, null, null);
     Assertions.assertTrue(stream instanceof ECBlockInputStreamProxy);
     Assertions.assertEquals(stream.getBlockID(), blockInfo.getBlockID());
     Assertions.assertEquals(stream.getLength(), blockInfo.getLength());

@@ -26,6 +26,7 @@ import org.apache.hadoop.hdds.scm.pipeline.Pipeline;
 import org.apache.hadoop.hdds.scm.storage.BlockExtendedInputStream;
 import org.apache.hadoop.hdds.scm.storage.BlockLocationInfo;
 import org.apache.hadoop.io.ByteBufferPool;
+import org.apache.hadoop.io.compress.CompressionCodec;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -77,14 +78,16 @@ public final class ECBlockInputStreamFactoryImpl implements
       List<DatanodeDetails> failedLocations, ReplicationConfig repConfig,
       BlockLocationInfo blockInfo, boolean verifyChecksum,
       XceiverClientFactory xceiverFactory,
-      Function<BlockID, Pipeline> refreshFunction) {
+      Function<BlockID, Pipeline> refreshFunction,
+      CompressionCodec compressionCodec) {
     if (missingLocations) {
       // We create the reconstruction reader
       ECBlockReconstructedStripeInputStream sis =
           new ECBlockReconstructedStripeInputStream(
               (ECReplicationConfig)repConfig, blockInfo, verifyChecksum,
               xceiverFactory, refreshFunction, inputStreamFactory,
-              byteBufferPool, ecReconstructExecutorSupplier.get());
+              byteBufferPool, ecReconstructExecutorSupplier.get(),
+              compressionCodec);
       if (failedLocations != null) {
         sis.addFailedDatanodes(failedLocations);
       }
@@ -93,7 +96,8 @@ public final class ECBlockInputStreamFactoryImpl implements
     } else {
       // Otherwise create the more efficient non-reconstruction reader
       return new ECBlockInputStream((ECReplicationConfig)repConfig, blockInfo,
-          verifyChecksum, xceiverFactory, refreshFunction, inputStreamFactory);
+          verifyChecksum, xceiverFactory, refreshFunction, inputStreamFactory,
+          compressionCodec);
     }
   }
 

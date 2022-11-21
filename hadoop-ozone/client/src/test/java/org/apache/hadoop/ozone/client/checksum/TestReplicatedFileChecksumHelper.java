@@ -303,6 +303,8 @@ public class TestReplicatedFileChecksumHelper {
         .setChunkName("dummy_chunk")
         .setOffset(1)
         .setLen(10)
+        .setOriginalOffset(1)
+        .setOriginalLen(10)
         .setChecksumData(checksumData)
         .build();
 

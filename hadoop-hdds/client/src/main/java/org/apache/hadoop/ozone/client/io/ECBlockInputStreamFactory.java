@@ -24,6 +24,7 @@ import org.apache.hadoop.hdds.scm.XceiverClientFactory;
 import org.apache.hadoop.hdds.scm.pipeline.Pipeline;
 import org.apache.hadoop.hdds.scm.storage.BlockExtendedInputStream;
 import org.apache.hadoop.hdds.scm.storage.BlockLocationInfo;
+import org.apache.hadoop.io.compress.CompressionCodec;
 
 import java.util.List;
 import java.util.function.Function;
@@ -54,5 +55,6 @@ public interface ECBlockInputStreamFactory {
       List<DatanodeDetails> failedLocations, ReplicationConfig repConfig,
       BlockLocationInfo blockInfo, boolean verifyChecksum,
       XceiverClientFactory xceiverFactory,
-      Function<BlockID, Pipeline> refreshFunction);
+      Function<BlockID, Pipeline> refreshFunction,
+      CompressionCodec compressionCodec);
 }

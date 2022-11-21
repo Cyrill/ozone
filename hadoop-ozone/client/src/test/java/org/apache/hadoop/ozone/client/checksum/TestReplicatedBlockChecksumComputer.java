@@ -91,6 +91,8 @@ public class TestReplicatedBlockChecksumComputer {
             .setChunkName("dummy_chunk")
             .setOffset(0)
             .setLen(len)
+            .setOriginalOffset(0)
+            .setOriginalLen(len)
             .build();
     List<ContainerProtos.ChunkInfo> chunkInfoList =
         Collections.singletonList(chunkInfo);

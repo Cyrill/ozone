@@ -20,6 +20,8 @@ package org.apache.hadoop.hdds.scm.storage;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
+
+import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.hadoop.fs.ByteBufferReadable;
@@ -33,6 +35,8 @@ import org.apache.hadoop.hdds.protocol.datanode.proto.ContainerProtos.ReadChunkR
 import org.apache.hadoop.hdds.scm.XceiverClientFactory;
 import org.apache.hadoop.hdds.scm.XceiverClientSpi;
 import org.apache.hadoop.hdds.scm.pipeline.Pipeline;
+import org.apache.hadoop.io.compress.CompressionCodec;
+import org.apache.hadoop.io.compress.CompressionInputStream;
 import org.apache.hadoop.ozone.common.Checksum;
 import org.apache.hadoop.ozone.common.ChecksumData;
 import org.apache.hadoop.ozone.common.OzoneChecksumException;
@@ -63,6 +67,7 @@ public class ChunkInputStream extends InputStream
       LoggerFactory.getLogger(ChunkInputStream.class);
 
   private ChunkInfo chunkInfo;
+  //todo: uncompressed length
   private final long length;
   private final BlockID blockID;
   private final XceiverClientFactory xceiverClientFactory;
@@ -101,15 +106,19 @@ public class ChunkInputStream extends InputStream
   private long chunkPosition = -1;
 
   private final Token<? extends TokenIdentifier> token;
+  private final CompressionCodec compressionCodec;
 
   private static final int EOF = -1;
 
   ChunkInputStream(ChunkInfo chunkInfo, BlockID blockId,
       XceiverClientFactory xceiverClientFactory,
       Supplier<Pipeline> pipelineSupplier,
-      boolean verifyChecksum, Token<? extends TokenIdentifier> token) {
+      boolean verifyChecksum, Token<? extends TokenIdentifier> token,
+      CompressionCodec compressionCodec) {
     this.chunkInfo = chunkInfo;
-    this.length = chunkInfo.getLen();
+    this.compressionCodec = compressionCodec;
+    this.length = isCompressed() ?
+        chunkInfo.getOriginalLen() : chunkInfo.getLen();
     this.blockID = blockId;
     this.xceiverClientFactory = xceiverClientFactory;
     this.pipelineSupplier = pipelineSupplier;
@@ -386,23 +395,33 @@ public class ChunkInputStream extends InputStream
         .setLen(adjustedBuffersLen)
         .build();
 
-    readChunkDataIntoBuffers(adjustedChunkInfo);
+    readChunkDataIntoBuffers(isCompressed() ?
+        ChunkInfo.newBuilder(chunkInfo).build() :
+        adjustedChunkInfo);
     bufferOffsetWrtChunkData = adjustedBuffersOffset;
 
-    // If the stream was seeked to position before, then the buffer
-    // position should be adjusted as the reads happen at checksum boundaries.
-    // The buffers position might need to be adjusted for the following
-    // scenarios:
-    //    1. Stream was seeked to a position before the chunk was read
-    //    2. Chunk was read from index < the current position to account for
-    //    checksum boundaries.
-    adjustBufferPosition(startByteIndex - bufferOffsetWrtChunkData);
+    if (isCompressed()) {
+      //no seek is performed on a compressed stream, seeking after decompression
+      adjustBufferPosition(chunkInfo.getOffset() + startByteIndex);
+    } else {
+      // If the stream was seeked to position before, then the buffer
+      // position should be adjusted as the reads happen at checksum boundaries.
+      // The buffers position might need to be adjusted for the following
+      // scenarios:
+      //    1. Stream was seeked to a position before the chunk was read
+      //    2. Chunk was read from index < the current position to account for
+      //    checksum boundaries.
+      adjustBufferPosition(startByteIndex - bufferOffsetWrtChunkData);
+    }
+
   }
 
   private void readChunkDataIntoBuffers(ChunkInfo readChunkInfo)
       throws IOException {
+    //todo: unpack buffers
     buffers = readChunk(readChunkInfo);
-    buffersSize = readChunkInfo.getLen();
+    buffersSize = isCompressed() ? readChunkInfo.getOriginalLen() :
+        readChunkInfo.getLen();
 
     bufferOffsets = new long[buffers.length];
     int tempOffset = 0;
@@ -432,16 +451,39 @@ public class ChunkInputStream extends InputStream
         readChunkInfo, blockID, validators, token);
 
     if (readChunkResponse.hasData()) {
-      return readChunkResponse.getData().asReadOnlyByteBufferList()
+      ByteString data = readChunkResponse.getData();
+      if (isCompressed()) {
+        data = decompress(data);
+      }
+      return data.asReadOnlyByteBufferList()
           .toArray(new ByteBuffer[0]);
     } else if (readChunkResponse.hasDataBuffers()) {
       List<ByteString> buffersList = readChunkResponse.getDataBuffers()
           .getBuffersList();
+      if (isCompressed()) {
+        ByteString data = ByteString.copyFrom(buffersList);
+        ByteString decompressed = decompress(data);
+        return decompressed.asReadOnlyByteBufferList()
+            .toArray(new ByteBuffer[0]);
+      }
       return BufferUtils.getReadOnlyByteBuffersArray(buffersList);
     } else {
       throw new IOException("Unexpected error while reading chunk data " +
           "from container. No data returned.");
     }
+  }
+
+  protected ByteString decompress(ByteString data) throws IOException {
+    try (ByteArrayInputStream bais =
+             new ByteArrayInputStream(data.toByteArray());
+         CompressionInputStream compressed =
+             compressionCodec.createInputStream(bais)) {
+      return ByteString.readFrom(compressed);
+    }
+  }
+
+  protected boolean isCompressed() {
+    return compressionCodec != null;
   }
 
   private CheckedBiFunction<ContainerCommandRequestProto,
@@ -609,7 +651,7 @@ public class ChunkInputStream extends InputStream
   }
 
   /**
-   * Check if curernt buffers have the data corresponding to the input position.
+   * Check if current buffers have the data corresponding to the input position.
    */
   private boolean buffersHavePosition(long pos) {
     // Check if buffers have been allocated

@@ -17,6 +17,8 @@
  */
 
 package org.apache.hadoop.hdds.scm.storage;
+
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -43,6 +45,8 @@ import org.apache.hadoop.hdds.scm.XceiverClientReply;
 import org.apache.hadoop.hdds.scm.XceiverClientSpi;
 import org.apache.hadoop.hdds.scm.container.common.helpers.StorageContainerException;
 import org.apache.hadoop.hdds.scm.pipeline.Pipeline;
+import org.apache.hadoop.io.compress.CompressionCodec;
+import org.apache.hadoop.io.compress.CompressionOutputStream;
 import org.apache.hadoop.ozone.common.Checksum;
 import org.apache.hadoop.ozone.common.ChecksumData;
 import org.apache.hadoop.ozone.common.ChunkBuffer;
@@ -55,6 +59,7 @@ import com.google.common.base.Preconditions;
 import static org.apache.hadoop.hdds.scm.storage.ContainerProtocolCalls.putBlockAsync;
 import static org.apache.hadoop.hdds.scm.storage.ContainerProtocolCalls.writeChunkAsync;
 import org.apache.ratis.thirdparty.com.google.protobuf.ByteString;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,7 +93,8 @@ public class BlockOutputStream extends OutputStream {
   private OzoneClientConfig config;
 
   private int chunkIndex;
-  private final AtomicLong chunkOffset = new AtomicLong();
+  private final AtomicLong chunkOriginalOffset = new AtomicLong();
+  private final AtomicLong chunkCompressedOffset = new AtomicLong();
   private final BufferPool bufferPool;
   // The IOException will be set by response handling thread in case there is an
   // exception received in the response. If the exception is set, the next
@@ -97,9 +103,11 @@ public class BlockOutputStream extends OutputStream {
   private final ExecutorService responseExecutor;
 
   // the effective length of data flushed so far
+  //todo: length of uncompressed data
   private long totalDataFlushedLength;
 
   // effective data write attempted so far for the block
+  //todo: length of uncompressed data
   private long writtenDataLength;
 
   // List containing buffers for which the putBlock call will
@@ -116,6 +124,7 @@ public class BlockOutputStream extends OutputStream {
   //number of buffers used before doing a flush/putBlock.
   private int flushPeriod;
   //bytes remaining to write in the current buffer.
+  //todo: uncompressed size
   private int currentBufferRemaining;
   //current buffer allocated to write
   private ChunkBuffer currentBuffer;
@@ -123,6 +132,7 @@ public class BlockOutputStream extends OutputStream {
   private int replicationIndex;
   private Pipeline pipeline;
   private final ContainerClientMetrics clientMetrics;
+  private final CompressionCodec compressionCodec;
 
   /**
    * Creates a new BlockOutputStream.
@@ -139,7 +149,8 @@ public class BlockOutputStream extends OutputStream {
       BufferPool bufferPool,
       OzoneClientConfig config,
       Token<? extends TokenIdentifier> token,
-      ContainerClientMetrics clientMetrics
+      ContainerClientMetrics clientMetrics,
+      CompressionCodec compressionCodec
   ) throws IOException {
     this.xceiverClientFactory = xceiverClientManager;
     this.config = config;
@@ -183,6 +194,7 @@ public class BlockOutputStream extends OutputStream {
         config.getBytesPerChecksum());
     this.clientMetrics = clientMetrics;
     this.pipeline = pipeline;
+    this.compressionCodec = compressionCodec;
   }
 
   void refreshCurrentBuffer() {
@@ -249,11 +261,13 @@ public class BlockOutputStream extends OutputStream {
     currentBuffer.put((byte) b);
     currentBufferRemaining--;
     writeChunkIfNeeded();
+    //todo: writtenDataLength is uncompressed
     writtenDataLength++;
     doFlushOrWatchIfNeeded();
   }
 
   private void writeChunkIfNeeded() throws IOException {
+    //todo: currentBufferRemaining is uncompressed
     if (currentBufferRemaining == 0) {
       writeChunk(currentBuffer);
     }
@@ -304,6 +318,7 @@ public class BlockOutputStream extends OutputStream {
   }
 
   private void allocateNewBufferIfNeeded() {
+    //todo: currentBufferRemaining tracks uncompressed data
     if (currentBufferRemaining == 0) {
       currentBuffer = bufferPool.allocateBuffer(config.getBufferIncrement());
       currentBufferRemaining = currentBuffer.remaining();
@@ -684,21 +699,28 @@ public class BlockOutputStream extends OutputStream {
    */
   CompletableFuture<ContainerCommandResponseProto> writeChunkToContainer(
       ChunkBuffer chunk) throws IOException {
-    int effectiveChunkSize = chunk.remaining();
-    final long offset = chunkOffset.getAndAdd(effectiveChunkSize);
-    final ByteString data = chunk.toByteString(
-        bufferPool.byteStringConversion());
-    ChecksumData checksumData = checksum.computeChecksum(chunk);
-    ChunkInfo chunkInfo = ChunkInfo.newBuilder()
-        .setChunkName(blockID.get().getLocalID() + "_chunk_" + ++chunkIndex)
-        .setOffset(offset)
-        .setLen(effectiveChunkSize)
-        .setChecksumData(checksumData.getProtoBufMessage())
-        .build();
+    int originalChunkSize = chunk.remaining();
+    long originalOffset = chunkOriginalOffset.getAndAdd(originalChunkSize);
+    ByteString originalData =
+        chunk.toByteString(bufferPool.byteStringConversion());
 
+    ChunkInfo chunkInfo;
+    ByteString data;
+    if (compressionCodec != null) {
+      ChunkBuffer compressedChunk =
+          compressData(originalData, compressionCodec);
+      chunkInfo =
+          createCompressedChunkInfo(compressedChunk,
+              originalChunkSize, originalOffset);
+      data = compressedChunk.toByteString(bufferPool.byteStringConversion());
+    } else {
+      chunkInfo =
+          createUncompressedChunkInfo(chunk, originalChunkSize, originalOffset);
+      data = originalData;
+    }
     if (LOG.isDebugEnabled()) {
       LOG.debug("Writing chunk {} length {} at offset {}",
-          chunkInfo.getChunkName(), effectiveChunkSize, offset);
+          chunkInfo.getChunkName(), originalChunkSize, originalOffset);
     }
     try {
       XceiverClientReply asyncReply = writeChunkAsync(xceiverClient, chunkInfo,
@@ -725,12 +747,59 @@ public class BlockOutputStream extends OutputStream {
       clientMetrics.recordWriteChunk(pipeline, chunkInfo.getLen());
       return validateFuture;
     } catch (IOException | ExecutionException e) {
-      throw new IOException(EXCEPTION_MSG + e.toString(), e);
+      throw new IOException(EXCEPTION_MSG + e, e);
     } catch (InterruptedException ex) {
       Thread.currentThread().interrupt();
       handleInterruptedException(ex, false);
     }
     return null;
+  }
+
+  private ChunkInfo createCompressedChunkInfo(ChunkBuffer compressedChunk,
+                                              int originalChunkSize,
+                                              long originalOffset)
+      throws OzoneChecksumException {
+    int compressedChunkSize = compressedChunk.remaining();
+    long compressedOffset =
+        chunkCompressedOffset.getAndAdd(compressedChunkSize);
+    ChecksumData checksumData = checksum.computeChecksum(compressedChunk);
+    return ChunkInfo.newBuilder()
+        .setChunkName(blockID.get().getLocalID() + "_chunk_" + ++chunkIndex)
+        .setOffset(compressedOffset)
+        .setLen(compressedChunkSize)
+        .setOriginalOffset(originalOffset)
+        .setOriginalLen(originalChunkSize)
+        .setChecksumData(checksumData.getProtoBufMessage())
+        .build();
+  }
+
+  @NotNull
+  private ChunkInfo createUncompressedChunkInfo(ChunkBuffer chunk,
+                                                int originalChunkSize,
+                                                long originalOffset)
+      throws OzoneChecksumException {
+    ChecksumData checksumData = checksum.computeChecksum(chunk);
+    return ChunkInfo.newBuilder()
+        .setChunkName(blockID.get().getLocalID() + "_chunk_" + ++chunkIndex)
+        .setOffset(originalOffset)
+        .setLen(originalChunkSize)
+        .setOriginalOffset(originalOffset)
+        .setOriginalLen(originalChunkSize)
+        .setChecksumData(checksumData.getProtoBufMessage())
+        .build();
+  }
+
+  private ChunkBuffer compressData(ByteString data,
+                                   CompressionCodec compressionCodec)
+      throws IOException {
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    try (CompressionOutputStream outputStream =
+             compressionCodec.createOutputStream(baos)) {
+      data.writeTo(outputStream);
+    }
+    ChunkBuffer compressed = ChunkBuffer.allocate(baos.size(), 0);
+    compressed.put(baos.toByteArray());
+    return compressed;
   }
 
   @VisibleForTesting

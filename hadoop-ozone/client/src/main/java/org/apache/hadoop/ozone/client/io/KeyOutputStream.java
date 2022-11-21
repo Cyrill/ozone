@@ -38,6 +38,7 @@ import org.apache.hadoop.hdds.scm.container.common.helpers.ExcludeList;
 import org.apache.hadoop.hdds.scm.container.common.helpers.StorageContainerException;
 import org.apache.hadoop.hdds.scm.pipeline.Pipeline;
 import org.apache.hadoop.hdds.scm.pipeline.PipelineID;
+import org.apache.hadoop.io.compress.CompressionCodec;
 import org.apache.hadoop.io.retry.RetryPolicies;
 import org.apache.hadoop.io.retry.RetryPolicy;
 import org.apache.hadoop.ozone.om.helpers.OmKeyLocationInfo;
@@ -135,7 +136,8 @@ public class KeyOutputStream extends OutputStream {
       String requestId, ReplicationConfig replicationConfig,
       String uploadID, int partNumber, boolean isMultipart,
       boolean unsafeByteBufferConversion,
-      ContainerClientMetrics clientMetrics
+      ContainerClientMetrics clientMetrics,
+      CompressionCodec compressionCodec
   ) {
     this.config = config;
     blockOutputStreamEntryPool =
@@ -148,7 +150,8 @@ public class KeyOutputStream extends OutputStream {
             unsafeByteBufferConversion,
             xceiverClientManager,
             handler.getId(),
-            clientMetrics);
+            clientMetrics,
+            compressionCodec);
     this.retryPolicyMap = HddsClientUtils.getRetryPolicyByException(
         config.getMaxRetryCount(), config.getRetryInterval());
     this.retryCount = 0;
@@ -552,6 +555,7 @@ public class KeyOutputStream extends OutputStream {
     private OzoneClientConfig clientConfig;
     private ReplicationConfig replicationConfig;
     private ContainerClientMetrics clientMetrics;
+    private CompressionCodec compressionCodec;
 
     public String getMultipartUploadID() {
       return multipartUploadID;
@@ -661,6 +665,15 @@ public class KeyOutputStream extends OutputStream {
       return clientMetrics;
     }
 
+    public CompressionCodec getCompressionCodec() {
+      return compressionCodec;
+    }
+
+    public Builder setCompressionCodec(CompressionCodec compressionCodec) {
+      this.compressionCodec = compressionCodec;
+      return this;
+    }
+
     public KeyOutputStream build() {
       return new KeyOutputStream(
           clientConfig,
@@ -674,7 +687,8 @@ public class KeyOutputStream extends OutputStream {
           multipartNumber,
           isMultipartKey,
           unsafeByteBufferConversion,
-          clientMetrics);
+          clientMetrics,
+          compressionCodec);
     }
 
   }

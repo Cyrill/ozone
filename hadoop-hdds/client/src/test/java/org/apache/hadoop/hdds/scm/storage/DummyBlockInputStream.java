@@ -27,6 +27,7 @@ import org.apache.hadoop.hdds.protocol.datanode.proto.ContainerProtos.ChunkInfo;
 import org.apache.hadoop.hdds.scm.XceiverClientFactory;
 import org.apache.hadoop.hdds.scm.pipeline.Pipeline;
 import org.apache.hadoop.hdds.security.token.OzoneBlockTokenIdentifier;
+import org.apache.hadoop.io.compress.CompressionCodec;
 import org.apache.hadoop.security.token.Token;
 
 /**
@@ -35,6 +36,7 @@ import org.apache.hadoop.security.token.Token;
 class DummyBlockInputStream extends BlockInputStream {
 
   private final List<ChunkInfo> chunks;
+  private final CompressionCodec compressionCodec;
 
   private final Map<String, byte[]> chunkDataMap;
 
@@ -48,12 +50,13 @@ class DummyBlockInputStream extends BlockInputStream {
       XceiverClientFactory xceiverClientManager,
       Function<BlockID, Pipeline> refreshFunction,
       List<ChunkInfo> chunkList,
-      Map<String, byte[]> chunks) {
+      Map<String, byte[]> chunks,
+      CompressionCodec compressionCodec) {
     super(blockId, blockLen, pipeline, token, verifyChecksum,
-        xceiverClientManager, refreshFunction);
+        xceiverClientManager, refreshFunction, compressionCodec);
     this.chunkDataMap = chunks;
     this.chunks = chunkList;
-
+    this.compressionCodec = compressionCodec;
   }
 
   @Override
@@ -65,7 +68,8 @@ class DummyBlockInputStream extends BlockInputStream {
   protected ChunkInputStream createChunkInputStream(ChunkInfo chunkInfo) {
     return new DummyChunkInputStream(
         chunkInfo, null, null, false,
-        chunkDataMap.get(chunkInfo.getChunkName()).clone(), null);
+        chunkDataMap.get(chunkInfo.getChunkName()).clone(), null,
+        compressionCodec);
   }
 
   @Override

@@ -17,6 +17,7 @@
  */
 package org.apache.hadoop.hdds.scm.storage;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +27,7 @@ import org.apache.hadoop.hdds.protocol.datanode.proto.ContainerProtos.ChunkInfo;
 import org.apache.hadoop.hdds.scm.XceiverClientFactory;
 
 import org.apache.hadoop.hdds.scm.pipeline.Pipeline;
+import org.apache.hadoop.io.compress.CompressionCodec;
 import org.apache.hadoop.ozone.common.utils.BufferUtils;
 import org.apache.ratis.thirdparty.com.google.protobuf.ByteString;
 
@@ -43,14 +45,15 @@ public class DummyChunkInputStream extends ChunkInputStream {
       BlockID blockId,
       XceiverClientFactory xceiverClientFactory,
       boolean verifyChecksum,
-      byte[] data, Pipeline pipeline) {
+      byte[] data, Pipeline pipeline,
+      CompressionCodec compressionCodec) {
     super(chunkInfo, blockId, xceiverClientFactory, () -> pipeline,
-        verifyChecksum, null);
+        verifyChecksum, null, compressionCodec);
     this.chunkData = data.clone();
   }
 
   @Override
-  protected ByteBuffer[] readChunk(ChunkInfo readChunkInfo) {
+  protected ByteBuffer[] readChunk(ChunkInfo readChunkInfo) throws IOException {
     int offset = (int) readChunkInfo.getOffset();
     int remainingToRead = (int) readChunkInfo.getLen();
 
@@ -70,6 +73,11 @@ public class DummyChunkInputStream extends ChunkInputStream {
 
       offset += bufferLen;
       remainingToRead -= bufferLen;
+    }
+    if (isCompressed()) {
+      ByteString decompressed =
+          decompress(ByteString.copyFrom(readByteBuffers));
+      return decompressed.asReadOnlyByteBufferList().toArray(new ByteBuffer[0]);
     }
 
     return BufferUtils.getReadOnlyByteBuffers(readByteBuffers)

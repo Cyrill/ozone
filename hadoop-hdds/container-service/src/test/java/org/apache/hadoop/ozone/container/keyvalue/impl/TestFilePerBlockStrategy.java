@@ -54,7 +54,7 @@ public class TestFilePerBlockStrategy extends CommonChunkManagerTestCases {
       chunkManager.writeChunk(container, blockID,
           getChunkInfo(), getData(), getDispatcherContext());
       ChunkInfo chunkInfo = new ChunkInfo(String.format("%d.data.%d",
-          blockID.getLocalID(), 0), 123, getChunkInfo().getLen());
+          blockID.getLocalID(), 0), 123, getChunkInfo().getLen(), 123, getChunkInfo().getLen());
 
       // WHEN
       chunkManager.deleteChunk(container, blockID, chunkInfo);
@@ -84,7 +84,7 @@ public class TestFilePerBlockStrategy extends CommonChunkManagerTestCases {
       // we are writing to the same chunk file but at different offsets.
       long offset = x * datalen;
       ChunkInfo info = getChunk(
-          blockID.getLocalID(), 0, offset, datalen);
+          blockID.getLocalID(), 0, offset, datalen, offset, datalen);
       ChunkBuffer data = ContainerTestHelper.getData(datalen);
       oldSha.update(data.toByteString().asReadOnlyByteBuffer());
       data.rewind();
@@ -95,7 +95,7 @@ public class TestFilePerBlockStrategy extends CommonChunkManagerTestCases {
 
     // Request to read the whole data in a single go.
     ChunkInfo largeChunk = getChunk(blockID.getLocalID(), 0, 0,
-        datalen * chunkCount);
+        datalen * chunkCount, 0, datalen * chunkCount);
     ChunkBuffer chunk =
         subject.readChunk(container, blockID, largeChunk,
             getDispatcherContext());
@@ -117,7 +117,7 @@ public class TestFilePerBlockStrategy extends CommonChunkManagerTestCases {
 
     KeyValueContainer container = getKeyValueContainer();
     BlockID blockID = getBlockID();
-    ChunkInfo info = getChunk(blockID.getLocalID(), 0, 0, datalen);
+    ChunkInfo info = getChunk(blockID.getLocalID(), 0, 0, datalen, 0, datalen);
     ChunkBuffer data = ContainerTestHelper.getData(datalen);
     setDataChecksum(info, data);
     DispatcherContext ctx = getDispatcherContext();
@@ -131,7 +131,7 @@ public class TestFilePerBlockStrategy extends CommonChunkManagerTestCases {
     assertEquals(data.rewind().toByteString(),
         readData.rewind().toByteString());
 
-    ChunkInfo info2 = getChunk(blockID.getLocalID(), 0, start, length);
+    ChunkInfo info2 = getChunk(blockID.getLocalID(), 0, start, length, start, length);
     ChunkBuffer readData2 = subject.readChunk(container, blockID, info2, ctx);
     assertEquals(length, info2.getLen());
     assertEquals(data.rewind().toByteString().substring(start, start + length),

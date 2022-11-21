@@ -35,6 +35,8 @@ public class ChunkInfo {
   private final String chunkName;
   private final long offset;
   private final long len;
+  private final long originalOffset;
+  private final long originalLen;
   private ChecksumData checksumData;
   private final Map<String, String> metadata;
 
@@ -51,9 +53,24 @@ public class ChunkInfo {
    * @param len       - Length of the Chunk.
    */
   public ChunkInfo(String chunkName, long offset, long len) {
+    this(chunkName, offset, len, offset, len);
+  }
+
+
+  /**
+   * Constructs a ChunkInfo.
+   *
+   * @param chunkName - File Name where chunk lives.
+   * @param offset    - offset where Chunk Starts.
+   * @param len       - Length of the Chunk.
+   */
+  public ChunkInfo(String chunkName, long offset, long len,
+                   long originalOffset, long originaLen) {
     this.chunkName = chunkName;
     this.offset = offset;
     this.len = len;
+    this.originalLen = originaLen;
+    this.originalOffset = originalOffset;
     this.metadata = new TreeMap<>();
   }
 
@@ -85,7 +102,7 @@ public class ChunkInfo {
     Preconditions.checkNotNull(info);
 
     ChunkInfo chunkInfo = new ChunkInfo(info.getChunkName(), info.getOffset(),
-        info.getLen());
+        info.getLen(), info.getOriginalOffset(), info.getOriginalLen());
 
     for (int x = 0; x < info.getMetadataCount(); x++) {
       chunkInfo.addMetadata(info.getMetadata(x).getKey(),
@@ -110,6 +127,8 @@ public class ChunkInfo {
     builder.setChunkName(this.getChunkName());
     builder.setOffset(this.getOffset());
     builder.setLen(this.getLen());
+    builder.setOriginalLen(this.getOriginalLen());
+    builder.setOriginalOffset(this.getOriginalOffset());
     if (checksumData == null) {
       // ChecksumData cannot be null while computing the protobufMessage.
       // Set it to NONE type (equivalent to non checksum).
@@ -153,6 +172,14 @@ public class ChunkInfo {
    */
   public long getLen() {
     return len;
+  }
+
+  public long getOriginalOffset() {
+    return originalOffset;
+  }
+
+  public long getOriginalLen() {
+    return originalLen;
   }
 
   /**

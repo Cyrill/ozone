@@ -29,6 +29,7 @@ import org.apache.hadoop.hdds.scm.storage.BlockLocationInfo;
 import org.apache.hadoop.hdds.security.token.OzoneBlockTokenIdentifier;
 import org.apache.hadoop.io.ByteBufferPool;
 import org.apache.hadoop.io.ElasticByteBufferPool;
+import org.apache.hadoop.io.compress.CompressionCodec;
 import org.apache.hadoop.security.token.Token;
 
 import java.util.concurrent.ExecutorService;
@@ -78,14 +79,16 @@ public class BlockInputStreamFactoryImpl implements BlockInputStreamFactory {
       BlockLocationInfo blockInfo, Pipeline pipeline,
       Token<OzoneBlockTokenIdentifier> token, boolean verifyChecksum,
       XceiverClientFactory xceiverFactory,
-      Function<BlockID, Pipeline> refreshFunction) {
+      Function<BlockID, Pipeline> refreshFunction,
+      CompressionCodec compressionCodec) {
     if (repConfig.getReplicationType().equals(HddsProtos.ReplicationType.EC)) {
       return new ECBlockInputStreamProxy((ECReplicationConfig)repConfig,
           blockInfo, verifyChecksum, xceiverFactory, refreshFunction,
-          ecBlockStreamFactory);
+          ecBlockStreamFactory, compressionCodec);
     } else {
       return new BlockInputStream(blockInfo.getBlockID(), blockInfo.getLength(),
-          pipeline, token, verifyChecksum, xceiverFactory, refreshFunction);
+          pipeline, token, verifyChecksum, xceiverFactory, refreshFunction,
+          compressionCodec);
     }
   }
 

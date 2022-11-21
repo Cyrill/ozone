@@ -75,7 +75,7 @@ public class TestECBlockReconstructedInputStream {
         ECStreamTestUtil.createKeyInfo(repConfig, blockLength, dnMap);
     streamFactory.setCurrentPipeline(keyInfo.getPipeline());
     return new ECBlockReconstructedStripeInputStream(repConfig, keyInfo, true,
-        null, null, streamFactory, bufferPool, ecReconstructExecutor);
+        null, null, streamFactory, bufferPool, ecReconstructExecutor, null);
   }
 
   @Test

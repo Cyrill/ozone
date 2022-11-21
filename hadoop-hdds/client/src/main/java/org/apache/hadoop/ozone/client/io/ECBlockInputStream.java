@@ -31,6 +31,7 @@ import org.apache.hadoop.hdds.scm.pipeline.PipelineID;
 import org.apache.hadoop.hdds.scm.storage.BlockExtendedInputStream;
 import org.apache.hadoop.hdds.scm.storage.BlockLocationInfo;
 import org.apache.hadoop.hdds.scm.storage.ByteReaderStrategy;
+import org.apache.hadoop.io.compress.CompressionCodec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,6 +52,7 @@ public class ECBlockInputStream extends BlockExtendedInputStream {
   private final ECReplicationConfig repConfig;
   private final int ecChunkSize;
   private final long stripeSize;
+  private final CompressionCodec compressionCodec;
   private final BlockInputStreamFactory streamFactory;
   private final boolean verifyChecksum;
   private final XceiverClientFactory xceiverClientFactory;
@@ -109,7 +111,8 @@ public class ECBlockInputStream extends BlockExtendedInputStream {
   public ECBlockInputStream(ECReplicationConfig repConfig,
       BlockLocationInfo blockInfo, boolean verifyChecksum,
       XceiverClientFactory xceiverClientFactory, Function<BlockID,
-      Pipeline> refreshFunction, BlockInputStreamFactory streamFactory) {
+      Pipeline> refreshFunction, BlockInputStreamFactory streamFactory,
+      CompressionCodec compressionCodec) {
     this.repConfig = repConfig;
     this.ecChunkSize = repConfig.getEcChunkSize();
     this.verifyChecksum = verifyChecksum;
@@ -123,6 +126,7 @@ public class ECBlockInputStream extends BlockExtendedInputStream {
         new BlockExtendedInputStream[repConfig.getRequiredNodes()];
 
     this.stripeSize = (long)ecChunkSize * repConfig.getData();
+    this.compressionCodec = compressionCodec;
     setBlockLocations(this.blockInfo.getPipeline());
   }
 
@@ -185,7 +189,8 @@ public class ECBlockInputStream extends BlockExtendedInputStream {
               HddsProtos.ReplicationFactor.ONE),
           blkInfo, pipeline,
           blockInfo.getToken(), verifyChecksum, xceiverClientFactory,
-          ecPipelineRefreshFunction(locationIndex + 1, refreshFunction));
+          ecPipelineRefreshFunction(locationIndex + 1, refreshFunction),
+          compressionCodec);
       blockStreams[locationIndex] = stream;
     }
     return stream;

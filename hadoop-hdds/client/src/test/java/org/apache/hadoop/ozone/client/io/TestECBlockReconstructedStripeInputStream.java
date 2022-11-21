@@ -756,7 +756,7 @@ public class TestECBlockReconstructedStripeInputStream {
   private ECBlockReconstructedStripeInputStream createInputStream(
       BlockLocationInfo keyInfo) {
     return new ECBlockReconstructedStripeInputStream(repConfig, keyInfo, true,
-        null, null, streamFactory, bufferPool, ecReconstructExecutor);
+        null, null, streamFactory, bufferPool, ecReconstructExecutor, null);
   }
 
   private List<Integer> indexesToList(int... indexes) {

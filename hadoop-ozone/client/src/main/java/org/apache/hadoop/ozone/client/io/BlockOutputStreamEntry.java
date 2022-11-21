@@ -32,6 +32,7 @@ import org.apache.hadoop.hdds.scm.storage.BlockOutputStream;
 import org.apache.hadoop.hdds.scm.storage.BufferPool;
 import org.apache.hadoop.hdds.scm.storage.RatisBlockOutputStream;
 import org.apache.hadoop.hdds.security.token.OzoneBlockTokenIdentifier;
+import org.apache.hadoop.io.compress.CompressionCodec;
 import org.apache.hadoop.security.token.Token;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -47,6 +48,7 @@ import com.google.common.annotations.VisibleForTesting;
 public class BlockOutputStreamEntry extends OutputStream {
 
   private final OzoneClientConfig config;
+  private final CompressionCodec compressionCodec;
   private OutputStream outputStream;
   private BlockID blockID;
   private final String key;
@@ -55,6 +57,8 @@ public class BlockOutputStreamEntry extends OutputStream {
   // total number of bytes that should be written to this stream
   private final long length;
   // the current position of this stream 0 <= currentPosition < length
+  //todo: this should be changed to compressed position.
+  // new, uncompressed to be added.
   private long currentPosition;
   private final Token<OzoneBlockTokenIdentifier> token;
 
@@ -70,9 +74,11 @@ public class BlockOutputStreamEntry extends OutputStream {
       BufferPool bufferPool,
       Token<OzoneBlockTokenIdentifier> token,
       OzoneClientConfig config,
-      ContainerClientMetrics clientMetrics
+      ContainerClientMetrics clientMetrics,
+      CompressionCodec compressionCodec
   ) {
     this.config = config;
+    this.compressionCodec = compressionCodec;
     this.outputStream = null;
     this.blockID = blockID;
     this.key = key;
@@ -104,7 +110,7 @@ public class BlockOutputStreamEntry extends OutputStream {
    */
   void createOutputStream() throws IOException {
     outputStream = new RatisBlockOutputStream(blockID, xceiverClientManager,
-        pipeline, bufferPool, config, token, clientMetrics);
+        pipeline, bufferPool, config, token, clientMetrics, compressionCodec);
   }
 
   ContainerClientMetrics getClientMetrics() {
@@ -293,6 +299,10 @@ public class BlockOutputStreamEntry extends OutputStream {
     return this.config;
   }
 
+  CompressionCodec getCompressionCodec() {
+    return compressionCodec;
+  }
+
   XceiverClientFactory getXceiverClientManager() {
     return this.xceiverClientManager;
   }
@@ -340,6 +350,7 @@ public class BlockOutputStreamEntry extends OutputStream {
     private Token<OzoneBlockTokenIdentifier> token;
     private OzoneClientConfig config;
     private ContainerClientMetrics clientMetrics;
+    private CompressionCodec compressionCodec;
 
     public Builder setBlockID(BlockID bID) {
       this.blockID = bID;
@@ -386,6 +397,11 @@ public class BlockOutputStreamEntry extends OutputStream {
       return this;
     }
 
+    public Builder setCompressionCodec(CompressionCodec codec) {
+      this.compressionCodec = codec;
+      return this;
+    }
+
     public BlockOutputStreamEntry build() {
       return new BlockOutputStreamEntry(blockID,
           key,
@@ -393,7 +409,7 @@ public class BlockOutputStreamEntry extends OutputStream {
           pipeline,
           length,
           bufferPool,
-          token, config, clientMetrics);
+          token, config, clientMetrics, compressionCodec);
     }
   }
 }

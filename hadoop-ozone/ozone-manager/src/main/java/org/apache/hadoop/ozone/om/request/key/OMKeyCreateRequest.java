@@ -167,9 +167,9 @@ public class OMKeyCreateRequest extends OMKeyRequest {
     newKeyArgs.setKeyName(keyPath);
 
     if (keyArgs.getIsMultipartKey()) {
-      getFileEncryptionInfoForMpuKey(keyArgs, newKeyArgs, ozoneManager);
+      fillEncryptionAndCompressionForMpu(keyArgs, newKeyArgs, ozoneManager);
     } else {
-      generateRequiredEncryptionInfo(keyArgs, newKeyArgs, ozoneManager);
+      fillEncryptionAndCompression(keyArgs, newKeyArgs, ozoneManager);
     }
 
     newCreateKeyRequest =
@@ -282,6 +282,7 @@ public class OMKeyCreateRequest extends OMKeyRequest {
 
       omKeyInfo = prepareKeyInfo(omMetadataManager, keyArgs, dbKeyInfo,
           keyArgs.getDataSize(), locations, getFileEncryptionInfo(keyArgs),
+          getCompressionType(keyArgs),
           ozoneManager.getPrefixManager(), bucketInfo, trxnLogIndex,
           ozoneManager.getObjectIdFromTxId(trxnLogIndex),
           ozoneManager.isRatisEnabled(), replicationConfig);

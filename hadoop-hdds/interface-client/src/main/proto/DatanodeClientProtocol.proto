@@ -377,7 +377,9 @@ message ChunkInfo {
   required uint64 offset = 2;
   required uint64 len = 3;
   repeated KeyValue metadata = 4;
-  required ChecksumData checksumData =5;
+  required ChecksumData checksumData = 5;
+  optional uint64 originalLen = 6;
+  optional uint64 originalOffset = 7;
 }
 
 message ChunkInfoList {

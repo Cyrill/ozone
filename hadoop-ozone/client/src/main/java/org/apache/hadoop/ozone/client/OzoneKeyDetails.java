@@ -41,6 +41,8 @@ public class OzoneKeyDetails extends OzoneKey {
 
   private FileEncryptionInfo feInfo;
 
+  private String compressionType;
+
   private SupplierWithIOException<OzoneInputStream> contentSupplier;
 
   /**
@@ -71,11 +73,13 @@ public class OzoneKeyDetails extends OzoneKey {
       ReplicationConfig replicationConfig,
       Map<String, String> metadata,
       FileEncryptionInfo feInfo,
+      String compressionType,
       SupplierWithIOException<OzoneInputStream> contentSupplier) {
     super(volumeName, bucketName, keyName, size, creationTime,
             modificationTime, replicationConfig, metadata);
     this.ozoneKeyLocations = ozoneKeyLocations;
     this.feInfo = feInfo;
+    this.compressionType = compressionType;
     this.contentSupplier = contentSupplier;
   }
 
@@ -89,6 +93,11 @@ public class OzoneKeyDetails extends OzoneKey {
   public FileEncryptionInfo getFileEncryptionInfo() {
     return feInfo;
   }
+
+  public String getCompressionType() {
+    return compressionType;
+  }
+
   /**
    * Set details of key location.
    * @param ozoneKeyLocations - details of key location

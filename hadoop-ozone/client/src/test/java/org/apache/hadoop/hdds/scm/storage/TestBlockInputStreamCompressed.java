@@ -21,6 +21,7 @@ package org.apache.hadoop.hdds.scm.storage;
 import com.google.common.primitives.Bytes;
 import org.apache.hadoop.hdds.client.BlockID;
 import org.apache.hadoop.hdds.client.ContainerBlockID;
+import org.apache.hadoop.hdds.conf.OzoneConfiguration;
 import org.apache.hadoop.hdds.protocol.DatanodeDetails;
 import org.apache.hadoop.hdds.protocol.datanode.proto.ContainerProtos.ChecksumType;
 import org.apache.hadoop.hdds.protocol.datanode.proto.ContainerProtos.ChunkInfo;
@@ -30,9 +31,12 @@ import org.apache.hadoop.hdds.scm.container.common.helpers.StorageContainerExcep
 import org.apache.hadoop.hdds.scm.pipeline.MockPipeline;
 import org.apache.hadoop.hdds.scm.pipeline.Pipeline;
 import org.apache.hadoop.hdds.security.exception.SCMSecurityException;
+import org.apache.hadoop.io.compress.CompressionCodec;
+import org.apache.hadoop.io.compress.CompressionOutputStream;
+import org.apache.hadoop.ozone.client.rpc.OzoneCompressionCodecFactory;
 import org.apache.hadoop.ozone.common.Checksum;
-
 import org.apache.hadoop.ozone.common.OzoneChecksumException;
+import org.apache.hadoop.ozone.om.helpers.CompressionType;
 import org.apache.ratis.thirdparty.io.grpc.Status;
 import org.apache.ratis.thirdparty.io.grpc.StatusException;
 import org.junit.Assert;
@@ -44,6 +48,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mockito;
 
+import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -70,29 +75,35 @@ import static org.mockito.Mockito.when;
 /**
  * Tests for {@link BlockInputStream}'s functionality.
  */
-public class TestBlockInputStream {
+public class TestBlockInputStreamCompressed {
 
   private static final int CHUNK_SIZE = 100;
 
   private Checksum checksum;
   private BlockInputStream blockStream;
   private byte[] blockData;
+  private byte[] uncompressedBlockData;
   private int blockSize;
+  private int uncompressedBlockSize;
   private List<ChunkInfo> chunks;
   private Map<String, byte[]> chunkDataMap;
 
   private Function<BlockID, Pipeline> refreshPipeline;
-
+  private CompressionCodec compressionCodec;
   @BeforeEach
   @SuppressWarnings("unchecked")
   public void setup() throws Exception {
+    compressionCodec =
+        OzoneCompressionCodecFactory
+            .getCompressionCodec(new OzoneConfiguration(),
+                                 CompressionType.SNAPPY.getCodecName());
     refreshPipeline = Mockito.mock(Function.class);
     BlockID blockID = new BlockID(new ContainerBlockID(1, 1));
     checksum = new Checksum(ChecksumType.NONE, CHUNK_SIZE);
     createChunkList(5);
 
     blockStream = new DummyBlockInputStream(blockID, blockSize, null, null,
-        false, null, refreshPipeline, chunks, chunkDataMap, null);
+        false, null, refreshPipeline, chunks, chunkDataMap, compressionCodec);
   }
 
   /**
@@ -105,8 +116,10 @@ public class TestBlockInputStream {
     chunks = new ArrayList<>(numChunks);
     chunkDataMap = new HashMap<>();
     blockData = new byte[0];
-    int i, chunkLen;
+    uncompressedBlockData = new byte[0];
+    int i, chunkLen, compressedLen;
     byte[] byteData;
+    byte[] compressedByteData;
     String chunkName;
 
     for (i = 0; i < numChunks; i++) {
@@ -116,22 +129,36 @@ public class TestBlockInputStream {
         chunkLen = CHUNK_SIZE / 2;
       }
       byteData = generateRandomData(chunkLen);
+      compressedByteData = compress(byteData);
+      compressedLen = compressedByteData.length;
       ChunkInfo chunkInfo = ChunkInfo.newBuilder()
           .setChunkName(chunkName)
           .setOffset(0)
-          .setLen(chunkLen)
+          .setLen(compressedLen)
           .setOriginalOffset(0)
           .setOriginalLen(chunkLen)
           .setChecksumData(checksum.computeChecksum(
-              byteData, 0, chunkLen).getProtoBufMessage())
+              compressedByteData, 0, compressedLen).getProtoBufMessage())
           .build();
 
-      chunkDataMap.put(chunkName, byteData);
+      chunkDataMap.put(chunkName, compressedByteData);
       chunks.add(chunkInfo);
 
-      blockSize += chunkLen;
-      blockData = Bytes.concat(blockData, byteData);
+      blockSize += compressedLen;
+      uncompressedBlockSize += chunkLen;
+      blockData = Bytes.concat(blockData, compressedByteData);
+      uncompressedBlockData = Bytes.concat(uncompressedBlockData, byteData);
     }
+  }
+
+  private byte[] compress(byte[] data) throws IOException {
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    try (
+         CompressionOutputStream outputStream =
+             compressionCodec.createOutputStream(baos)) {
+      outputStream.write(data);
+    }
+    return baos.toByteArray();
   }
 
   private void seekAndVerify(int pos) throws Exception {
@@ -151,7 +178,8 @@ public class TestBlockInputStream {
   private void matchWithInputData(byte[] readData, int inputDataStartIndex,
       int length) {
     for (int i = inputDataStartIndex; i < inputDataStartIndex + length; i++) {
-      Assert.assertEquals(blockData[i], readData[i - inputDataStartIndex]);
+      Assert.assertEquals(uncompressedBlockData[i],
+          readData[i - inputDataStartIndex]);
     }
   }
 
@@ -194,7 +222,7 @@ public class TestBlockInputStream {
     // Seek to random positions between 0 and the block size.
     Random random = new Random();
     for (int i = 0; i < 10; i++) {
-      pos = random.nextInt(blockSize);
+      pos = random.nextInt(uncompressedBlockSize);
       seekAndVerify(pos);
     }
   }
@@ -240,7 +268,7 @@ public class TestBlockInputStream {
     ByteBuffer buffer = ByteBuffer.allocateDirect(200);
     blockStream.read(buffer);
     for (int i = 50; i < 50 + 200; i++) {
-      Assert.assertEquals(blockData[i], buffer.get(i - 50));
+      Assert.assertEquals(uncompressedBlockData[i], buffer.get(i - 50));
     }
 
     // The new position of the blockInputStream should be the last index read

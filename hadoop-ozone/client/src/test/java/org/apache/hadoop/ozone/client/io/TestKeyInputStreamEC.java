@@ -68,10 +68,10 @@ public class TestKeyInputStreamEC {
     BlockInputStreamFactory mockStreamFactory =
         mock(BlockInputStreamFactory.class);
     when(mockStreamFactory.create(any(), any(), any(), any(),
-        anyBoolean(), any(), any())).thenReturn(blockInputStream);
+        anyBoolean(), any(), any(), any())).thenReturn(blockInputStream);
 
     try (LengthInputStream kis = KeyInputStream.getFromOmKeyInfo(keyInfo,
-        null, true,  null, mockStreamFactory)) {
+        null, true,  null, mockStreamFactory, null)) {
       byte[] buf = new byte[100];
       int readBytes = kis.read(buf, 0, 100);
       Assert.assertEquals(100, readBytes);

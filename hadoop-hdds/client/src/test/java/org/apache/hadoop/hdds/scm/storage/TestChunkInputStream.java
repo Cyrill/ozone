@@ -67,12 +67,14 @@ public class TestChunkInputStream {
         .setChunkName(CHUNK_NAME)
         .setOffset(0)
         .setLen(CHUNK_SIZE)
+        .setOriginalOffset(0)
+        .setOriginalLen(CHUNK_SIZE)
         .setChecksumData(checksum.computeChecksum(
             chunkData, 0, CHUNK_SIZE).getProtoBufMessage())
         .build();
 
     chunkStream = new DummyChunkInputStream(chunkInfo, null, null, true,
-        chunkData, null);
+        chunkData, null, null);
   }
 
   static byte[] generateRandomData(int length) {
@@ -236,7 +238,7 @@ public class TestChunkInputStream {
     AtomicReference<Pipeline> pipelineRef = new AtomicReference<>(pipeline);
 
     ChunkInputStream subject = new ChunkInputStream(chunkInfo, null,
-        clientFactory, pipelineRef::get, false, null) {
+        clientFactory, pipelineRef::get, false, null, null) {
       @Override
       protected ByteBuffer[] readChunk(ChunkInfo readChunkInfo) {
         return ByteString.copyFrom(chunkData).asReadOnlyByteBufferList()

@@ -33,7 +33,8 @@ import org.slf4j.LoggerFactory;
  * Keys in Encrypted Buckets.
  */
 public class OzoneCryptoInputStream extends CryptoInputStream
-    implements Seekable {
+    implements Seekable, EncodedInputStream {
+
 
   private static final Logger LOG =
       LoggerFactory.getLogger(OzoneCryptoInputStream.class);

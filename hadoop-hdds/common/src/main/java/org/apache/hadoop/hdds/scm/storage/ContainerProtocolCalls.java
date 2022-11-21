@@ -229,6 +229,7 @@ public final class ContainerProtocolCalls  {
    * @throws InterruptedException
    * @throws ExecutionException
    */
+  //todo: execute call #2
   public static XceiverClientReply putBlockAsync(XceiverClientSpi xceiverClient,
       BlockData containerBlockData, boolean eof,
       Token<? extends TokenIdentifier> token)
@@ -261,6 +262,7 @@ public final class ContainerProtocolCalls  {
    * @return container protocol read chunk response
    * @throws IOException if there is an I/O error while performing the call
    */
+  //todo: read data from DN
   public static ContainerProtos.ReadChunkResponseProto readChunk(
       XceiverClientSpi xceiverClient, ChunkInfo chunk, BlockID blockID,
       List<CheckedBiFunction> validators,
@@ -327,6 +329,7 @@ public final class ContainerProtocolCalls  {
    * @param token a token for this block (may be null)
    * @throws IOException if there is an I/O error while performing the call
    */
+  //TODO: call #1
   public static XceiverClientReply writeChunkAsync(
       XceiverClientSpi xceiverClient, ChunkInfo chunk, BlockID blockID,
       ByteString data, Token<? extends TokenIdentifier> token,

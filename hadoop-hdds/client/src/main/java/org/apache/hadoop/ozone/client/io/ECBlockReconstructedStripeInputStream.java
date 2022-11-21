@@ -29,6 +29,7 @@ import org.apache.hadoop.hdds.scm.storage.BlockExtendedInputStream;
 import org.apache.hadoop.hdds.scm.storage.BlockLocationInfo;
 import org.apache.hadoop.hdds.scm.storage.ByteReaderStrategy;
 import org.apache.hadoop.io.ByteBufferPool;
+import org.apache.hadoop.io.compress.CompressionCodec;
 import org.apache.ozone.erasurecode.rawcoder.RawErasureDecoder;
 import org.apache.ozone.erasurecode.rawcoder.util.CodecUtil;
 import org.apache.ratis.util.Preconditions;
@@ -156,9 +157,10 @@ public class ECBlockReconstructedStripeInputStream extends ECBlockInputStream {
       XceiverClientFactory xceiverClientFactory, Function<BlockID,
       Pipeline> refreshFunction, BlockInputStreamFactory streamFactory,
       ByteBufferPool byteBufferPool,
-      ExecutorService ecReconstructExecutor) {
+      ExecutorService ecReconstructExecutor,
+      CompressionCodec compressionCodec) {
     super(repConfig, blockInfo, verifyChecksum, xceiverClientFactory,
-        refreshFunction, streamFactory);
+        refreshFunction, streamFactory, compressionCodec);
     this.byteBufferPool = byteBufferPool;
     this.executor = ecReconstructExecutor;
 

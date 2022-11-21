@@ -32,6 +32,7 @@ import org.apache.hadoop.hdds.scm.XceiverClientFactory;
 import org.apache.hadoop.hdds.scm.container.common.helpers.ExcludeList;
 import org.apache.hadoop.hdds.scm.pipeline.PipelineID;
 import org.apache.hadoop.hdds.scm.storage.BufferPool;
+import org.apache.hadoop.io.compress.CompressionCodec;
 import org.apache.hadoop.ozone.om.helpers.OmKeyArgs;
 import org.apache.hadoop.ozone.om.helpers.OmKeyInfo;
 import org.apache.hadoop.ozone.om.helpers.OmKeyLocationInfo;
@@ -81,6 +82,7 @@ public class BlockOutputStreamEntryPool {
   private final long openID;
   private final ExcludeList excludeList;
   private final ContainerClientMetrics clientMetrics;
+  private final CompressionCodec compressionCodec;
 
   @SuppressWarnings({"parameternumber", "squid:S00107"})
   public BlockOutputStreamEntryPool(
@@ -91,7 +93,8 @@ public class BlockOutputStreamEntryPool {
       boolean isMultipart, OmKeyInfo info,
       boolean unsafeByteBufferConversion,
       XceiverClientFactory xceiverClientFactory, long openID,
-      ContainerClientMetrics clientMetrics
+      ContainerClientMetrics clientMetrics,
+      CompressionCodec compressionCodec
   ) {
     this.config = config;
     this.xceiverClientFactory = xceiverClientFactory;
@@ -107,6 +110,7 @@ public class BlockOutputStreamEntryPool {
     this.openID = openID;
     this.excludeList = createExcludeList();
 
+    this.compressionCodec = compressionCodec;
     this.bufferPool =
         new BufferPool(config.getStreamBufferSize(),
             (int) (config.getStreamBufferMaxSize() / config
@@ -139,6 +143,7 @@ public class BlockOutputStreamEntryPool {
     openID = -1;
     excludeList = new ExcludeList();
     this.clientMetrics = clientMetrics;
+    this.compressionCodec = null;
   }
 
   /**
@@ -185,6 +190,7 @@ public class BlockOutputStreamEntryPool {
             .setBufferPool(bufferPool)
             .setToken(subKeyInfo.getToken())
             .setClientMetrics(clientMetrics)
+            .setCompressionCodec(compressionCodec)
             .build();
   }
 

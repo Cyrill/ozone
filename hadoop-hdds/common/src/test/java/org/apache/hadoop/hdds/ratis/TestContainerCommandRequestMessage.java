@@ -76,6 +76,8 @@ public class TestContainerCommandRequestMessage {
         .setChunkName(blockID.getLocalID() + "_chunk")
         .setOffset(0)
         .setLen(data.size())
+        .setOriginalOffset(0)
+        .setOriginalLen(data.size())
         .addMetadata(keyValue)
         .setChecksumData(checksum(data).getProtoBufMessage())
         .build();
@@ -99,6 +101,8 @@ public class TestContainerCommandRequestMessage {
         .setChunkName(blockID.getLocalID() + "_chunk_" + 1)
         .setOffset(0)
         .setLen(data.size())
+        .setOriginalOffset(0)
+        .setOriginalLen(data.size())
         .setChecksumData(checksum(data).getProtoBufMessage())
         .build();
 

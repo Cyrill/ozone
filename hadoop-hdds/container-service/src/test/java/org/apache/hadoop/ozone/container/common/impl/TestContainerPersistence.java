@@ -380,7 +380,7 @@ public class TestContainerPersistence {
       container = addContainer(containerSet, testContainerID);
     }
     ChunkInfo info = getChunk(
-        blockID.getLocalID(), 0, 0, datalen);
+        blockID.getLocalID(), 0, 0, datalen, 0, datalen);
     ChunkBuffer data = getData(datalen);
     setDataChecksum(info, data);
     commitBytesBefore = container.getContainerData()
@@ -429,7 +429,8 @@ public class TestContainerPersistence {
     List<ChunkInfo> chunks = new ArrayList<>(chunkCount);
     BlockData blockData = new BlockData(blockID);
     for (int x = 0; x < chunkCount; x++) {
-      ChunkInfo info = getChunk(blockID.getLocalID(), x, x * datalen, datalen);
+      ChunkInfo info = getChunk(blockID.getLocalID(), x, x * datalen, datalen,
+          x * datalen, datalen);
       ChunkBuffer data = getData(datalen);
       setDataChecksum(info, data);
       chunkManager.writeChunk(container, blockID, info, data,
@@ -474,7 +475,7 @@ public class TestContainerPersistence {
 
     BlockID blockID = ContainerTestHelper.getTestBlockID(testContainerID);
     ChunkInfo info = getChunk(
-        blockID.getLocalID(), 0, 0, datalen);
+        blockID.getLocalID(), 0, 0, datalen, 0, datalen);
     ChunkBuffer data = getData(datalen);
     setDataChecksum(info, data);
     chunkManager.writeChunk(container, blockID, info, data,
@@ -509,7 +510,7 @@ public class TestContainerPersistence {
 
     BlockID blockID = ContainerTestHelper.getTestBlockID(testContainerID);
     ChunkInfo info = getChunk(
-        blockID.getLocalID(), 1, 0, datalen);
+        blockID.getLocalID(), 1, 0, datalen, 0, datalen);
     ChunkBuffer data = getData(datalen);
     setDataChecksum(info, data);
     chunkManager.writeChunk(container, blockID, info, data,
@@ -620,7 +621,7 @@ public class TestContainerPersistence {
     List<ChunkInfo> chunkList = new LinkedList<>();
     for (int x = 0; x < chunkCount; x++) {
       ChunkInfo info = new ChunkInfo(String.format("%d.data",
-          blockID.getLocalID()), x * datalen, datalen);
+          blockID.getLocalID()), x * datalen, datalen, x * datalen, datalen);
       ChunkBuffer data = getData(datalen);
       setDataChecksum(info, data);
       chunkManager.writeChunk(container, blockID, info, data,

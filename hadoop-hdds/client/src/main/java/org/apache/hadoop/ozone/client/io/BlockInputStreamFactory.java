@@ -24,6 +24,7 @@ import org.apache.hadoop.hdds.scm.pipeline.Pipeline;
 import org.apache.hadoop.hdds.scm.storage.BlockExtendedInputStream;
 import org.apache.hadoop.hdds.scm.storage.BlockLocationInfo;
 import org.apache.hadoop.hdds.security.token.OzoneBlockTokenIdentifier;
+import org.apache.hadoop.io.compress.CompressionCodec;
 import org.apache.hadoop.security.token.Token;
 
 import java.util.function.Function;
@@ -50,6 +51,7 @@ public interface BlockInputStreamFactory {
       BlockLocationInfo blockInfo, Pipeline pipeline,
       Token<OzoneBlockTokenIdentifier> token, boolean verifyChecksum,
        XceiverClientFactory xceiverFactory,
-       Function<BlockID, Pipeline> refreshFunction);
+       Function<BlockID, Pipeline> refreshFunction,
+       CompressionCodec compressionCodec);
 
 }
