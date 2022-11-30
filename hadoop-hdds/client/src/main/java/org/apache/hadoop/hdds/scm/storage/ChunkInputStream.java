@@ -402,7 +402,7 @@ public class ChunkInputStream extends InputStream
 
     if (isCompressed()) {
       //no seek is performed on a compressed stream, seeking after decompression
-      adjustBufferPosition(chunkInfo.getOffset() + startByteIndex);
+      adjustBufferPosition(startByteIndex);
     } else {
       // If the stream was seeked to position before, then the buffer
       // position should be adjusted as the reads happen at checksum boundaries.

@@ -712,6 +712,7 @@ public class BlockOutputStream extends OutputStream {
       chunkInfo =
           createCompressedChunkInfo(compressedChunk,
               originalChunkSize, originalOffset);
+      compressedChunk.rewind();
       data = compressedChunk.toByteString(bufferPool.byteStringConversion());
     } else {
       chunkInfo =
@@ -799,6 +800,7 @@ public class BlockOutputStream extends OutputStream {
     }
     ChunkBuffer compressed = ChunkBuffer.allocate(baos.size(), 0);
     compressed.put(baos.toByteArray());
+    compressed.rewind();
     return compressed;
   }
 
