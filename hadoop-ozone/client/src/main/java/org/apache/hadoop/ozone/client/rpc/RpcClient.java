@@ -99,7 +99,7 @@ import org.apache.hadoop.ozone.client.io.KeyDataStreamOutput;
 import org.apache.hadoop.ozone.client.io.KeyInputStream;
 import org.apache.hadoop.ozone.client.io.KeyOutputStream;
 import org.apache.hadoop.ozone.client.io.LengthInputStream;
-import org.apache.hadoop.hdds.scm.storage.MultipartInputStream;
+import org.apache.hadoop.ozone.client.io.MultipartCryptoKeyInputStream;
 import org.apache.hadoop.ozone.client.io.OzoneCryptoInputStream;
 import org.apache.hadoop.ozone.client.io.OzoneDataStreamOutput;
 import org.apache.hadoop.ozone.client.io.OzoneInputStream;
@@ -2167,7 +2167,8 @@ public class RpcClient implements ClientProtocol {
         cryptoInputStreams.add(ozoneCryptoInputStream);
       }
       return new OzoneInputStream(
-          new MultipartInputStream(keyInfo.getKeyName(), cryptoInputStreams));
+          new MultipartCryptoKeyInputStream(keyInfo.getKeyName(),
+              cryptoInputStreams));
     }
   }
   private OzoneDataStreamOutput createDataStreamOutput(OpenKeySession openKey,
