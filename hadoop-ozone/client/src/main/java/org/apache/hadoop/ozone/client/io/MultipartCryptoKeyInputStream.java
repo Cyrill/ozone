@@ -17,7 +17,6 @@
  */
 package org.apache.hadoop.ozone.client.io;
 
-import org.apache.hadoop.hdds.scm.storage.ByteReaderStrategy;
 import org.apache.hadoop.hdds.scm.storage.MultipartInputStream;
 import org.apache.hadoop.hdds.scm.storage.PartInputStream;
 
@@ -35,12 +34,4 @@ public class MultipartCryptoKeyInputStream extends MultipartInputStream {
     super(" Key: " + keyName, inputStreams);
   }
 
-  @Override
-  protected int getNumBytesToRead(ByteReaderStrategy strategy,
-                                  PartInputStream current) {
-    //OzoneCryptoInputStream read position is aligned with
-    // the crypto buffer boundary. We don't limit the requested length here
-    // to let OzoneCryptoInputStream decide itself how many bytes to read.
-    return strategy.getTargetLength();
-  }
 }
