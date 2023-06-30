@@ -71,7 +71,6 @@ public abstract class StorageVolume
   private static final Logger LOG =
       LoggerFactory.getLogger(StorageVolume.class);
 
-
   // The name of the directory used for temporary files on the volume.
   public static final String TMP_DIR_NAME = "tmp";
   // The name of the directory where temporary files used to check disk
@@ -548,6 +547,7 @@ public abstract class StorageVolume
   public void shutdown() {
     setState(VolumeState.NON_EXISTENT);
     volumeInfo.ifPresent(VolumeInfo::shutdownUsageThread);
+    cleanTmpDiskCheckDir();
   }
 
   /**

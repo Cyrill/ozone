@@ -55,6 +55,7 @@ import org.apache.hadoop.ozone.container.common.volume.StorageVolume.VolumeType;
 import org.apache.hadoop.ozone.container.common.volume.StorageVolumeChecker;
 import org.apache.hadoop.ozone.container.keyvalue.statemachine.background.BlockDeletingService;
 import org.apache.hadoop.ozone.container.keyvalue.statemachine.background.StaleRecoveringContainerScrubbingService;
+import org.apache.hadoop.ozone.container.mover.ContainerMoverService;
 import org.apache.hadoop.ozone.container.replication.ContainerImporter;
 import org.apache.hadoop.ozone.container.replication.ReplicationServer;
 import org.apache.hadoop.ozone.container.replication.ReplicationServer.ReplicationConfig;
@@ -232,15 +233,7 @@ public class OzoneContainer {
             blockDeletingServiceTimeout, TimeUnit.MILLISECONDS,
             blockDeletingServiceWorkerSize, config);
 
-    Duration containerMoverInterval =
-        config.getObject(DatanodeConfiguration.class)
-            .getContainerMoverInterval();
-    Duration containerMoverTimeout = config
-        .getObject(DatanodeConfiguration.class)
-        .getContainerMoverTimeout();
-    containerMoverService = new ContainerMoverService(this,
-        containerMoverInterval.toMillis(), TimeUnit.MILLISECONDS, 1,
-        containerMoverTimeout.toMillis());
+    containerMoverService = ContainerMoverService.initialize(this, config);
 
     Duration recoveringContainerScrubbingSvcInterval = conf.getObject(
         DatanodeConfiguration.class).getRecoveringContainerScrubInterval();

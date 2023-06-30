@@ -4103,4 +4103,35 @@
       to existing buckets till this operation is completed.
     </description>
   </property>
+  <property>
+    <name>hdds.datanode.container.move.policy</name>
+    <value/>
+    <tag>DATANODE, CONTAINER_MOVER</tag>
+    <description>
+      A policy to choose the containers for moving them to another volumes on the same datanode, default is
+      org.apache.hadoop.ozone.container.mover.DummyContainerMovePolicy (provides an empty list of containers for moving).
+      ContainerMoverService deals with the policy in the next way:
+        - background task filters the containers and returns BackgroundTaskQueue with selected ones
+        - container mover task selects the destination volume (with provided policy) and moves the container to.
+      org.apache.hadoop.ozone.container.mover.SsdToHddClosedContainerMover policy provides a list of CLOSED containers from SSD volumes and
+      [DISK] labeled volume as a destination one
+    </description>
+  </property>
+  <property>
+    <name>hdds.datanode.container.move.scan.interval</name>
+    <value>60s</value>
+    <tag>DATANODE, CONTAINER_MOVER</tag>
+    <description>
+      Interval to run org.apache.hadoop.ozone.container.mover.ContainerMoverService's tasks
+    </description>
+  </property>
+  <property>
+    <name>hdds.datanode.container.move.task.timeout</name>
+    <value>900s</value>
+    <tag>DATANODE, CONTAINER_MOVER</tag>
+    <description>
+      Time to execute ContainerMoverService task, if the task execution duration will reach the limit then the WARN message will be written
+      to log
+    </description>
+  </property>
 </configuration>

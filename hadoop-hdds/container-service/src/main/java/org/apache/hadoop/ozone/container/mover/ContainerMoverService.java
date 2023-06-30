@@ -16,10 +16,9 @@
  * limitations under the License.
  */
 
-package org.apache.hadoop.ozone.container.ozoneimpl;
+package org.apache.hadoop.ozone.container.mover;
 
-import org.apache.hadoop.fs.StorageType;
-import org.apache.hadoop.hdds.protocol.datanode.proto.ContainerProtos;
+import org.apache.hadoop.hdds.conf.ConfigurationSource;
 import org.apache.hadoop.hdds.utils.BackgroundService;
 import org.apache.hadoop.hdds.utils.BackgroundTask;
 import org.apache.hadoop.hdds.utils.BackgroundTaskQueue;
@@ -29,14 +28,17 @@ import org.apache.hadoop.ozone.container.common.impl.ContainerData;
 import org.apache.hadoop.ozone.container.common.impl.ContainerDataYaml;
 import org.apache.hadoop.ozone.container.common.interfaces.Container;
 import org.apache.hadoop.ozone.container.common.interfaces.VolumeChoosingPolicy;
+import org.apache.hadoop.ozone.container.common.statemachine.DatanodeConfiguration;
 import org.apache.hadoop.ozone.container.common.utils.StorageVolumeUtil;
 import org.apache.hadoop.ozone.container.common.volume.HddVolumeChoosingPolicy;
 import org.apache.hadoop.ozone.container.common.volume.HddsVolume;
-import org.apache.hadoop.ozone.container.common.volume.RoundRobinVolumeChoosingPolicy;
 import org.apache.hadoop.ozone.container.keyvalue.KeyValueContainer;
 import org.apache.hadoop.ozone.container.keyvalue.helpers.KeyValueContainerLocationUtil;
+import org.apache.hadoop.ozone.container.ozoneimpl.OzoneContainer;
 import org.apache.hadoop.ozone.container.upgrade.VersionedDatanodeFeatures;
 import org.apache.ratis.util.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,14 +46,20 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.Map;
+import java.time.Duration;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import static org.apache.hadoop.hdds.HddsConfigKeys.CONTAINER_MOVE_POLICY;
+
 public class ContainerMoverService extends BackgroundService {
 
+  private static final Logger LOG = LoggerFactory.getLogger(ContainerMoverService.class);
+  public static final String CONTAINER_MOVER_TMP_DIR = "tmp";
+  public static final String CONTAINER_MOVER_DIR = "containerMover";
+  public static ContainerMoverService instance;
   private final OzoneContainer ozoneContainer;
 
   private final VolumeChoosingPolicy destVolumeChoosingPolicy =
@@ -59,27 +67,65 @@ public class ContainerMoverService extends BackgroundService {
 
   private Set<Long> inProgressContainers;
 
-  public ContainerMoverService(OzoneContainer ozoneContainer, long interval,
-                               TimeUnit unit,
+  private ContainerMoverMetrics metrics;
+
+  private ContainerMoverPolicy containerMoverPolicy;
+
+  public ContainerMoverService(OzoneContainer ozoneContainer,
+                               ContainerMoverPolicy containerMoverPolicy,
+                               long interval, TimeUnit unit,
                                int threadPoolSize, long serviceTimeout) {
     super("ContainerMover", interval, unit, threadPoolSize, serviceTimeout);
     this.ozoneContainer = ozoneContainer;
+    this.containerMoverPolicy = containerMoverPolicy;
     inProgressContainers = ConcurrentHashMap.newKeySet();
+    metrics = ContainerMoverMetrics.crete();
     constructTmpDir();
   }
 
   @Override
   public BackgroundTaskQueue getTasks() {
     BackgroundTaskQueue tasksQueue = new BackgroundTaskQueue();
-    ozoneContainer.getContainerSet().getContainerMapCopy().values().stream()
-        .filter(container -> container.getContainerState().equals(ContainerProtos.ContainerDataProto.State.CLOSED)
-            && !inProgressContainers.contains(container.getContainerData().getContainerID()))
-        .filter(container -> container.getContainerData().getVolume().getStorageType().equals(StorageType.SSD))
+    containerMoverPolicy.getContainerListToMove(ozoneContainer.getContainerSet())
+        .stream()
+        .filter(container -> !inProgressContainers.contains(container.getContainerData().getContainerID()))
         .forEach(container -> {
           inProgressContainers.add(container.getContainerData().getContainerID());
           tasksQueue.add(new ContainerMoveTask((KeyValueContainer) container, ozoneContainer, destVolumeChoosingPolicy));
         });
     return tasksQueue;
+  }
+
+  public static ContainerMoverService initialize(OzoneContainer ozoneContainer,
+                                                 ConfigurationSource config) {
+    if (instance == null) {
+      Duration containerMoverInterval =
+          config.getObject(DatanodeConfiguration.class)
+              .getContainerMoverInterval();
+      Duration containerMoverTimeout = config
+          .getObject(DatanodeConfiguration.class)
+          .getContainerMoverTimeout();
+
+      ContainerMoverPolicy containerMoverPolicy;
+      try {
+        containerMoverPolicy = config.getObject(DatanodeConfiguration.class)
+            .getContainerMoverPolicy().newInstance();;
+        instance = new ContainerMoverService(ozoneContainer, containerMoverPolicy,
+            containerMoverInterval.toMillis(), TimeUnit.MILLISECONDS, 1,
+            containerMoverTimeout.toMillis());
+      } catch (InstantiationException | IllegalAccessException ex) {
+        LOG.error("Oops!", ex);
+        LOG.error("ContainerMoverService can't be started, the container mover"
+            + "policy configured incorrectly, please consider the '{}' configuration property", CONTAINER_MOVE_POLICY);
+      }
+
+    }
+    return instance;
+  }
+
+  @Override
+  public void shutdown() {
+    ContainerMoverMetrics.unregister();
   }
 
   public boolean isMovingContainer(long containerId) {
@@ -105,38 +151,41 @@ public class ContainerMoverService extends BackgroundService {
     @Override
     public BackgroundTaskResult call() throws Exception {
       boolean destVolumeIncreased = false;
-      Path diskBalancerTmpDir = null, diskBalancerDestDir = null;
+      Path containerMoverTmpDir = null, containerMoverDestDir = null;
       ContainerData containerData = container.getContainerData();
       long containerSize = containerData.getBytesUsed();
-      destVolume = volumeChoosingPolicy.chooseVolume(ozoneContainer.getVolumeSet()
-          .getVolumesList().stream().map(storageVolume -> (HddsVolume)storageVolume).collect(Collectors.toList()), container.getContainerData().getMaxSize());
+      destVolume = containerMoverPolicy.chooseVolume(ozoneContainer.getVolumeSet()
+          .getVolumesList().stream()
+          .map(storageVolume -> (HddsVolume)storageVolume)
+          .collect(Collectors.toList()),
+            container.getContainerData().getMaxSize());
       try {
-        diskBalancerTmpDir = Paths.get(destVolume.getTmpDir().getPath())
-            .resolve("containerMover").resolve(String.valueOf(container.getContainerData().getContainerID()));
+        containerMoverTmpDir = Paths.get(destVolume.getTmpDir().getPath())
+            .resolve(CONTAINER_MOVER_DIR).resolve(String.valueOf(container.getContainerData().getContainerID()));
 
         // Copy container to new Volume's tmp Dir
         ozoneContainer.getController().copyContainer(
             containerData.getContainerType(),
-            containerData.getContainerID(), diskBalancerTmpDir);
+            containerData.getContainerID(), containerMoverTmpDir);
 
         // Move container directory to final place on new volume
         String idDir = VersionedDatanodeFeatures.ScmHA.chooseContainerPathID(
             destVolume, destVolume.getClusterID());
-        diskBalancerDestDir =
+        containerMoverDestDir =
             Paths.get(KeyValueContainerLocationUtil.getBaseContainerLocation(
                 destVolume.getHddsRootDir().toString(), idDir,
                 containerData.getContainerID()));
-        Path destDirParent = diskBalancerDestDir.getParent();
+        Path destDirParent = containerMoverDestDir.getParent();
         if (destDirParent != null) {
           Files.createDirectories(destDirParent);
         }
-        Files.move(diskBalancerTmpDir, diskBalancerDestDir,
+        Files.move(containerMoverTmpDir, containerMoverDestDir,
             StandardCopyOption.ATOMIC_MOVE,
             StandardCopyOption.REPLACE_EXISTING);
 
         // Generate a new Container based on destDir
         File containerFile = ContainerUtils.getContainerFile(
-            diskBalancerDestDir.toFile());
+            containerMoverDestDir.toFile());
         if (!containerFile.exists()) {
           throw new IOException("ContainerFile for container " + container.getContainerData().getContainerID()
               + " doesn't exists.");
@@ -144,7 +193,7 @@ public class ContainerMoverService extends BackgroundService {
         ContainerData originalContainerData = ContainerDataYaml
             .readContainerFile(containerFile);
         Container newContainer = ozoneContainer.getController()
-            .importContainer(originalContainerData, destVolume, diskBalancerDestDir);
+            .importContainer(originalContainerData, destVolume, containerMoverDestDir);
         newContainer.getContainerData().getVolume()
             .incrementUsedSpace(containerSize);
         destVolumeIncreased = true;
@@ -161,21 +210,20 @@ public class ContainerMoverService extends BackgroundService {
         }
         oldContainer.getContainerData().getVolume()
             .decrementUsedSpace(containerSize);
-//        metrics.incrSuccessCount(1);
-//        metrics.incrSuccessBytes(containerSize);
+        metrics.incrSuccessCount();
       } catch (IOException e) {
         try {
-          Files.deleteIfExists(diskBalancerTmpDir);
+          Files.deleteIfExists(containerMoverTmpDir);
         } catch (IOException ex) {
-          LOG.warn("Failed to delete tmp directory {}", diskBalancerTmpDir,
+          LOG.warn("Failed to delete tmp directory {}", containerMoverTmpDir,
               ex);
         }
-        if (diskBalancerDestDir != null) {
+        if (containerMoverDestDir != null) {
           try {
-            Files.deleteIfExists(diskBalancerDestDir);
+            Files.deleteIfExists(containerMoverDestDir);
           } catch (IOException ex) {
             LOG.warn("Failed to delete dest directory {}: {}.",
-                diskBalancerDestDir, ex.getMessage());
+                containerMoverDestDir, ex.getMessage());
           }
         }
         // Only need to check for destVolume, sourceVolume's usedSpace is
@@ -183,7 +231,7 @@ public class ContainerMoverService extends BackgroundService {
         if (destVolumeIncreased) {
           destVolume.decrementUsedSpace(containerSize);
         }
-//        metrics.incrFailureCount();
+        metrics.incrFailureCount();
       } finally {
         postCall();
       }
@@ -212,7 +260,8 @@ public class ContainerMoverService extends BackgroundService {
   }
 
   private Path getDiskBalancerTmpDir(HddsVolume hddsVolume) {
-    return hddsVolume.getTmpDir().toPath().resolve("containerMover");
+    return Paths.get(hddsVolume.getVolumeRootDir())
+        .resolve(CONTAINER_MOVER_TMP_DIR).resolve(CONTAINER_MOVER_DIR);
   }
 
 }

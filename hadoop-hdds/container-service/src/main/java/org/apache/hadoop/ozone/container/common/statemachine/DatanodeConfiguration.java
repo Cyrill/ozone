@@ -24,6 +24,9 @@ import org.apache.hadoop.hdds.conf.ConfigTag;
 
 import static java.util.concurrent.TimeUnit.MICROSECONDS;
 import static org.apache.hadoop.hdds.conf.ConfigTag.DATANODE;
+
+import org.apache.hadoop.ozone.container.mover.ContainerMoverPolicy;
+import org.apache.hadoop.ozone.container.mover.DummyContainerMovePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -470,7 +473,7 @@ public class DatanodeConfiguration {
   private boolean bCheckEmptyContainerDir =
       OZONE_DATANODE_CHECK_EMPTY_CONTAINER_DIR_ON_DELETE_DEFAULT;
 
-  @Config(key = "container.mover.service.interval",
+  @Config(key = "container.move.scan.interval",
       defaultValue = "60s",
       type = ConfigType.TIME,
       tags = { DATANODE, ConfigTag.CONTAINER_MOVER},
@@ -485,7 +488,7 @@ public class DatanodeConfiguration {
     return Duration.ofMillis(containerMoverInterval);
   }
 
-  @Config(key = "container.mover.service.timeout",
+  @Config(key = "container.move.task.timeout",
       defaultValue = "900s",
       type = ConfigType.TIME,
       tags = { DATANODE, ConfigTag.CONTAINER_MOVER},
@@ -496,6 +499,22 @@ public class DatanodeConfiguration {
 
   public Duration getContainerMoverTimeout() {
     return Duration.ofMillis(containerMoverTimeout);
+  }
+
+  @Config(key = "container.move.policy",
+      defaultValue = "org.apache.hadoop.ozone.container.mover"
+          + ".DummyContainerMovePolicy",
+      type = ConfigType.CLASS,
+      tags = {DATANODE, ConfigTag.CONTAINER_MOVER},
+      description = "Implementation of the ContainerMoverPolicy interface to"
+          + "provide a container list for moving and the destination hdds "
+          + "volume"
+  )
+  private Class<? extends ContainerMoverPolicy> containerMoverPolicy =
+      DummyContainerMovePolicy.class;
+
+  public Class<? extends ContainerMoverPolicy> getContainerMoverPolicy() {
+    return containerMoverPolicy;
   }
 
   @PostConstruct
