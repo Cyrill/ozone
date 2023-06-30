@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Path;
 import java.time.Instant;
 import java.util.Map;
 
@@ -189,4 +190,15 @@ public interface Container<CONTAINERDATA extends ContainerData> extends RwLock {
    *         false otherwise
    */
   boolean scanData(DataTransferThrottler throttler, Canceler canceler);
+
+  /**
+   * Copy all the data of the container to the destination path.
+   */
+  void copyContainerData(Path destPath) throws IOException;
+
+  /**
+   * Import the container from a container path.
+   */
+  void importContainerData(Path containerPath) throws IOException;
+
 }

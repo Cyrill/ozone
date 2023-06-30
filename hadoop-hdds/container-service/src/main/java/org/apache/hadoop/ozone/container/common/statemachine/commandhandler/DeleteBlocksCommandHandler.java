@@ -300,6 +300,11 @@ public class DeleteBlocksCommandHandler implements CommandHandler {
       List<Future<DeleteBlockTransactionResult>> futures = new ArrayList<>();
       for (int i = 0; i < containerBlocks.size(); i++) {
         DeletedBlocksTransaction tx = containerBlocks.get(i);
+        // Container is being moved, ignore this transaction
+        if (shouldAbandon(tx.getContainerID(), cmd.getContainer())) {
+          // TODO is any user exception needed here (why the command is being abandoned?)
+          continue;
+        }
         Future<DeleteBlockTransactionResult> future =
             executor.submit(new ProcessTransactionTask(tx));
         futures.add(future);
@@ -569,4 +574,11 @@ public class DeleteBlocksCommandHandler implements CommandHandler {
         BatchOperation batch, long txnID, DeletedBlocksTransaction delTX)
         throws IOException;
   }
+
+  private boolean shouldAbandon(long containerId,
+                                OzoneContainer ozoneContainer) {
+    return ozoneContainer.getContainerMoverService()
+        .isMovingContainer(containerId);
+  }
+
 }

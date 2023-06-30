@@ -117,6 +117,7 @@ public class OzoneContainer {
   private final ReplicationServer replicationServer;
   private DatanodeDetails datanodeDetails;
   private StateContext context;
+  private ContainerMoverService containerMoverService;
 
 
   private final ContainerMetrics metrics;
@@ -230,6 +231,16 @@ public class OzoneContainer {
         new BlockDeletingService(this, blockDeletingSvcInterval.toMillis(),
             blockDeletingServiceTimeout, TimeUnit.MILLISECONDS,
             blockDeletingServiceWorkerSize, config);
+
+    Duration containerMoverInterval =
+        config.getObject(DatanodeConfiguration.class)
+            .getContainerMoverInterval();
+    Duration containerMoverTimeout = config
+        .getObject(DatanodeConfiguration.class)
+        .getContainerMoverTimeout();
+    containerMoverService = new ContainerMoverService(this,
+        containerMoverInterval.toMillis(), TimeUnit.MILLISECONDS, 1,
+        containerMoverTimeout.toMillis());
 
     Duration recoveringContainerScrubbingSvcInterval = conf.getObject(
         DatanodeConfiguration.class).getRecoveringContainerScrubInterval();
@@ -428,6 +439,7 @@ public class OzoneContainer {
     hddsDispatcher.setClusterId(clusterId);
     blockDeletingService.start();
     recoveringContainerScrubbingService.start();
+    containerMoverService.start();
 
     // mark OzoneContainer as INITIALIZED.
     initializingStatus.set(InitializingStatus.INITIALIZED);
@@ -546,4 +558,9 @@ public class OzoneContainer {
   public ContainerMetrics getMetrics() {
     return metrics;
   }
+
+  public ContainerMoverService getContainerMoverService() {
+    return containerMoverService;
+  }
+
 }

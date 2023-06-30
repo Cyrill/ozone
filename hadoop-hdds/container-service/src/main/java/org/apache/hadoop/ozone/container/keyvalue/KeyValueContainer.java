@@ -75,6 +75,7 @@ import static org.apache.hadoop.hdds.protocol.datanode.proto.ContainerProtos.Res
 import static org.apache.hadoop.hdds.protocol.datanode.proto.ContainerProtos.Result.ERROR_IN_DB_SYNC;
 import static org.apache.hadoop.hdds.protocol.datanode.proto.ContainerProtos.Result.INVALID_CONTAINER_STATE;
 import static org.apache.hadoop.hdds.protocol.datanode.proto.ContainerProtos.Result.UNSUPPORTED_REQUEST;
+import static org.apache.hadoop.hdds.protocol.datanode.proto.ContainerProtos.Result.CONTAINER_DESCRIPTOR_MISSING;
 import static org.apache.hadoop.ozone.container.common.utils.StorageVolumeUtil.onFailure;
 
 import org.slf4j.Logger;
@@ -241,6 +242,18 @@ public class KeyValueContainer implements Container<KeyValueContainerData> {
     containerData.setMetadataPath(containerMetaDataPath.getPath());
     containerData.setChunksPath(chunksPath.getPath());
     containerData.setVolume(containerVolume);
+    containerData.setDbFile(getContainerDBFile());
+  }
+
+  public void populatePathFields(HddsVolume volume, Path containerPath) {
+    containerData.setMetadataPath(
+        KeyValueContainerLocationUtil.getContainerMetaDataPath(
+            containerPath.toString()).toString());
+    containerData.setChunksPath(
+        KeyValueContainerLocationUtil.getChunksLocationPath(
+            containerPath.toString()).toString()
+    );
+    containerData.setVolume(volume);
     containerData.setDbFile(getContainerDBFile());
   }
 
@@ -901,6 +914,106 @@ public class KeyValueContainer implements Container<KeyValueContainerData> {
     return checker.fullCheck(throttler, canceler);
   }
 
+  @Override
+  public void copyContainerData(Path destination) throws IOException {
+    writeLock();
+    try {
+      // Closed/ Quasi closed containers are considered for replication by
+      // replication manager if they are under-replicated.
+      ContainerProtos.ContainerDataProto.State state =
+          getContainerData().getState();
+      if (!(state == ContainerProtos.ContainerDataProto.State.CLOSED ||
+          state == ContainerDataProto.State.QUASI_CLOSED)) {
+        throw new IllegalStateException(
+            "Only (quasi)closed containers can be exported, but " +
+                "ContainerId=" + getContainerData().getContainerID() +
+                " is in state " + state);
+      }
+
+      try {
+        if (!containerData.getSchemaVersion().equals(OzoneConsts.SCHEMA_V3)) {
+          compactDB();
+          // Close DB (and remove from cache) to avoid concurrent modification
+          // while copying it.
+          BlockUtils.removeDB(containerData, config);
+        }
+      } finally {
+        readLock();
+        writeUnlock();
+      }
+
+      if (containerData.getSchemaVersion().equals(OzoneConsts.SCHEMA_V3)) {
+        // Synchronize the dump and copy operation,
+        // so concurrent copy don't get dump files overwritten.
+        // We seldom got concurrent exports for a container,
+        // so it should not influence performance much.
+        synchronized (dumpLock) {
+          BlockUtils.dumpKVContainerDataToFiles(containerData, config);
+          copyContainerToDestination(destination);
+        }
+      } else {
+        copyContainerToDestination(destination);
+      }
+    } catch (Exception e) {
+      LOG.error("Got exception when copying container {} to {}",
+          containerData.getContainerID(), destination, e);
+    } finally {
+      if (lock.isWriteLockedByCurrentThread()) {
+        writeUnlock();
+      } else {
+        readUnlock();
+      }
+    }
+  }
+
+  @Override
+  public void importContainerData(Path containerPath) throws IOException {
+    writeLock();
+    try {
+      if (!getContainerFile().exists()) {
+        String errorMessage = String.format(
+            "Can't load container (cid=%d) data from a specific location"
+                + " as the container descriptor (%s) is missing",
+            getContainerData().getContainerID(),
+            getContainerFile().getAbsolutePath());
+        throw new StorageContainerException(errorMessage,
+            CONTAINER_DESCRIPTOR_MISSING);
+      }
+
+      KeyValueContainerData originalContainerData =
+          (KeyValueContainerData) ContainerDataYaml
+              .readContainerFile(getContainerFile());
+
+      innerImportContainerData(originalContainerData);
+
+    } catch (Exception ex) {
+      if (ex instanceof StorageContainerException &&
+          ((StorageContainerException) ex).getResult() ==
+              CONTAINER_DESCRIPTOR_MISSING) {
+        throw ex;
+      }
+      //delete all the temporary data in case of any exception.
+      try {
+        if (containerData.getSchemaVersion() != null &&
+            containerData.getSchemaVersion().equals(OzoneConsts.SCHEMA_V3)) {
+          BlockUtils.removeContainerFromDB(containerData, config);
+        }
+        FileUtils.deleteDirectory(new File(containerData.getMetadataPath()));
+        FileUtils.deleteDirectory(new File(containerData.getChunksPath()));
+        FileUtils.deleteDirectory(
+            new File(getContainerData().getContainerPath()));
+      } catch (Exception deleteex) {
+        LOG.error(
+            "Can not cleanup destination directories after a container load"
+                + " error (cid" +
+                containerData.getContainerID() + ")", deleteex);
+      }
+      throw ex;
+    } finally {
+      writeUnlock();
+    }
+  }
+
   /**
    * Creates a temporary file.
    * @param file
@@ -928,4 +1041,45 @@ public class KeyValueContainer implements Container<KeyValueContainerData> {
       packer.pack(this, destination);
     }
   }
+
+  /**
+   * Copy container directory to destination path.
+   * @param destination destination path
+   * @throws IOException file operation exception
+   */
+  private void copyContainerToDestination(Path destination)
+      throws IOException {
+    try {
+      if (Files.exists(destination)) {
+        FileUtils.deleteDirectory(destination.toFile());
+      }
+      FileUtils.copyDirectory(new File(containerData.getContainerPath()),
+          destination.toFile());
+
+    } catch (IOException e) {
+      LOG.error("Failed when copying container to {}", destination, e);
+      throw e;
+    }
+  }
+
+  private void innerImportContainerData(KeyValueContainerData
+                                            originalContainerData) throws IOException {
+    Preconditions.checkState(hasWriteLock());
+    containerData.setState(originalContainerData.getState());
+    containerData
+        .setContainerDBType(originalContainerData.getContainerDBType());
+    containerData.setSchemaVersion(originalContainerData.getSchemaVersion());
+
+    //rewriting the yaml file with new checksum calculation.
+    update(originalContainerData.getMetadata(), true);
+
+    if (containerData.getSchemaVersion().equals(OzoneConsts.SCHEMA_V3)) {
+      // load metadata from received dump files before we try to parse kv
+      BlockUtils.loadKVContainerDataFromFiles(containerData, config);
+    }
+
+    //fill in memory stat counter (keycount, byte usage)
+    KeyValueContainerUtil.parseKVContainerData(containerData, config);
+  }
+
 }

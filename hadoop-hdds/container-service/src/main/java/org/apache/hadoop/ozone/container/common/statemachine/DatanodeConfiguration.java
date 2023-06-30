@@ -422,6 +422,34 @@ public class DatanodeConfiguration {
   private boolean bCheckEmptyContainerDir =
       OZONE_DATANODE_CHECK_EMPTY_CONTAINER_DIR_ON_DELETE_DEFAULT;
 
+  @Config(key = "container.mover.service.interval",
+      defaultValue = "60s",
+      type = ConfigType.TIME,
+      tags = { DATANODE, ConfigTag.CONTAINER_MOVER},
+      description = "Time interval of the Datanode ContainerMover service. " +
+          "The Datanode will check the service periodically and execute " +
+          "the CLOSED containers moving action to DISK volumes. " +
+          "Unit could be defined with postfix (ns,ms,s,m,h,d). "
+  )
+  private long containerMoverInterval = Duration.ofSeconds(60).toMillis();
+
+  public Duration getContainerMoverInterval() {
+    return Duration.ofMillis(containerMoverInterval);
+  }
+
+  @Config(key = "container.mover.service.timeout",
+      defaultValue = "900s",
+      type = ConfigType.TIME,
+      tags = { DATANODE, ConfigTag.CONTAINER_MOVER},
+      description = "Timeout for the Datanode ContainerMover service. "
+          + "Unit could be defined with postfix (ns,ms,s,m,h,d). "
+  )
+  private long containerMoverTimeout = Duration.ofSeconds(900).toMillis();
+
+  public Duration getContainerMoverTimeout() {
+    return Duration.ofMillis(containerMoverTimeout);
+  }
+
   @PostConstruct
   public void validate() {
     if (containerDeleteThreads < 1) {

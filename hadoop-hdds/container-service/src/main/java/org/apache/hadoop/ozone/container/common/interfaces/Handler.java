@@ -21,6 +21,7 @@ package org.apache.hadoop.ozone.container.common.interfaces;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Path;
 
 import org.apache.hadoop.hdds.conf.ConfigurationSource;
 import org.apache.hadoop.hdds.protocol.datanode.proto.ContainerProtos;
@@ -34,6 +35,7 @@ import org.apache.hadoop.ozone.container.common.impl.ContainerData;
 import org.apache.hadoop.ozone.container.common.impl.ContainerSet;
 import org.apache.hadoop.ozone.container.common.report.IncrementalReportSender;
 import org.apache.hadoop.ozone.container.common.transport.server.ratis.DispatcherContext;
+import org.apache.hadoop.ozone.container.common.volume.HddsVolume;
 import org.apache.hadoop.ozone.container.common.volume.VolumeSet;
 import org.apache.hadoop.ozone.container.keyvalue.KeyValueHandler;
 import org.apache.hadoop.ozone.container.keyvalue.TarContainerPacker;
@@ -210,5 +212,15 @@ public abstract class Handler {
   public void setClusterID(String clusterID) {
     this.clusterId = clusterID;
   }
+
+  public abstract Container importContainer(ContainerData containerData, HddsVolume hddsVolume,
+                                   Path containerPath) throws IOException;
+
+  /**
+   * Copy container to the destination path.
+   */
+  public abstract void copyContainer(
+      Container container, Path destination)
+      throws IOException;
 
 }

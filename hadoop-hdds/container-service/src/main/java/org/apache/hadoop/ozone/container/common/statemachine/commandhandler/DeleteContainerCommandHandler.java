@@ -79,6 +79,11 @@ public class DeleteContainerCommandHandler implements CommandHandler {
                      final OzoneContainer ozoneContainer,
                      final StateContext context,
                      final SCMConnectionManager connectionManager) {
+    // Abandon this request if container can not be deleted now.
+    if (shouldAbandon(command, ozoneContainer)) {
+      // TODO is any user exception needed here (why the command is being abandoned?)
+      return;
+    }
     final DeleteContainerCommand deleteContainerCommand =
         (DeleteContainerCommand) command;
     final ContainerController controller = ozoneContainer.getController();
@@ -170,6 +175,12 @@ public class DeleteContainerCommandHandler implements CommandHandler {
       // Ignore, we don't really care about the failure.
       Thread.currentThread().interrupt();
     }
+  }
+
+  private boolean shouldAbandon(SCMCommand cmd, OzoneContainer ozoneContainer) {
+    long containerId = ((DeleteContainerCommand) cmd).getContainerID();
+    return ozoneContainer.getContainerMoverService()
+        .isMovingContainer(containerId);
   }
 
 }

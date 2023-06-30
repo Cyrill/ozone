@@ -75,6 +75,8 @@ import org.apache.hadoop.ozone.container.common.report.IncrementalReportSender;
 import org.apache.hadoop.ozone.container.common.statemachine.DatanodeConfiguration;
 import org.apache.hadoop.ozone.container.common.transport.server.ratis.DispatcherContext;
 import org.apache.hadoop.ozone.container.common.transport.server.ratis.DispatcherContext.WriteChunkStage;
+import org.apache.hadoop.ozone.container.common.utils.HddsVolumeUtil;
+import org.apache.hadoop.ozone.container.common.utils.StorageVolumeUtil;
 import org.apache.hadoop.ozone.container.common.volume.HddsVolume;
 import org.apache.hadoop.ozone.container.common.volume.RoundRobinVolumeChoosingPolicy;
 import org.apache.hadoop.ozone.container.common.volume.VolumeSet;
@@ -1223,6 +1225,29 @@ public class KeyValueHandler extends Handler {
       LOG.info("Deleted unreferenced chunk/block {} in container {}", name,
           containerID);
     }
+  }
+
+  @Override
+  public Container importContainer(ContainerData originalContainerData, HddsVolume hddsVolume,
+                                   Path containerPath) throws IOException {
+    Preconditions.checkState(originalContainerData instanceof
+        KeyValueContainerData, "Should be KeyValueContainerData instance");
+
+    KeyValueContainerData containerData = new KeyValueContainerData(
+        (KeyValueContainerData) originalContainerData);
+
+    KeyValueContainer container = new KeyValueContainer(containerData,
+        conf);
+
+    container.populatePathFields(hddsVolume, containerPath);
+    container.importContainerData(containerPath);
+    return container;
+  }
+
+  @Override
+  public void copyContainer(Container container, Path destinationPath) throws IOException {
+    final KeyValueContainer kvc = (KeyValueContainer) container;
+    kvc.copyContainerData(destinationPath);
   }
 
   private String[] getFilesWithPrefix(String prefix, File chunkDir) {
