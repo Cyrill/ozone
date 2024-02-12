@@ -647,6 +647,19 @@ public final class OmSnapshotManager implements AutoCloseable {
     return getSnapshot(volumeName, bucketName, snapshotName, false);
   }
 
+  public ReferenceCounted<OmSnapshot> getActiveSnapshot(SnapshotInfo snapshotInfo)
+      throws IOException {
+    if (snapshotInfo == null) {
+      // don't allow snapshot indicator without snapshot info
+      throw new OMException(INVALID_SNAPSHOT_ERROR);
+    }
+
+    checkSnapshotActive(snapshotInfo, false);
+
+    return getSnapshot(snapshotInfo.getSnapshotId());
+  }
+
+  @VisibleForTesting
   public ReferenceCounted<OmSnapshot> getSnapshot(
       String volumeName,
       String bucketName,

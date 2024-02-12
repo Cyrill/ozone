@@ -183,7 +183,7 @@ class TestOmSnapshotManager {
     // retrieve it and setup store mock
     OmSnapshotManager omSnapshotManager = om.getOmSnapshotManager();
     OmSnapshot firstSnapshot = omSnapshotManager
-        .getActiveSnapshot(first.getVolumeName(), first.getBucketName(), first.getName())
+        .getActiveSnapshot(first)
         .get();
     DBStore firstSnapshotStore = mock(DBStore.class);
     HddsWhiteboxTestUtils.setInternalState(
@@ -198,7 +198,7 @@ class TestOmSnapshotManager {
 
     // read in second snapshot to evict first
     omSnapshotManager
-        .getActiveSnapshot(second.getVolumeName(), second.getBucketName(), second.getName());
+        .getActiveSnapshot(second);
 
     // As a workaround, invalidate all cache entries in order to trigger
     // instances close in this test case, since JVM GC most likely would not

@@ -461,10 +461,7 @@ public class TestSstFilteringService {
     SnapshotInfo snapshotInfo = om.getMetadataManager().getSnapshotInfoTable()
         .get(SnapshotInfo.getTableKey(volume, bucket, snapshot));
     try (ReferenceCounted<OmSnapshot> snapshotMetadataReader =
-             om.getOmSnapshotManager().getActiveSnapshot(
-                 snapshotInfo.getVolumeName(),
-                 snapshotInfo.getBucketName(),
-                 snapshotInfo.getName())) {
+             om.getOmSnapshotManager().getActiveSnapshot(snapshotInfo)) {
       OmSnapshot omSnapshot = snapshotMetadataReader.get();
       return getKeysFromDb(omSnapshot.getMetadataManager(), volume, bucket);
     }

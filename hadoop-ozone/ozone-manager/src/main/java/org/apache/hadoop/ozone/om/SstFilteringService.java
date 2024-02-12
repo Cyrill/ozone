@@ -182,10 +182,7 @@ public class SstFilteringService extends BackgroundService
 
             try (
                 ReferenceCounted<OmSnapshot> snapshotMetadataReader =
-                    snapshotManager.get().getActiveSnapshot(
-                        snapshotInfo.getVolumeName(),
-                        snapshotInfo.getBucketName(),
-                        snapshotInfo.getName())) {
+                    snapshotManager.get().getActiveSnapshot(snapshotInfo)) {
               OmSnapshot omSnapshot = snapshotMetadataReader.get();
               RDBStore rdbStore = (RDBStore) omSnapshot.getMetadataManager()
                   .getStore();

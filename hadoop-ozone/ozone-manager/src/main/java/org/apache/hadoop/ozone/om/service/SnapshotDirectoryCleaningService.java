@@ -184,10 +184,7 @@ public class SnapshotDirectoryCleaningService
             Table<String, String> prevRenamedTable = null;
 
             if (previousSnapshot != null) {
-              rcPrevOmSnapshot = omSnapshotManager.getActiveSnapshot(
-                  previousSnapshot.getVolumeName(),
-                  previousSnapshot.getBucketName(),
-                  previousSnapshot.getName());
+              rcPrevOmSnapshot = omSnapshotManager.getActiveSnapshot(previousSnapshot);
               OmSnapshot omPreviousSnapshot = rcPrevOmSnapshot.get();
 
               previousKeyTable = omPreviousSnapshot.getMetadataManager()
@@ -200,10 +197,7 @@ public class SnapshotDirectoryCleaningService
 
             Table<String, OmKeyInfo> previousToPrevKeyTable = null;
             if (previousToPrevSnapshot != null) {
-              rcPrevToPrevOmSnapshot = omSnapshotManager.getActiveSnapshot(
-                  previousToPrevSnapshot.getVolumeName(),
-                  previousToPrevSnapshot.getBucketName(),
-                  previousToPrevSnapshot.getName());
+              rcPrevToPrevOmSnapshot = omSnapshotManager.getActiveSnapshot(previousToPrevSnapshot);
               OmSnapshot omPreviousToPrevSnapshot = rcPrevToPrevOmSnapshot.get();
 
               previousToPrevKeyTable = omPreviousToPrevSnapshot
@@ -213,11 +207,8 @@ public class SnapshotDirectoryCleaningService
 
             String dbBucketKeyForDir = getOzonePathKeyForFso(metadataManager,
                 currSnapInfo.getVolumeName(), currSnapInfo.getBucketName());
-            try (ReferenceCounted<OmSnapshot>
-                     rcCurrOmSnapshot = omSnapshotManager.getActiveSnapshot(
-                currSnapInfo.getVolumeName(),
-                currSnapInfo.getBucketName(),
-                currSnapInfo.getName())) {
+            try (ReferenceCounted<OmSnapshot> rcCurrOmSnapshot =
+                     omSnapshotManager.getActiveSnapshot(currSnapInfo)) {
 
               OmSnapshot currOmSnapshot = rcCurrOmSnapshot.get();
               Table<String, OmKeyInfo> snapDeletedDirTable =
