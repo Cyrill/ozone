@@ -357,7 +357,7 @@ class TestKeyDeletingService extends OzoneTestBase {
       keyDeletingService.resume();
 
       try (ReferenceCounted<OmSnapshot> rcOmSnapshot =
-               om.getOmSnapshotManager().getSnapshot(volumeName, bucketName, snap3)) {
+               om.getOmSnapshotManager().getActiveSnapshot(volumeName, bucketName, snap3)) {
         OmSnapshot snapshot3 = rcOmSnapshot.get();
 
         Table<String, RepeatedOmKeyInfo> snap3deletedTable =

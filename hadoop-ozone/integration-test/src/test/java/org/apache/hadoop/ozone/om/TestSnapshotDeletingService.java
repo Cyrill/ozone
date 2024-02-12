@@ -132,7 +132,7 @@ public class TestSnapshotDeletingService {
             .getSuccessfulRunCount() >= 1, 1000, 10000);
 
     OmSnapshot bucket1snap3 = om.getOmSnapshotManager()
-        .getSnapshot(VOLUME_NAME, BUCKET_NAME_ONE, "bucket1snap3").get();
+        .getActiveSnapshot(VOLUME_NAME, BUCKET_NAME_ONE, "bucket1snap3").get();
 
     // Check bucket1key1 added to next non deleted snapshot db.
     List<? extends Table.KeyValue<String, RepeatedOmKeyInfo>> omKeyInfos =
@@ -356,7 +356,7 @@ public class TestSnapshotDeletingService {
 
     verifySnapshotChain(deletedSnap, "/vol1/bucket2/snap3");
     OmSnapshot snap3 = om.getOmSnapshotManager()
-        .getSnapshot(VOLUME_NAME, BUCKET_NAME_TWO, "snap3").get();
+        .getActiveSnapshot(VOLUME_NAME, BUCKET_NAME_TWO, "snap3").get();
 
     Table<String, OmKeyInfo> snapDeletedDirTable =
         snap3.getMetadataManager().getDeletedDirTable();
@@ -384,7 +384,7 @@ public class TestSnapshotDeletingService {
     assertTableRowCount(deletedDirTable, 3);
 
     ReferenceCounted<OmSnapshot> rcSnap1 =
-        om.getOmSnapshotManager().getSnapshot(
+        om.getOmSnapshotManager().getActiveSnapshot(
             VOLUME_NAME, BUCKET_NAME_TWO, "snap1");
     OmSnapshot snap1 = rcSnap1.get();
     Table<String, OmKeyInfo> snap1KeyTable =

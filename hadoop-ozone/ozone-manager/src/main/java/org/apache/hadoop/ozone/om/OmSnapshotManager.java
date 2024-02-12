@@ -644,7 +644,17 @@ public final class OmSnapshotManager implements AutoCloseable {
       String volumeName,
       String bucketName,
       String snapshotName) throws IOException {
-    return getSnapshot(volumeName, bucketName, snapshotName, false);
+    if (snapshotName == null || snapshotName.isEmpty()) {
+      // don't allow snapshot indicator without snapshot name
+      throw new OMException(INVALID_KEY_NAME);
+    }
+
+    String snapshotTableKey =
+        SnapshotInfo.getTableKey(volumeName, bucketName, snapshotName);
+
+    SnapshotInfo snapshotInfo = getSnapshotInfo(snapshotTableKey);
+
+    return getActiveSnapshot(snapshotInfo);
   }
 
   public ReferenceCounted<OmSnapshot> getActiveSnapshot(SnapshotInfo snapshotInfo)
@@ -656,42 +666,6 @@ public final class OmSnapshotManager implements AutoCloseable {
 
     checkSnapshotActive(snapshotInfo, false);
 
-    return getSnapshot(snapshotInfo.getSnapshotId());
-  }
-
-  @VisibleForTesting
-  public ReferenceCounted<OmSnapshot> getSnapshot(
-      String volumeName,
-      String bucketName,
-      String snapshotName) throws IOException {
-    return getSnapshot(volumeName, bucketName, snapshotName, true);
-  }
-
-  private ReferenceCounted<OmSnapshot> getSnapshot(
-      String volumeName,
-      String bucketName,
-      String snapshotName,
-      boolean skipActiveCheck) throws IOException {
-
-    if (snapshotName == null || snapshotName.isEmpty()) {
-      // don't allow snapshot indicator without snapshot name
-      throw new OMException(INVALID_KEY_NAME);
-    }
-
-    String snapshotTableKey = SnapshotInfo.getTableKey(volumeName,
-        bucketName, snapshotName);
-
-    return getSnapshot(snapshotTableKey, skipActiveCheck);
-  }
-
-  private ReferenceCounted<OmSnapshot> getSnapshot(String snapshotTableKey, boolean skipActiveCheck)
-      throws IOException {
-    SnapshotInfo snapshotInfo = getSnapshotInfo(snapshotTableKey);
-    // Block FS API reads when snapshot is not active.
-    if (!skipActiveCheck) {
-      checkSnapshotActive(snapshotInfo, false);
-    }
-    // retrieve the snapshot from the cache
     return getSnapshot(snapshotInfo.getSnapshotId());
   }
 
@@ -711,8 +685,7 @@ public final class OmSnapshotManager implements AutoCloseable {
    * @param status SnapshotStatus
    * @return true if the snapshot is in given status, false otherwise
    */
-  public boolean isSnapshotStatus(String key,
-                                  SnapshotInfo.SnapshotStatus status)
+  public boolean isSnapshotStatus(String key, SnapshotInfo.SnapshotStatus status)
       throws IOException {
     return getSnapshotInfo(key).getSnapshotStatus().equals(status);
   }
