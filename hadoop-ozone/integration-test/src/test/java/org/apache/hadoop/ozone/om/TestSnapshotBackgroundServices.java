@@ -259,7 +259,7 @@ public class TestSnapshotBackgroundServices {
     OmSnapshot snapC;
     try (ReferenceCounted<OmSnapshot> rcC = newLeaderOM
         .getOmSnapshotManager()
-        .getSnapshot(volumeName, bucketName, snapshotInfoC.getName())) {
+        .getSnapshot(snapshotInfoC.getSnapshotId())) {
       assertNotNull(rcC);
       snapC = rcC.get();
     }
@@ -283,7 +283,7 @@ public class TestSnapshotBackgroundServices {
     OmSnapshot snapD;
     try (ReferenceCounted<OmSnapshot> rcD = newLeaderOM
         .getOmSnapshotManager()
-        .getSnapshot(volumeName, bucketName, snapshotInfoD.getName())) {
+        .getSnapshot(snapshotInfoD.getSnapshotId())) {
       assertNotNull(rcD);
       snapD = rcD.get();
     }

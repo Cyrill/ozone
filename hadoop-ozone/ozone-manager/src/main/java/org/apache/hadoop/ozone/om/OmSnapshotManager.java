@@ -95,6 +95,7 @@ import static org.apache.hadoop.ozone.om.OMConfigKeys.OZONE_OM_SNAPSHOT_DIFF_DB_
 import static org.apache.hadoop.ozone.om.OMConfigKeys.OZONE_OM_SNAPSHOT_DIFF_REPORT_MAX_PAGE_SIZE;
 import static org.apache.hadoop.ozone.om.OMConfigKeys.OZONE_OM_SNAPSHOT_DIFF_REPORT_MAX_PAGE_SIZE_DEFAULT;
 import static org.apache.hadoop.ozone.om.exceptions.OMException.ResultCodes.INVALID_KEY_NAME;
+import static org.apache.hadoop.ozone.om.exceptions.OMException.ResultCodes.INVALID_SNAPSHOT_ERROR;
 import static org.apache.hadoop.ozone.om.snapshot.SnapshotDiffManager.getSnapshotRootPath;
 import static org.apache.hadoop.ozone.om.snapshot.SnapshotUtils.checkSnapshotActive;
 import static org.apache.hadoop.ozone.om.snapshot.SnapshotUtils.dropColumnFamilyHandle;
@@ -672,14 +673,23 @@ public final class OmSnapshotManager implements AutoCloseable {
 
   private ReferenceCounted<OmSnapshot> getSnapshot(String snapshotTableKey, boolean skipActiveCheck)
       throws IOException {
-    SnapshotInfo snapshotInfo = SnapshotUtils.getSnapshotInfo(ozoneManager, snapshotTableKey);
+    SnapshotInfo snapshotInfo = getSnapshotInfo(snapshotTableKey);
     // Block FS API reads when snapshot is not active.
     if (!skipActiveCheck) {
       checkSnapshotActive(snapshotInfo, false);
     }
-
     // retrieve the snapshot from the cache
-    return snapshotCache.get(snapshotInfo.getSnapshotId());
+    return getSnapshot(snapshotInfo.getSnapshotId());
+  }
+
+  public ReferenceCounted<OmSnapshot> getSnapshot(UUID snapshotId)
+      throws IOException {
+    if (snapshotId == null) {
+      // don't allow snapshot indicator without snapshot id
+      throw new OMException(INVALID_SNAPSHOT_ERROR);
+    }
+    // retrieve the snapshot from the cache
+    return snapshotCache.get(snapshotId);
   }
 
   /**

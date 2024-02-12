@@ -214,13 +214,12 @@ public class TestOMKeyPurgeRequestAndResponse extends TestOMKeyRequest {
         .setVolumeName(volumeName)
         .setBucketName(bucketName)
         .setName("snap1")
+        .setSnapshotId(snapInfo.getSnapshotId())
         .build();
 
     ReferenceCounted<OmSnapshot> rcOmSnapshot =
-        ozoneManager.getOmSnapshotManager().getSnapshot(
-            fromSnapshotInfo.getVolumeName(),
-            fromSnapshotInfo.getBucketName(),
-            fromSnapshotInfo.getName());
+        ozoneManager.getOmSnapshotManager()
+            .getSnapshot(fromSnapshotInfo.getSnapshotId());
     OmSnapshot omSnapshot = rcOmSnapshot.get();
 
     // The keys should be present in the snapshot's deletedTable

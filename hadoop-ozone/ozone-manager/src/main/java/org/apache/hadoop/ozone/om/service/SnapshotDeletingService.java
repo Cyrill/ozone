@@ -165,9 +165,7 @@ public class SnapshotDeletingService extends AbstractKeyDeletingService {
           // Note: Can refactor this to use try-with-resources.
           // Handling RC decrements manually for now to minimize conflicts.
           rcOmSnapshot = omSnapshotManager.getSnapshot(
-              snapInfo.getVolumeName(),
-              snapInfo.getBucketName(),
-              snapInfo.getName());
+              snapInfo.getSnapshotId());
           OmSnapshot omSnapshot = rcOmSnapshot.get();
 
           Table<String, RepeatedOmKeyInfo> snapshotDeletedTable =
@@ -221,9 +219,7 @@ public class SnapshotDeletingService extends AbstractKeyDeletingService {
           // and next snapshot deletedKeyTable.
           if (previousSnapshot != null) {
             rcOmPreviousSnapshot = omSnapshotManager.getSnapshot(
-                previousSnapshot.getVolumeName(),
-                previousSnapshot.getBucketName(),
-                previousSnapshot.getName());
+                previousSnapshot.getSnapshotId());
             omPreviousSnapshot = rcOmPreviousSnapshot.get();
 
             previousKeyTable = omPreviousSnapshot

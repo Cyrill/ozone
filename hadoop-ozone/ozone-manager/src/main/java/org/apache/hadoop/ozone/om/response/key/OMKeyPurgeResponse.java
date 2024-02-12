@@ -79,10 +79,7 @@ public class OMKeyPurgeResponse extends OmKeyResponse {
               .getOzoneManager().getOmSnapshotManager();
 
       try (ReferenceCounted<OmSnapshot> rcOmFromSnapshot =
-          omSnapshotManager.getSnapshot(
-              fromSnapshot.getVolumeName(),
-              fromSnapshot.getBucketName(),
-              fromSnapshot.getName())) {
+               omSnapshotManager.getSnapshot(fromSnapshot.getSnapshotId())) {
 
         OmSnapshot fromOmSnapshot = rcOmFromSnapshot.get();
         DBStore fromSnapshotStore =

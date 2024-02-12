@@ -261,11 +261,8 @@ public class KeyDeletingService extends AbstractKeyDeletingService {
             continue;
           }
 
-          try (ReferenceCounted<OmSnapshot>
-              rcCurrOmSnapshot = omSnapshotManager.getSnapshot(
-                  currSnapInfo.getVolumeName(),
-                  currSnapInfo.getBucketName(),
-                  currSnapInfo.getName())) {
+          try (ReferenceCounted<OmSnapshot> rcCurrOmSnapshot =
+                   omSnapshotManager.getSnapshot(currSnapInfo.getSnapshotId())) {
             OmSnapshot currOmSnapshot = rcCurrOmSnapshot.get();
 
             Table<String, RepeatedOmKeyInfo> snapDeletedTable =
@@ -306,9 +303,7 @@ public class KeyDeletingService extends AbstractKeyDeletingService {
             // deletedKeyTable and next snapshot deletedKeyTable.
             if (previousSnapshot != null) {
               rcPrevOmSnapshot = omSnapshotManager.getSnapshot(
-                  previousSnapshot.getVolumeName(),
-                  previousSnapshot.getBucketName(),
-                  previousSnapshot.getName());
+                  previousSnapshot.getSnapshotId());
               OmSnapshot omPreviousSnapshot = rcPrevOmSnapshot.get();
 
               previousKeyTable = omPreviousSnapshot.getMetadataManager()
@@ -321,9 +316,7 @@ public class KeyDeletingService extends AbstractKeyDeletingService {
             ReferenceCounted<OmSnapshot> rcPrevToPrevOmSnapshot = null;
             if (previousToPrevSnapshot != null) {
               rcPrevToPrevOmSnapshot = omSnapshotManager.getSnapshot(
-                  previousToPrevSnapshot.getVolumeName(),
-                  previousToPrevSnapshot.getBucketName(),
-                  previousToPrevSnapshot.getName());
+                  previousToPrevSnapshot.getSnapshotId());
               OmSnapshot omPreviousToPrevSnapshot = rcPrevToPrevOmSnapshot.get();
 
               previousToPrevKeyTable = omPreviousToPrevSnapshot

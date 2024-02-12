@@ -83,11 +83,8 @@ public class OMDirectoriesPurgeResponseWithFSO extends OmKeyResponse {
           ((OmMetadataManagerImpl) metadataManager)
               .getOzoneManager().getOmSnapshotManager();
 
-      try (ReferenceCounted<OmSnapshot>
-          rcFromSnapshotInfo = omSnapshotManager.getSnapshot(
-              fromSnapshotInfo.getVolumeName(),
-              fromSnapshotInfo.getBucketName(),
-              fromSnapshotInfo.getName())) {
+      try (ReferenceCounted<OmSnapshot> rcFromSnapshotInfo =
+               omSnapshotManager.getSnapshot(fromSnapshotInfo.getSnapshotId())) {
         OmSnapshot fromSnapshot = rcFromSnapshotInfo.get();
         DBStore fromSnapshotStore = fromSnapshot.getMetadataManager()
             .getStore();

@@ -1699,9 +1699,7 @@ public class OmMetadataManagerImpl implements OMMetadataManager,
     Optional<ReferenceCounted<OmSnapshot>> rcOmSnapshot =
         snapshotInfo.isPresent() ?
             Optional.ofNullable(
-                snapshotManager.getSnapshot(volumeName,
-                    bucketName,
-                    snapshotInfo.get().getName())
+                snapshotManager.getSnapshot(snapshotInfo.get().getSnapshotId())
             ) :
             Optional.empty();
 
