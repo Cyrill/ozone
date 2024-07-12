@@ -66,7 +66,7 @@ public class S3MultipartUploadCompleteResponse extends OmKeyResponse {
       @Nonnull OmKeyInfo omKeyInfo,
       @Nonnull List<OmKeyInfo> allKeyInfoToRemove,
       @Nonnull BucketLayout bucketLayout,
-      @CheckForNull OmBucketInfo omBucketInfo) {
+      OmBucketInfo omBucketInfo) {
     super(omResponse, bucketLayout);
     this.allKeyInfoToRemove = allKeyInfoToRemove;
     this.multipartKey = multipartKey;
