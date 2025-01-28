@@ -510,8 +510,7 @@ public class TestReplicationManager {
     assertEquals(0, repQueue.overReplicatedQueueSize());
 
     when(ratisPlacementPolicy.chooseDatanodes(anyList(), anyList(), eq(null), eq(1), anyLong(),
-        anyLong())).thenAnswer(invocation ->
-        ImmutableList.of(MockDatanodeDetails.randomDatanodeDetails()));
+        anyLong())).thenAnswer(invocation -> ImmutableList.of(MockDatanodeDetails.randomDatanodeDetails()));
     when(nodeManager.getTotalDatanodeCommandCounts(any(DatanodeDetails.class), any(), any()))
         .thenAnswer(invocation -> {
           Map<SCMCommandProto.Type, Integer> map = new HashMap<>();
