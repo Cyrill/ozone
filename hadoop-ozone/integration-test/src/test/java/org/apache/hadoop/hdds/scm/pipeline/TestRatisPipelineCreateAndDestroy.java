@@ -29,6 +29,7 @@ import org.apache.hadoop.hdds.scm.server.StorageContainerManager;
 import org.apache.hadoop.ozone.HddsDatanodeService;
 import org.apache.hadoop.ozone.MiniOzoneCluster;
 import org.apache.ozone.test.GenericTestUtils;
+import org.junit.Assert;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
@@ -54,7 +55,7 @@ public class TestRatisPipelineCreateAndDestroy {
   private PipelineManager pipelineManager;
 
   public void init(int numDatanodes) throws Exception {
-    conf.setInt(OZONE_DATANODE_PIPELINE_LIMIT, 2);
+    conf.setInt(OZONE_DATANODE_PIPELINE_LIMIT, 5);
     conf.setTimeDuration(
         ScmConfigKeys.OZONE_SCM_PIPELINE_CREATION_INTERVAL, 500,
         TimeUnit.MILLISECONDS);
@@ -172,6 +173,35 @@ public class TestRatisPipelineCreateAndDestroy {
           .notifyEventTriggered(Event.PRE_CHECK_COMPLETED);
       waitForPipelines(1);
     }
+  }
+
+
+  @Test
+  void createPipelineWithReplicationFactorSix() throws Exception {
+    conf.setBoolean(OZONE_SCM_PIPELINE_AUTO_CREATE_FACTOR_ONE, false);
+    conf.setInt(OZONE_DATANODE_PIPELINE_LIMIT, 5);
+
+    init(6);
+
+    // make sure two pipelines are created
+    waitForPipelines(2);
+
+    // No Factor ONE pipeline is auto created.
+    assertEquals(
+        0,
+        pipelineManager.getPipelines(RatisReplicationConfig.getInstance(ReplicationFactor.ONE)).size()
+    );
+
+    pipelineManager.createPipeline(RatisReplicationConfig.getInstance(ReplicationFactor.SIX));
+
+    GenericTestUtils.waitFor(
+        () -> !pipelineManager.getPipelines(
+            RatisReplicationConfig.getInstance(ReplicationFactor.SIX),
+            Pipeline.PipelineState.OPEN
+        ).isEmpty(),
+        100,
+        60000
+    );
   }
 
   private void waitForPipelines(int numPipelines)

@@ -166,6 +166,7 @@ public class RatisPipelineProvider
           containerSizeBytes, conf);
       break;
     case THREE:
+    case SIX:
       List<DatanodeDetails> excludeDueToEngagement = filterPipelineEngagement();
       if (excludeDueToEngagement.size() > 0) {
         if (excludedNodes.size() == 0) {
