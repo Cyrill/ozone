@@ -55,7 +55,7 @@ public class TestRatisPipelineCreateAndDestroy {
   private PipelineManager pipelineManager;
 
   public void init(int numDatanodes) throws Exception {
-    conf.setInt(OZONE_DATANODE_PIPELINE_LIMIT, 5);
+    conf.setInt(OZONE_DATANODE_PIPELINE_LIMIT, 2);
     conf.setTimeDuration(
         ScmConfigKeys.OZONE_SCM_PIPELINE_CREATION_INTERVAL, 500,
         TimeUnit.MILLISECONDS);
