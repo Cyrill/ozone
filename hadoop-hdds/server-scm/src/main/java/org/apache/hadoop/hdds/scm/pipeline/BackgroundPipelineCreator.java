@@ -18,7 +18,14 @@
 package org.apache.hadoop.hdds.scm.pipeline;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import org.apache.commons.collections.iterators.LoopingIterator;
+import java.io.IOException;
+import java.time.Clock;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import org.apache.hadoop.hdds.HddsConfigKeys;
 import org.apache.hadoop.hdds.client.RatisReplicationConfig;
 import org.apache.hadoop.hdds.client.ReplicationConfig;
@@ -33,21 +40,14 @@ import org.apache.hadoop.ozone.OzoneConfigKeys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.time.Clock;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
 import static org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationType.RATIS;
 import static org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationType.STAND_ALONE;
-import static org.apache.hadoop.hdds.scm.ha.SCMService.Event.NODE_ADDRESS_UPDATE_HANDLER_TRIGGERED;
-import static org.apache.hadoop.hdds.scm.ha.SCMService.Event.UNHEALTHY_TO_HEALTHY_NODE_HANDLER_TRIGGERED;
+import static org.apache.hadoop.hdds.scm.ScmConfigKeys.OZONE_SCM_RATIS_PIPELINE_LIMIT;
+import static org.apache.hadoop.hdds.scm.ScmConfigKeys.OZONE_SCM_RATIS_PIPELINE_LIMIT_DEFAULT;
 import static org.apache.hadoop.hdds.scm.ha.SCMService.Event.NEW_NODE_HANDLER_TRIGGERED;
+import static org.apache.hadoop.hdds.scm.ha.SCMService.Event.NODE_ADDRESS_UPDATE_HANDLER_TRIGGERED;
 import static org.apache.hadoop.hdds.scm.ha.SCMService.Event.PRE_CHECK_COMPLETED;
+import static org.apache.hadoop.hdds.scm.ha.SCMService.Event.UNHEALTHY_TO_HEALTHY_NODE_HANDLER_TRIGGERED;
 
 /**
  * Implements api for running background pipeline creation jobs.
@@ -202,6 +202,13 @@ public class BackgroundPipelineCreator implements SCMService {
   }
 
   private void createPipelines() throws RuntimeException {
+    int pipelineLimit = conf.getInt(OZONE_SCM_RATIS_PIPELINE_LIMIT, OZONE_SCM_RATIS_PIPELINE_LIMIT_DEFAULT);
+
+    if (pipelineLimit <= 0 || pipelineManager.getPipelines().size() >= pipelineLimit) {
+      LOG.debug("Reached limit of {} pipelines.", pipelineLimit);
+      return;
+    }
+
     // TODO: #CLUTIL Different replication factor may need to be supported
     HddsProtos.ReplicationType type = HddsProtos.ReplicationType.valueOf(
         conf.get(OzoneConfigKeys.OZONE_REPLICATION_TYPE,
@@ -226,19 +233,14 @@ public class BackgroundPipelineCreator implements SCMService {
       list.add(replicationConfig);
     }
 
-    LoopingIterator it = new LoopingIterator(list);
-    while (it.hasNext()) {
-      ReplicationConfig replicationConfig =
-          (ReplicationConfig) it.next();
-
+    for (ReplicationConfig replicationConfig : list) {
       try {
         Pipeline pipeline = pipelineManager.createPipeline(replicationConfig);
         LOG.info("Created new pipeline {}", pipeline);
       } catch (IOException ioe) {
-        it.remove();
+        // ignore
       } catch (Throwable t) {
         LOG.error("Error while creating pipelines", t);
-        it.remove();
       }
     }
 

@@ -168,8 +168,8 @@ public class RatisPipelineProvider
     case THREE:
     case SIX:
       List<DatanodeDetails> excludeDueToEngagement = filterPipelineEngagement();
-      if (excludeDueToEngagement.size() > 0) {
-        if (excludedNodes.size() == 0) {
+      if (!excludeDueToEngagement.isEmpty()) {
+        if (excludedNodes.isEmpty()) {
           excludedNodes = excludeDueToEngagement;
         } else {
           excludedNodes.addAll(excludeDueToEngagement);
