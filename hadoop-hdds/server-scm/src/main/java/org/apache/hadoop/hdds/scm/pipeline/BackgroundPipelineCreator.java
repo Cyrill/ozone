@@ -26,6 +26,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import org.apache.commons.collections.iterators.LoopingIterator;
 import org.apache.hadoop.hdds.HddsConfigKeys;
 import org.apache.hadoop.hdds.client.RatisReplicationConfig;
 import org.apache.hadoop.hdds.client.ReplicationConfig;
@@ -233,14 +234,19 @@ public class BackgroundPipelineCreator implements SCMService {
       list.add(replicationConfig);
     }
 
-    for (ReplicationConfig replicationConfig : list) {
+    LoopingIterator it = new LoopingIterator(list);
+    while (it.hasNext() && pipelineManager.getPipelines().size() < pipelineLimit) {
+      ReplicationConfig replicationConfig =
+          (ReplicationConfig) it.next();
+
       try {
         Pipeline pipeline = pipelineManager.createPipeline(replicationConfig);
         LOG.info("Created new pipeline {}", pipeline);
       } catch (IOException ioe) {
-        // ignore
+        it.remove();
       } catch (Throwable t) {
         LOG.error("Error while creating pipelines", t);
+        it.remove();
       }
     }
 
