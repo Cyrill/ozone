@@ -338,6 +338,7 @@ public interface MiniOzoneCluster extends AutoCloseable {
     protected Optional<Long> blockSize = Optional.empty();
     protected Optional<StorageUnit> streamBufferSizeUnit = Optional.empty();
     protected boolean includeRecon = false;
+    protected DatanodesCreatedCallback datanodesCreatedCallback = null;
 
 
     protected Optional<Integer> omLayoutVersion = Optional.empty();
@@ -370,6 +371,13 @@ public interface MiniOzoneCluster extends AutoCloseable {
     public Builder setSCMConfigurator(SCMConfigurator configurator) {
       this.scmConfigurator = configurator;
       return this;
+    }
+
+    @FunctionalInterface
+    public interface DatanodesCreatedCallback {
+      void onDatanodesCreated(
+              List<HddsDatanodeService> hddsDatanodes,
+              OzoneConfiguration conf) throws IOException;
     }
 
     /**
@@ -541,6 +549,11 @@ public interface MiniOzoneCluster extends AutoCloseable {
      */
     public Builder setChunkSize(int size) {
       chunkSize = Optional.of(size);
+      return this;
+    }
+
+    public Builder setDatanodesCreatedCallback(DatanodesCreatedCallback callback) {
+      this.datanodesCreatedCallback = callback;
       return this;
     }
 
