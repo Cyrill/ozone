@@ -205,7 +205,7 @@ public class BackgroundPipelineCreator implements SCMService {
   private void createPipelines() throws RuntimeException {
     int pipelineLimit = conf.getInt(OZONE_SCM_RATIS_PIPELINE_LIMIT, OZONE_SCM_RATIS_PIPELINE_LIMIT_DEFAULT);
 
-    if (pipelineLimit <= 0 || pipelineManager.getPipelines().size() >= pipelineLimit) {
+    if (pipelineLimit > 0 && pipelineManager.getPipelines().size() >= pipelineLimit) {
       LOG.debug("Reached limit of {} pipelines.", pipelineLimit);
       return;
     }
@@ -235,7 +235,7 @@ public class BackgroundPipelineCreator implements SCMService {
     }
 
     LoopingIterator it = new LoopingIterator(list);
-    while (it.hasNext() && pipelineManager.getPipelines().size() < pipelineLimit) {
+    while (it.hasNext() && (pipelineManager.getPipelines().size() < pipelineLimit || pipelineLimit <= 0)) {
       ReplicationConfig replicationConfig =
           (ReplicationConfig) it.next();
 
