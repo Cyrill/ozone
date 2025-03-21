@@ -373,6 +373,9 @@ public interface MiniOzoneCluster extends AutoCloseable {
       return this;
     }
 
+    /**
+     * Callback for CrossDC test.
+     */
     @FunctionalInterface
     public interface DatanodesCreatedCallback {
       void onDatanodesCreated(

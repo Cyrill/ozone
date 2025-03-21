@@ -101,23 +101,23 @@ class TestCrossDCKeyWrite {
         .setChunkSize(CHUNK_SIZE)
         .setStreamBufferSizeUnit(StorageUnit.BYTES)
         .setDatanodesCreatedCallback((hddsDatanodes, configuration) -> {
-            List<String> dns = hddsDatanodes.stream()
-              .map(dn -> {
-                   int ratisPort = Integer.parseInt(dn.getConf().get(HDDS_CONTAINER_RATIS_IPC_PORT));
-                   String host = "192.168.1.85";
-                   return host + ":" + ratisPort;
-              })
-              .collect(Collectors.toList());
+          List<String> dns = hddsDatanodes.stream()
+                .map(dn -> {
+                int ratisPort = Integer.parseInt(dn.getConf().get(HDDS_CONTAINER_RATIS_IPC_PORT));
+                String host = "192.168.1.85";
+                return host + ":" + ratisPort;
+                })
+                .collect(Collectors.toList());
 
-            StringBuilder sb = new StringBuilder();
-              for (int i = 0; i < dns.size(); i++) {
-                if (sb.length() > 0) {
-                  sb.append(",");
-                }
-                sb.append(dns.get(i)).append("=dc").append(i / 3 + 1);
-              }
-            configuration.set(OZONE_SCM_DC_DATANODE_MAPPING_KEY, sb.toString());
-            conf.set(OZONE_SCM_DC_DATANODE_MAPPING_KEY, sb.toString());
+          StringBuilder sb = new StringBuilder();
+          for (int i = 0; i < dns.size(); i++) {
+            if (sb.length() > 0) {
+              sb.append(",");
+            }
+            sb.append(dns.get(i)).append("=dc").append(i / 3 + 1);
+          }
+          configuration.set(OZONE_SCM_DC_DATANODE_MAPPING_KEY, sb.toString());
+          conf.set(OZONE_SCM_DC_DATANODE_MAPPING_KEY, sb.toString());
         })
         .build();
     cluster.waitForClusterToBeReady();
@@ -150,24 +150,24 @@ class TestCrossDCKeyWrite {
         .setChunkSize(CHUNK_SIZE)
         .setStreamBufferSizeUnit(StorageUnit.BYTES)
         .setDatanodesCreatedCallback((hddsDatanodes, configuration) -> {
-            List<String> dns = hddsDatanodes.stream()
-              .map(dn -> {
+          List<String> dns = hddsDatanodes.stream()
+                .map(dn -> {
                 int ratisPort = Integer.parseInt(dn.getConf().get(HDDS_CONTAINER_RATIS_IPC_PORT));
                 String host = "192.168.1.85";
                 return host + ":" + ratisPort;
-              })
-              .collect(Collectors.toList());
+                })
+                .collect(Collectors.toList());
 
-            StringBuilder sb = new StringBuilder();
-            for (String dn : dns) {
-              if (sb.length() > 0) {
-                sb.append(",");
-              }
-              sb.append(dn).append("=dc").append(1);
+          StringBuilder sb = new StringBuilder();
+          for (String dn : dns) {
+            if (sb.length() > 0) {
+              sb.append(",");
             }
-            System.out.println("[SOUT]" + sb);
-            configuration.set(OZONE_SCM_DC_DATANODE_MAPPING_KEY, sb.toString());
-            conf.set(OZONE_SCM_DC_DATANODE_MAPPING_KEY, sb.toString());
+            sb.append(dn).append("=dc").append(1);
+          }
+          System.out.println("[SOUT]" + sb);
+          configuration.set(OZONE_SCM_DC_DATANODE_MAPPING_KEY, sb.toString());
+          conf.set(OZONE_SCM_DC_DATANODE_MAPPING_KEY, sb.toString());
         })
         .build();
     cluster.waitForClusterToBeReady();
@@ -182,30 +182,30 @@ class TestCrossDCKeyWrite {
     TestOzoneRpcClient.setStorageContainerLocationClient(storageContainerLocationClient);
     TestOzoneRpcClient.setStore(store);
     TestOzoneRpcClient.setClusterId(CLUSTER_ID);
-    }
+  }
 
   @ParameterizedTest
   @EnumSource
   void testPutKeyThreeDCs(BucketLayout bucketLayout) throws Exception {
-      initThreeDC();
-      try {
-          String volumeName = UUID.randomUUID().toString();
-          String bucketName = UUID.randomUUID().toString();
-          store.createVolume(volumeName);
-          OzoneVolume volume = store.getVolume(volumeName);
-          BucketArgs bucketArgs = BucketArgs.newBuilder()
+    initThreeDC();
+    try {
+      String volumeName = UUID.randomUUID().toString();
+      String bucketName = UUID.randomUUID().toString();
+      store.createVolume(volumeName);
+      OzoneVolume volume = store.getVolume(volumeName);
+      BucketArgs bucketArgs = BucketArgs.newBuilder()
                   .setBucketLayout(bucketLayout)
                   .addMetadata(OzoneConsts.DATACENTERS, "dc1,dc2,dc3")
                   .setDefaultReplicationConfig(
                           new DefaultReplicationConfig(ReplicationConfig.fromTypeAndFactor(RATIS, THREE)))
                   .build();
-          volume.createBucket(bucketName, bucketArgs);
-          OzoneBucket bucket = volume.getBucket(bucketName);
-          createAndVerifyKeyData(bucket);
-          createAndVerifyStreamKeyData(bucket);
-      } finally {
-        cluster.shutdown();
-      }
+      volume.createBucket(bucketName, bucketArgs);
+      OzoneBucket bucket = volume.getBucket(bucketName);
+      createAndVerifyKeyData(bucket);
+      createAndVerifyStreamKeyData(bucket);
+    } finally {
+      cluster.shutdown();
+    }
   }
 
   @ParameterizedTest
@@ -213,20 +213,20 @@ class TestCrossDCKeyWrite {
   void testPutKeyOneDC(BucketLayout bucketLayout) throws Exception {
     initOneDC();
     try {
-        String volumeName = UUID.randomUUID().toString();
-        String bucketName = UUID.randomUUID().toString();
-        store.createVolume(volumeName);
-        OzoneVolume volume = store.getVolume(volumeName);
-        BucketArgs bucketArgs = BucketArgs.newBuilder()
+      String volumeName = UUID.randomUUID().toString();
+      String bucketName = UUID.randomUUID().toString();
+      store.createVolume(volumeName);
+      OzoneVolume volume = store.getVolume(volumeName);
+      BucketArgs bucketArgs = BucketArgs.newBuilder()
             .setBucketLayout(bucketLayout)
             .addMetadata(OzoneConsts.DATACENTERS, "dc1")
             .setDefaultReplicationConfig(
                 new DefaultReplicationConfig(ReplicationConfig.fromTypeAndFactor(RATIS, THREE)))
             .build();
-        volume.createBucket(bucketName, bucketArgs);
-        OzoneBucket bucket = volume.getBucket(bucketName);
-        createAndVerifyKeyData(bucket);
-        createAndVerifyStreamKeyData(bucket);
+      volume.createBucket(bucketName, bucketArgs);
+      OzoneBucket bucket = volume.getBucket(bucketName);
+      createAndVerifyKeyData(bucket);
+      createAndVerifyStreamKeyData(bucket);
     } finally {
       cluster.shutdown();
     }
@@ -269,7 +269,7 @@ class TestCrossDCKeyWrite {
   }
 
   static void verifyKeyData(OzoneBucket bucket, String keyName, String value,
-     Instant testStartTime) throws Exception {
+      Instant testStartTime) throws Exception {
     OzoneKeyDetails key = bucket.getKey(keyName);
     assertEquals(keyName, key.getName());
 
@@ -292,27 +292,27 @@ class TestCrossDCKeyWrite {
 
   static boolean verifyRatisReplication(String volumeName, String bucketName,
       String keyName, ReplicationType type, ReplicationFactor factor) throws IOException {
-     OmKeyArgs keyArgs = new OmKeyArgs.Builder()
+    OmKeyArgs keyArgs = new OmKeyArgs.Builder()
          .setVolumeName(volumeName)
          .setBucketName(bucketName)
          .setKeyName(keyName)
          .build();
-     HddsProtos.ReplicationType replicationType =
+    HddsProtos.ReplicationType replicationType =
          HddsProtos.ReplicationType.valueOf(type.toString());
-     HddsProtos.ReplicationFactor replicationFactor =
+    HddsProtos.ReplicationFactor replicationFactor =
          HddsProtos.ReplicationFactor.valueOf(factor.getValue());
-     OmKeyInfo keyInfo = ozoneManager.lookupKey(keyArgs);
-     for (OmKeyLocationInfo info:
+    OmKeyInfo keyInfo = ozoneManager.lookupKey(keyArgs);
+    for (OmKeyLocationInfo info:
          keyInfo.getLatestVersionLocations().getLocationList()) {
        ContainerInfo container =
            storageContainerLocationClient.getContainer(info.getContainerID());
-       if (!ReplicationConfig.getLegacyFactor(container.getReplicationConfig())
+      if (!ReplicationConfig.getLegacyFactor(container.getReplicationConfig())
            .equals(replicationFactor) || (
            container.getReplicationType() != replicationType)) {
-         return false;
-       }
-     }
-     return true;
+        return false;
+      }
+    }
+    return true;
   }
 }
 

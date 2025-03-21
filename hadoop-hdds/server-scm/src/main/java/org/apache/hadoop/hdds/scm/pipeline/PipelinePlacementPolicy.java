@@ -315,7 +315,7 @@ public final class PipelinePlacementPolicy extends SCMCommonPlacementPolicy {
       throw new SCMException(msg, SCMException.ResultCodes.INVALID_CAPACITY);
     }
 
-    Map<String, String> dcMapping = ScmUtils.getDcMapping(conf);
+    Map<String, String> dcMap = ScmUtils.getDcMapping(conf);
 
     int nodesRequiredPerDc = nodesRequired / datacenters.size();
     Map<String, List<DatanodeDetails>> nodesPerDatacenter = datacenters.stream()
@@ -324,7 +324,7 @@ public final class PipelinePlacementPolicy extends SCMCommonPlacementPolicy {
       String nodeKey = node.getHostName() + ":" +
           node.getPort(DatanodeDetails.Port.Name.RATIS).getValue();
       LOG.info("getResultSetWithDatacenters for node {}", nodeKey);
-      String nodeDc = dcMapping.get(nodeKey);
+      String nodeDc = dcMap.get(nodeKey);
       if (nodesPerDatacenter.containsKey(nodeDc) && nodesPerDatacenter.get(nodeDc).size() < nodesRequiredPerDc) {
         nodesPerDatacenter.get(nodeDc).add(node);
       }
