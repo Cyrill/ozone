@@ -103,9 +103,9 @@ class TestCrossDCKeyWrite {
         .setDatanodesCreatedCallback((hddsDatanodes, configuration) -> {
           List<String> dns = hddsDatanodes.stream()
                 .map(dn -> {
-                int ratisPort = Integer.parseInt(dn.getConf().get(HDDS_CONTAINER_RATIS_IPC_PORT));
-                String host = "192.168.1.85";
-                return host + ":" + ratisPort;
+                  int ratisPort = Integer.parseInt(dn.getConf().get(HDDS_CONTAINER_RATIS_IPC_PORT));
+                  String host = "192.168.1.85";
+                  return host + ":" + ratisPort;
                 })
                 .collect(Collectors.toList());
 
@@ -152,9 +152,9 @@ class TestCrossDCKeyWrite {
         .setDatanodesCreatedCallback((hddsDatanodes, configuration) -> {
           List<String> dns = hddsDatanodes.stream()
                 .map(dn -> {
-                int ratisPort = Integer.parseInt(dn.getConf().get(HDDS_CONTAINER_RATIS_IPC_PORT));
-                String host = "192.168.1.85";
-                return host + ":" + ratisPort;
+                  int ratisPort = Integer.parseInt(dn.getConf().get(HDDS_CONTAINER_RATIS_IPC_PORT));
+                  String host = "192.168.1.85";
+                  return host + ":" + ratisPort;
                 })
                 .collect(Collectors.toList());
 
@@ -304,7 +304,7 @@ class TestCrossDCKeyWrite {
     OmKeyInfo keyInfo = ozoneManager.lookupKey(keyArgs);
     for (OmKeyLocationInfo info:
          keyInfo.getLatestVersionLocations().getLocationList()) {
-       ContainerInfo container =
+      ContainerInfo container =
            storageContainerLocationClient.getContainer(info.getContainerID());
       if (!ReplicationConfig.getLegacyFactor(container.getReplicationConfig())
            .equals(replicationFactor) || (
