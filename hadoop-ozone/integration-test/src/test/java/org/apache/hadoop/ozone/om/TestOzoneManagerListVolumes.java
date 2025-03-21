@@ -92,7 +92,6 @@ public class TestOzoneManagerListVolumes {
     String clusterId = UUID.randomUUID().toString();
     String scmId = UUID.randomUUID().toString();
     String omId = UUID.randomUUID().toString();
-    conf.setInt(OZONE_SCM_RATIS_PIPELINE_LIMIT, 10);
 
     // Use native impl here, default impl doesn't do actual checks
     conf.set(OZONE_ACL_AUTHORIZER_CLASS, OZONE_ACL_AUTHORIZER_CLASS_NATIVE);
