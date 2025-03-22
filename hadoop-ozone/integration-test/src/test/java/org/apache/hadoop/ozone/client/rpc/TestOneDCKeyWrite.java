@@ -191,7 +191,7 @@ class TestOneDCKeyWrite {
         value.getBytes(StandardCharsets.UTF_8).length,
         ReplicationConfig.fromTypeAndFactor(RATIS, THREE),
         new HashMap<>())) {
-        out.write(value.getBytes(StandardCharsets.UTF_8));
+      out.write(value.getBytes(StandardCharsets.UTF_8));
     }
     verifyKeyData(bucket, keyName, value, testStartTime);
   }
@@ -204,8 +204,8 @@ class TestOneDCKeyWrite {
         value.getBytes(StandardCharsets.UTF_8).length,
         ReplicationConfig.fromTypeAndFactor(RATIS, THREE),
         new HashMap<>())) {
-        out.write(value.getBytes(StandardCharsets.UTF_8));
-        }
+      out.write(value.getBytes(StandardCharsets.UTF_8));
+    }
     verifyKeyData(bucket, keyName, value, testStartTime);
 
     // Overwrite the key
@@ -213,7 +213,7 @@ class TestOneDCKeyWrite {
         value.getBytes(StandardCharsets.UTF_8).length,
         ReplicationConfig.fromTypeAndFactor(RATIS, THREE),
         new HashMap<>())) {
-        out.write(value.getBytes(StandardCharsets.UTF_8));
+      out.write(value.getBytes(StandardCharsets.UTF_8));
     }
   }
 
