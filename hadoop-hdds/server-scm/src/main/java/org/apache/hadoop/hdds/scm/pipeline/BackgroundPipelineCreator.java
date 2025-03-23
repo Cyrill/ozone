@@ -209,12 +209,12 @@ public class BackgroundPipelineCreator implements SCMService {
   }
 
   private void createPipelines() throws RuntimeException {
-//    int pipelineLimit = conf.getInt(OZONE_SCM_RATIS_PIPELINE_LIMIT, OZONE_SCM_RATIS_PIPELINE_LIMIT_DEFAULT);
-//
-//    if (pipelineLimit > 0 && pipelineManager.getPipelines().size() >= pipelineLimit) {
-//      LOG.info("Reached limit of {} pipelines.", pipelineLimit);
-//      return;
-//    }
+    //    int pipelineLimit = conf.getInt(OZONE_SCM_RATIS_PIPELINE_LIMIT, OZONE_SCM_RATIS_PIPELINE_LIMIT_DEFAULT);
+    //
+    //    if (pipelineLimit > 0 && pipelineManager.getPipelines().size() >= pipelineLimit) {
+    //      LOG.info("Reached limit of {} pipelines.", pipelineLimit);
+    //      return;
+    //    }
 
     // TODO: #CLUTIL Different replication factor may need to be supported
     HddsProtos.ReplicationType type = HddsProtos.ReplicationType.valueOf(
