@@ -38,6 +38,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.apache.hadoop.hdds.HddsConfigKeys.HDDS_HEARTBEAT_INTERVAL;
 import static org.apache.hadoop.hdds.scm.ScmConfigKeys.OZONE_DATANODE_PIPELINE_LIMIT;
@@ -51,14 +53,15 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * Tests for RatisPipelineUtils.
  */
 public class TestRatisPipelineCreateAndDestroy {
-
+  private static final Logger LOG =
+      LoggerFactory.getLogger(TestRatisPipelineCreateAndDestroy.class);
   private MiniOzoneCluster cluster;
   private OzoneConfiguration conf = new OzoneConfiguration();
   private PipelineManager pipelineManager;
 
   public void init(int numDatanodes, int replicaFactor) throws Exception {
     conf.setInt(OZONE_DATANODE_PIPELINE_LIMIT, 2);
-    conf.setInt(OZONE_SCM_RATIS_PIPELINE_LIMIT, numDatanodes + numDatanodes / replicaFactor);
+    conf.setInt(OZONE_SCM_RATIS_PIPELINE_LIMIT, numDatanodes + numDatanodes / replicaFactor + 2);
     conf.setTimeDuration(HDDS_HEARTBEAT_INTERVAL, 2000, TimeUnit.MILLISECONDS);
     conf.setTimeDuration(ScmConfigKeys.OZONE_SCM_HEARTBEAT_PROCESS_INTERVAL, 1000, TimeUnit.MILLISECONDS);
     conf.setTimeDuration(
@@ -68,6 +71,7 @@ public class TestRatisPipelineCreateAndDestroy {
             .setNumDatanodes(numDatanodes)
             .build();
     cluster.waitForClusterToBeReady();
+
     StorageContainerManager scm = cluster.getStorageContainerManager();
     pipelineManager = scm.getPipelineManager();
   }
@@ -84,16 +88,18 @@ public class TestRatisPipelineCreateAndDestroy {
     init(numOfDatanodes, ReplicationFactor.THREE.getNumber());
     // make sure two pipelines are created
     waitForPipelines(2);
+    LOG.info("First two ready");
     assertEquals(numOfDatanodes, pipelineManager.getPipelines(
         RatisReplicationConfig.getInstance(
             ReplicationFactor.ONE)).size());
-
+    LOG.info("Assert eq ");
     List<Pipeline> pipelines = pipelineManager
         .getPipelines(RatisReplicationConfig.getInstance(
             ReplicationFactor.THREE), Pipeline.PipelineState.OPEN);
     for (Pipeline pipeline : pipelines) {
       pipelineManager.closePipeline(pipeline, false);
     }
+    LOG.info("Wait for 2");
     // make sure two pipelines are created
     waitForPipelines(2);
   }
