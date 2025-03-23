@@ -27,17 +27,75 @@ x-common-config:
 
 x-replication:
   &replication
-  OZONE-SITE.XML_ozone.server.default.replication: ${OZONE_REPLICATION_FACTOR:-1}
+  OZONE-SITE.XML_ozone.server.default.replication: 6
 
 services:
-  datanode:
+  datanode1:
     <<: *common-config
     ports:
-      - 19864
-      - 9882
+      - "19864"
+      - "9882"
     environment:
       <<: *replication
     command: ["ozone","datanode"]
+    networks:
+      ozone_net:
+        ipv4_address: 10.5.0.2
+  datanode2:
+    <<: *common-config
+    ports:
+      - "19864"
+      - "9882"
+    environment:
+      <<: *replication
+    command: ["ozone","datanode"]
+    networks:
+      ozone_net:
+        ipv4_address: 10.5.0.3
+  datanode3:
+    <<: *common-config
+    ports:
+      - "19864"
+      - "9882"
+    environment:
+      <<: *replication
+    command: ["ozone","datanode"]
+    networks:
+      ozone_net:
+        ipv4_address: 10.5.0.4
+  datanode4:
+    <<: *common-config
+    ports:
+      - "19864"
+      - "9882"
+    environment:
+      <<: *replication
+    command: ["ozone","datanode"]
+    networks:
+      ozone_net:
+        ipv4_address: 10.5.0.5
+  datanode5:
+    <<: *common-config
+    ports:
+      - "19864"
+      - "9882"
+    environment:
+      <<: *replication
+    command: ["ozone","datanode"]
+    networks:
+      ozone_net:
+        ipv4_address: 10.5.0.6
+  datanode6:
+    <<: *common-config
+    ports:
+      - "19864"
+      - "9882"
+    environment:
+      <<: *replication
+    command: ["ozone","datanode"]
+    networks:
+      ozone_net:
+        ipv4_address: 10.5.0.7
   om1:
     <<: *common-config
     environment:
@@ -45,10 +103,13 @@ services:
       ENSURE_OM_INITIALIZED: /data/metadata/om/current/VERSION
       <<: *replication
     ports:
-      - 9874:9874
-      - 9862
+      - "9874:9874"
+      - "9862"
     hostname: om1
     command: ["ozone","om"]
+    networks:
+      ozone_net:
+        ipv4_address: 10.5.0.8
   om2:
     <<: *common-config
     environment:
@@ -56,10 +117,13 @@ services:
       ENSURE_OM_INITIALIZED: /data/metadata/om/current/VERSION
       <<: *replication
     ports:
-      - 9874
-      - 9862
+      - "9874"
+      - "9862"
     hostname: om2
     command: ["ozone","om"]
+    networks:
+      ozone_net:
+        ipv4_address: 10.5.0.9
   om3:
     <<: *common-config
     environment:
@@ -67,58 +131,87 @@ services:
       ENSURE_OM_INITIALIZED: /data/metadata/om/current/VERSION
       <<: *replication
     ports:
-      - 9874
-      - 9862
+      - "9874"
+      - "9862"
     hostname: om3
     command: ["ozone","om"]
+    networks:
+      ozone_net:
+        ipv4_address: 10.5.0.10
   scm1:
     <<: *common-config
     ports:
-      - 9876:9876
+      - "9876:9876"
     environment:
       ENSURE_SCM_INITIALIZED: /data/metadata/scm/current/VERSION
       OZONE-SITE.XML_hdds.scm.safemode.min.datanode: ${OZONE_SAFEMODE_MIN_DATANODES:-1}
       <<: *replication
     command: ["ozone","scm"]
+    networks:
+      ozone_net:
+        ipv4_address: 10.5.0.11
   scm2:
     <<: *common-config
     ports:
-      - 9876
+      - "9876"
     environment:
       WAITFOR: scm1:9894
       ENSURE_SCM_BOOTSTRAPPED: /data/metadata/scm/current/VERSION
       OZONE-SITE.XML_hdds.scm.safemode.min.datanode: ${OZONE_SAFEMODE_MIN_DATANODES:-1}
       <<: *replication
     command: ["ozone","scm"]
+    networks:
+      ozone_net:
+        ipv4_address: 10.5.0.12
   scm3:
     <<: *common-config
     ports:
-      - 9876
+      - "9876"
     environment:
       WAITFOR: scm2:9894
       ENSURE_SCM_BOOTSTRAPPED: /data/metadata/scm/current/VERSION
       OZONE-SITE.XML_hdds.scm.safemode.min.datanode: ${OZONE_SAFEMODE_MIN_DATANODES:-1}
       <<: *replication
     command: ["ozone","scm"]
+    networks:
+      ozone_net:
+        ipv4_address: 10.5.0.13
   httpfs:
     <<: *common-config
     environment:
       OZONE-SITE.XML_hdds.scm.safemode.min.datanode: ${OZONE_SAFEMODE_MIN_DATANODES:-1}
       <<: *replication
     ports:
-      - 14000:14000
+      - "14000:14000"
     command: [ "ozone","httpfs" ]
+    networks:
+      ozone_net:
+        ipv4_address: 10.5.0.14
   s3g:
     <<: *common-config
     environment:
       <<: *replication
     ports:
-      - 9878:9878
+      - "9878:9878"
     command: ["ozone","s3g"]
+    networks:
+      ozone_net:
+        ipv4_address: 10.5.0.15
   recon:
     <<: *common-config
     ports:
-      - 9888:9888
+      - "9888:9888"
     environment:
       <<: *replication
     command: ["ozone","recon"]
+    networks:
+      ozone_net:
+        ipv4_address: 10.5.0.16
+
+networks:
+  ozone_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.5.0.0/16
+          gateway: 10.5.0.1
