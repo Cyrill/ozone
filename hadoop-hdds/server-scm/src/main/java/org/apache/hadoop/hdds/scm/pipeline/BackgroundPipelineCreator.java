@@ -47,8 +47,6 @@ import org.slf4j.LoggerFactory;
 
 import static org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationType.RATIS;
 import static org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationType.STAND_ALONE;
-import static org.apache.hadoop.hdds.scm.ScmConfigKeys.OZONE_SCM_RATIS_PIPELINE_LIMIT;
-import static org.apache.hadoop.hdds.scm.ScmConfigKeys.OZONE_SCM_RATIS_PIPELINE_LIMIT_DEFAULT;
 import static org.apache.hadoop.hdds.scm.ha.SCMService.Event.NEW_NODE_HANDLER_TRIGGERED;
 import static org.apache.hadoop.hdds.scm.ha.SCMService.Event.NODE_ADDRESS_UPDATE_HANDLER_TRIGGERED;
 import static org.apache.hadoop.hdds.scm.ha.SCMService.Event.PRE_CHECK_COMPLETED;
@@ -258,7 +256,7 @@ public class BackgroundPipelineCreator implements SCMService {
       }
     }
 
-    LOG.info("BackgroundPipelineCreator createPipelines finished. "+it.hasNext());
+    LOG.info("BackgroundPipelineCreator createPipelines finished. " + it.hasNext());
   }
 
   @Override

@@ -61,7 +61,7 @@ public class TestRatisPipelineCreateAndDestroy {
 
   public void init(int numDatanodes, int replicaFactor) throws Exception {
     conf.setInt(OZONE_DATANODE_PIPELINE_LIMIT, 2);
-    conf.setInt(OZONE_SCM_RATIS_PIPELINE_LIMIT, numDatanodes + numDatanodes / replicaFactor + 2);
+    conf.setInt(OZONE_SCM_RATIS_PIPELINE_LIMIT, numDatanodes + numDatanodes / replicaFactor);
     conf.setTimeDuration(HDDS_HEARTBEAT_INTERVAL, 2000, TimeUnit.MILLISECONDS);
     conf.setTimeDuration(ScmConfigKeys.OZONE_SCM_HEARTBEAT_PROCESS_INTERVAL, 1000, TimeUnit.MILLISECONDS);
     conf.setTimeDuration(
