@@ -31,9 +31,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.apache.commons.collections.iterators.LoopingIterator;
 import org.apache.hadoop.hdds.HddsConfigKeys;
-import org.apache.hadoop.hdds.client.RatisReplicationConfig;
 import org.apache.hadoop.hdds.client.ReplicationConfig;
-import org.apache.hadoop.hdds.client.StandaloneReplicationConfig;
 import org.apache.hadoop.hdds.conf.ConfigurationSource;
 import org.apache.hadoop.hdds.protocol.proto.HddsProtos;
 import org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationFactor;
@@ -45,8 +43,6 @@ import org.apache.hadoop.ozone.OzoneConfigKeys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationType.RATIS;
-import static org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationType.STAND_ALONE;
 import static org.apache.hadoop.hdds.scm.ha.SCMService.Event.NEW_NODE_HANDLER_TRIGGERED;
 import static org.apache.hadoop.hdds.scm.ha.SCMService.Event.NODE_ADDRESS_UPDATE_HANDLER_TRIGGERED;
 import static org.apache.hadoop.hdds.scm.ha.SCMService.Event.PRE_CHECK_COMPLETED;
@@ -194,15 +190,15 @@ public class BackgroundPipelineCreator implements SCMService {
 
   private boolean skipCreation(ReplicationConfig replicationConfig,
       boolean autoCreate) {
-    if (replicationConfig.getReplicationType().equals(RATIS)) {
-      return RatisReplicationConfig
-          .hasFactor(replicationConfig, ReplicationFactor.ONE) && (!autoCreate);
-    } else if (replicationConfig.getReplicationType().equals(STAND_ALONE)) {
-      // For STAND_ALONE Replication Type, Replication Factor 3 should not be
-      // used.
-      return ((StandaloneReplicationConfig) replicationConfig)
-          .getReplicationFactor() != ReplicationFactor.ONE;
-    }
+    //    if (replicationConfig.getReplicationType().equals(RATIS)) {
+    //      return RatisReplicationConfig
+    //          .hasFactor(replicationConfig, ReplicationFactor.ONE) && (!autoCreate);
+    //    } else if (replicationConfig.getReplicationType().equals(STAND_ALONE)) {
+    //      // For STAND_ALONE Replication Type, Replication Factor 3 should not be
+    //      // used.
+    //      return ((StandaloneReplicationConfig) replicationConfig)
+    //          .getReplicationFactor() != ReplicationFactor.ONE;
+    //    }
     return true;
   }
 

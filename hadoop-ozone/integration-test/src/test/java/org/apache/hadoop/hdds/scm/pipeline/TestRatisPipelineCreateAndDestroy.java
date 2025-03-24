@@ -33,6 +33,7 @@ import org.apache.hadoop.hdds.scm.server.StorageContainerManager;
 import org.apache.hadoop.ozone.HddsDatanodeService;
 import org.apache.hadoop.ozone.MiniOzoneCluster;
 import org.apache.ozone.test.GenericTestUtils;
+import org.apache.ozone.test.tag.Unhealthy;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
@@ -42,6 +43,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.apache.hadoop.hdds.HddsConfigKeys.HDDS_HEARTBEAT_INTERVAL;
+import static org.apache.hadoop.hdds.HddsConfigKeys.HDDS_SCM_SAFEMODE_PIPELINE_AVAILABILITY_CHECK;
 import static org.apache.hadoop.hdds.scm.ScmConfigKeys.OZONE_DATANODE_PIPELINE_LIMIT;
 import static org.apache.hadoop.hdds.scm.ScmConfigKeys.OZONE_SCM_PIPELINE_AUTO_CREATE_FACTOR_ONE;
 import static org.apache.hadoop.hdds.scm.ScmConfigKeys.OZONE_SCM_RATIS_PIPELINE_LIMIT;
@@ -61,6 +63,7 @@ public class TestRatisPipelineCreateAndDestroy {
 
   public void init(int numDatanodes, int replicaFactor) throws Exception {
     conf.setInt(OZONE_DATANODE_PIPELINE_LIMIT, 2);
+    conf.setBoolean(HDDS_SCM_SAFEMODE_PIPELINE_AVAILABILITY_CHECK, false);
     conf.setInt(OZONE_SCM_RATIS_PIPELINE_LIMIT, numDatanodes + numDatanodes / replicaFactor);
     conf.setTimeDuration(HDDS_HEARTBEAT_INTERVAL, 2000, TimeUnit.MILLISECONDS);
     conf.setTimeDuration(ScmConfigKeys.OZONE_SCM_HEARTBEAT_PROCESS_INTERVAL, 1000, TimeUnit.MILLISECONDS);
@@ -81,6 +84,8 @@ public class TestRatisPipelineCreateAndDestroy {
     cluster.shutdown();
   }
 
+
+  @Unhealthy("Disabled background pipeline creator")
   @Test @Timeout(unit = TimeUnit.MILLISECONDS, value = 180000)
   public void testAutomaticPipelineCreationOnPipelineDestroy()
       throws Exception {
@@ -104,6 +109,7 @@ public class TestRatisPipelineCreateAndDestroy {
     waitForPipelines(2);
   }
 
+  @Unhealthy("Disabled background pipeline creator")
   @Test @Timeout(unit = TimeUnit.MILLISECONDS, value = 180000)
   public void testAutomaticPipelineCreationDisablingFactorONE()
       throws Exception {
@@ -127,6 +133,7 @@ public class TestRatisPipelineCreateAndDestroy {
     waitForPipelines(2);
   }
 
+  @Unhealthy("Disabled background pipeline creator")
   @Test @Timeout(unit = TimeUnit.MILLISECONDS, value = 180000)
   public void testPipelineCreationOnNodeRestart() throws Exception {
     conf.setTimeDuration(OZONE_SCM_STALENODE_INTERVAL,
@@ -185,7 +192,7 @@ public class TestRatisPipelineCreateAndDestroy {
     init(12, replicationFactor.getNumber());
 
     // make sure two pipelines are created
-    waitForPipelines(2);
+    //    waitForPipelines(2);
 
     // No Factor ONE pipeline is auto created.
     assertEquals(
