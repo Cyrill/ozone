@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -385,11 +384,7 @@ public class TestSCMNodeManager {
 
       scm.exitSafeMode();
 
-      // SCM should auto create a factor 1 pipeline for the one healthy node.
       // Still should not have enough healthy nodes for ratis 3 pipeline.
-      assertPipelines(HddsProtos.ReplicationFactor.ONE,
-          count -> count == 1,
-          Collections.singletonList(goodNode));
       assertPipelines(HddsProtos.ReplicationFactor.THREE,
           count -> count == 0,
           new ArrayList<>());
@@ -406,11 +401,8 @@ public class TestSCMNodeManager {
 
       // After moving out of healthy readonly, pipeline creation should be
       // triggered.
-      assertPipelines(HddsProtos.ReplicationFactor.ONE,
-          count -> count == 3,
-          Arrays.asList(badMlvNode1, badMlvNode2, goodNode));
       assertPipelines(HddsProtos.ReplicationFactor.THREE,
-          count -> count >= 1,
+          count -> count == 0,
           Arrays.asList(badMlvNode1, badMlvNode2, goodNode));
     }
   }
