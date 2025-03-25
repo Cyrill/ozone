@@ -23,6 +23,9 @@ import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
+import org.apache.hadoop.hdds.client.ReplicationConfig;
+import org.apache.hadoop.hdds.client.ReplicationFactor;
+import org.apache.hadoop.hdds.client.ReplicationType;
 import org.apache.hadoop.hdds.conf.OzoneConfiguration;
 import org.apache.hadoop.ozone.MiniOzoneCluster;
 import org.apache.hadoop.ozone.OzoneConfigKeys;
@@ -80,8 +83,10 @@ public class TestDnRatisLogParser {
     OzoneConfiguration conf = cluster.getHddsDatanodes().get(0).getConf();
     String path =
         conf.get(OzoneConfigKeys.HDDS_CONTAINER_RATIS_DATANODE_STORAGE_DIR);
+    ReplicationConfig config =
+        ReplicationConfig.fromTypeAndFactor(ReplicationType.RATIS, ReplicationFactor.ONE);
     UUID pid = cluster.getStorageContainerManager().getPipelineManager()
-        .getPipelines().get(0).getId().getId();
+        .createPipeline(config).getId().getId();
     File pipelineDir = new File(path, pid.toString());
     File currentDir = new File(pipelineDir, "current");
     File logFile = new File(currentDir, "log_inprogress_0");

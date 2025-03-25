@@ -277,7 +277,6 @@ class TestDatanodeHddsVolumeFailureDetection {
         .setNumDataVolumes(1)
         .build();
     cluster.waitForClusterToBeReady();
-    cluster.waitForPipelineTobeReady(ReplicationFactor.ONE, 30000);
 
     return cluster;
   }

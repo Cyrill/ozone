@@ -19,14 +19,14 @@ package org.apache.hadoop.ozone.client.rpc;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.hadoop.conf.StorageUnit;
 import org.apache.hadoop.hdds.client.DefaultReplicationConfig;
@@ -58,7 +58,6 @@ import org.apache.hadoop.ozone.om.helpers.BucketLayout;
 import org.apache.ozone.test.GenericTestUtils;
 
 import static org.apache.hadoop.hdds.HddsConfigKeys.OZONE_METADATA_DIRS;
-import static org.apache.hadoop.hdds.client.ReplicationFactor.THREE;
 import static org.apache.hadoop.hdds.client.ReplicationType.RATIS;
 import static org.apache.hadoop.hdds.scm.ScmConfigKeys.OZONE_SCM_DC_DATANODE_MAPPING_KEY;
 import static org.apache.hadoop.ozone.OzoneConfigKeys.HDDS_CONTAINER_RATIS_IPC_PORT;
@@ -68,17 +67,20 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
-class TestThreeDCKeyWrite {
+@Timeout(100)
+class TestCrossDCKeyWrite {
 
-  private static MiniOzoneCluster cluster = null;
-  private static OzoneClient ozClient = null;
-  private static ObjectStore store = null;
+  private static MiniOzoneCluster cluster;
+  private static OzoneClient ozClient;
+  private static ObjectStore store;
   private static OzoneManager ozoneManager;
   private static StorageContainerLocationProtocolClientSideTranslatorPB
-            storageContainerLocationClient;
+      storageContainerLocationClient;
 
   private static final String SCM_ID = UUID.randomUUID().toString();
   private static final String CLUSTER_ID = UUID.randomUUID().toString();
@@ -92,14 +94,15 @@ class TestThreeDCKeyWrite {
   @BeforeAll
   static void init() throws Exception {
     testDir = GenericTestUtils.getTestDir(
-                TestSecureOzoneRpcClient.class.getSimpleName());
+        TestSecureOzoneRpcClient.class.getSimpleName());
     conf = new OzoneConfiguration();
     conf.set(OZONE_METADATA_DIRS, testDir.getAbsolutePath());
     conf.set(OZONE_METADATA_DIRS, testDir.getAbsolutePath());
     conf.set(OZONE_SCM_DC_DATANODE_MAPPING_KEY, "localhost:0=dc1,localhost:1=dc2,localhost:2=dc3");
     conf.setBoolean(ScmConfigKeys.OZONE_SCM_PIPELINE_AUTO_CREATE_FACTOR_ONE, false);
+    int nodesPerDc = 6;
     cluster = MiniOzoneCluster.newBuilder(conf)
-        .setNumDatanodes(9)
+        .setNumDatanodes(nodesPerDc * 3) // 3 DC.
         .setScmId(SCM_ID)
         .setClusterId(CLUSTER_ID)
         .setBlockSize(BLOCK_SIZE)
@@ -107,24 +110,20 @@ class TestThreeDCKeyWrite {
         .setStreamBufferSizeUnit(StorageUnit.BYTES)
         .setDatanodesCreatedCallback((hddsDatanodes, configuration) -> {
           List<String> dns = hddsDatanodes.stream()
-                .map(dn -> {
-                  int ratisPort = Integer.parseInt(dn.getConf().get(HDDS_CONTAINER_RATIS_IPC_PORT));
-                  String host;
-                  try {
-                    host = InetAddress.getLocalHost().getHostAddress();
-                  } catch (UnknownHostException e) {
-                    throw new RuntimeException(e);
-                  }
-                  return host + ":" + ratisPort;
-                })
-                .collect(Collectors.toList());
+              .map(dn -> {
+                int ratisPort = Integer.parseInt(dn.getConf().get(HDDS_CONTAINER_RATIS_IPC_PORT));
+                String host;
+                host = "localhost";
+                return host + ":" + ratisPort;
+              })
+              .collect(Collectors.toList());
 
           StringBuilder sb = new StringBuilder();
           for (int i = 0; i < dns.size(); i++) {
             if (sb.length() > 0) {
               sb.append(",");
             }
-            sb.append(dns.get(i)).append("=dc").append(i / 3 + 1);
+            sb.append(dns.get(i)).append("=dc").append(i / nodesPerDc + 1);
           }
           configuration.set(OZONE_SCM_DC_DATANODE_MAPPING_KEY, sb.toString());
           conf.set(OZONE_SCM_DC_DATANODE_MAPPING_KEY, sb.toString());
@@ -159,71 +158,67 @@ class TestThreeDCKeyWrite {
     }
   }
 
+  @MethodSource("bucketConfigs")
   @ParameterizedTest
-  @EnumSource(value = BucketLayout.class, names = { "FILE_SYSTEM_OPTIMIZED" })
-  void testPutKeyThreeDCs(BucketLayout bucketLayout) throws Exception {
-    try {
-      String volumeName = UUID.randomUUID().toString();
-      String bucketName = UUID.randomUUID().toString();
-      store.createVolume(volumeName);
-      OzoneVolume volume = store.getVolume(volumeName);
-      BucketArgs bucketArgs = BucketArgs.newBuilder()
-              .setBucketLayout(bucketLayout)
-              .addMetadata(OzoneConsts.DATACENTERS, "dc1,dc2,dc3")
-              .setDefaultReplicationConfig(
-                      new DefaultReplicationConfig(ReplicationConfig.fromTypeAndFactor(RATIS, THREE)))
-              .build();
-      volume.createBucket(bucketName, bucketArgs);
-      OzoneBucket bucket = volume.getBucket(bucketName);
-      createAndVerifyKeyData(bucket);
-      createAndVerifyStreamKeyData(bucket);
-    } finally {
-      cluster.shutdown();
-    }
+  void testPutKeyThreeDCs(BucketLayout bucketLayout, ReplicationFactor replicationFactor, String dcs) throws Exception {
+    String volumeName = UUID.randomUUID().toString();
+    String bucketName = UUID.randomUUID().toString();
+    store.createVolume(volumeName);
+    OzoneVolume volume = store.getVolume(volumeName);
+    BucketArgs bucketArgs = BucketArgs.newBuilder()
+        .setBucketLayout(bucketLayout)
+        .addMetadata(OzoneConsts.DATACENTERS, dcs)
+        .setDefaultReplicationConfig(
+            new DefaultReplicationConfig(ReplicationConfig.fromTypeAndFactor(RATIS, replicationFactor)))
+        .build();
+    volume.createBucket(bucketName, bucketArgs);
+    OzoneBucket bucket = volume.getBucket(bucketName);
+    createAndVerifyKeyData(bucket, replicationFactor);
+    createAndVerifyStreamKeyData(bucket, replicationFactor);
   }
 
-  static void createAndVerifyStreamKeyData(OzoneBucket bucket)
+  static void createAndVerifyStreamKeyData(OzoneBucket bucket, ReplicationFactor replicationFactor)
       throws Exception {
     Instant testStartTime = Instant.now();
     String keyName = UUID.randomUUID().toString();
     String value = "sample value";
     try (OzoneDataStreamOutput out = bucket.createStreamKey(keyName,
         value.getBytes(StandardCharsets.UTF_8).length,
-        ReplicationConfig.fromTypeAndFactor(RATIS, THREE),
+        ReplicationConfig.fromTypeAndFactor(RATIS, replicationFactor),
         new HashMap<>())) {
       out.write(value.getBytes(StandardCharsets.UTF_8));
     }
-    verifyKeyData(bucket, keyName, value, testStartTime);
+    verifyKeyData(bucket, keyName, value, testStartTime, replicationFactor);
   }
 
-  static void createAndVerifyKeyData(OzoneBucket bucket) throws Exception {
+  static void createAndVerifyKeyData(OzoneBucket bucket, ReplicationFactor replicationFactor) throws Exception {
     Instant testStartTime = Instant.now();
     String keyName = UUID.randomUUID().toString();
     String value = "sample value";
     try (OzoneOutputStream out = bucket.createKey(keyName,
         value.getBytes(StandardCharsets.UTF_8).length,
-        ReplicationConfig.fromTypeAndFactor(RATIS, THREE),
+        ReplicationConfig.fromTypeAndFactor(RATIS, replicationFactor),
         new HashMap<>())) {
       out.write(value.getBytes(StandardCharsets.UTF_8));
     }
-    verifyKeyData(bucket, keyName, value, testStartTime);
+    verifyKeyData(bucket, keyName, value, testStartTime, replicationFactor);
 
     // Overwrite the key
     try (OzoneOutputStream out = bucket.createKey(keyName,
         value.getBytes(StandardCharsets.UTF_8).length,
-        ReplicationConfig.fromTypeAndFactor(RATIS, THREE),
+        ReplicationConfig.fromTypeAndFactor(RATIS, replicationFactor),
         new HashMap<>())) {
       out.write(value.getBytes(StandardCharsets.UTF_8));
     }
   }
 
   static void verifyKeyData(OzoneBucket bucket, String keyName, String value,
-      Instant testStartTime) throws Exception {
+                            Instant testStartTime, ReplicationFactor replicationFactor) throws Exception {
     OzoneKeyDetails key = bucket.getKey(keyName);
     assertEquals(keyName, key.getName());
 
     byte[] fileContent;
-    int len = 0;
+    int len;
 
     try (OzoneInputStream is = bucket.readKey(keyName)) {
       fileContent = new byte[value.getBytes(StandardCharsets.UTF_8).length];
@@ -232,37 +227,51 @@ class TestThreeDCKeyWrite {
 
     assertEquals(len, value.length());
     assertTrue(verifyRatisReplication(bucket.getVolumeName(),
-               bucket.getName(), keyName, RATIS,
-               THREE));
+        bucket.getName(), keyName, RATIS, replicationFactor));
     assertEquals(value, new String(fileContent, StandardCharsets.UTF_8));
     assertFalse(key.getCreationTime().isBefore(testStartTime));
     assertFalse(key.getModificationTime().isBefore(testStartTime));
   }
 
   static boolean verifyRatisReplication(String volumeName, String bucketName,
-      String keyName, ReplicationType type, ReplicationFactor factor) throws IOException {
+                                        String keyName, ReplicationType type,
+                                        ReplicationFactor factor) throws IOException {
     OmKeyArgs keyArgs = new OmKeyArgs.Builder()
-          .setVolumeName(volumeName)
-          .setBucketName(bucketName)
-          .setKeyName(keyName)
-                .build();
+        .setVolumeName(volumeName)
+        .setBucketName(bucketName)
+        .setKeyName(keyName)
+        .build();
     HddsProtos.ReplicationType replicationType =
-         HddsProtos.ReplicationType.valueOf(type.toString());
+        HddsProtos.ReplicationType.valueOf(type.toString());
     HddsProtos.ReplicationFactor replicationFactor =
-         HddsProtos.ReplicationFactor.valueOf(factor.getValue());
+        HddsProtos.ReplicationFactor.valueOf(factor.getValue());
     OmKeyInfo keyInfo = ozoneManager.lookupKey(keyArgs);
-    for (OmKeyLocationInfo info:
-         keyInfo.getLatestVersionLocations().getLocationList()) {
+    for (OmKeyLocationInfo info :
+        keyInfo.getLatestVersionLocations().getLocationList()) {
       ContainerInfo container =
-           storageContainerLocationClient.getContainer(info.getContainerID());
+          storageContainerLocationClient.getContainer(info.getContainerID());
       if (!ReplicationConfig.getLegacyFactor(container.getReplicationConfig())
-           .equals(replicationFactor) || (
-           container.getReplicationType() != replicationType)) {
+          .equals(replicationFactor) || container.getReplicationType() != replicationType) {
         return false;
       }
     }
     return true;
   }
+
+  private static Stream<Arguments> bucketConfigs() {
+    List<Arguments> args = new ArrayList<>();
+    String[] dcs = {"dc1,dc2,dc3", "dc1"};
+    ReplicationFactor[] factors = {ReplicationFactor.THREE, ReplicationFactor.SIX};
+    for (BucketLayout layout : BucketLayout.values()) {
+      for (ReplicationFactor factor : factors) {
+        for (String dc : dcs) {
+          args.add(Arguments.of(layout, factor, dc));
+        }
+      }
+    }
+    return args.stream();
+  }
+
 }
 
 

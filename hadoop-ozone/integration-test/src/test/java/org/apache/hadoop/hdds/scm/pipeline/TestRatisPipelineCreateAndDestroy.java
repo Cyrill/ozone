@@ -191,9 +191,6 @@ public class TestRatisPipelineCreateAndDestroy {
 
     init(12, replicationFactor.getNumber());
 
-    // make sure two pipelines are created
-    //    waitForPipelines(2);
-
     // No Factor ONE pipeline is auto created.
     assertEquals(
         0,

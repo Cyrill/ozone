@@ -19,6 +19,9 @@
 package org.apache.hadoop.ozone.container.ozoneimpl;
 
 import org.apache.hadoop.hdds.client.BlockID;
+import org.apache.hadoop.hdds.client.ReplicationConfig;
+import org.apache.hadoop.hdds.client.ReplicationFactor;
+import org.apache.hadoop.hdds.client.ReplicationType;
 import org.apache.hadoop.hdds.protocol.DatanodeDetails;
 import org.apache.hadoop.hdds.protocol.datanode.proto.ContainerProtos;
 import org.apache.hadoop.hdds.scm.pipeline.MockPipeline;
@@ -37,6 +40,7 @@ import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
 import org.junit.rules.TemporaryFolder;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -499,9 +503,11 @@ public class TestOzoneContainer {
   }
 
   private static XceiverClientGrpc createClientForTesting(
-      MiniOzoneCluster cluster) {
+      MiniOzoneCluster cluster) throws IOException {
+    ReplicationConfig replicationConfig =
+        ReplicationConfig.fromTypeAndFactor(ReplicationType.RATIS, ReplicationFactor.ONE);
     Pipeline pipeline = cluster.getStorageContainerManager()
-        .getPipelineManager().getPipelines().iterator().next();
+        .getPipelineManager().createPipeline(replicationConfig);
     return new XceiverClientGrpc(pipeline, cluster.getConf());
   }
 

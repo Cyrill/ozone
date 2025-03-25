@@ -90,9 +90,6 @@ public class TestReconAsPassiveScm {
     PipelineManager reconPipelineManager = reconScm.getPipelineManager();
     PipelineManager scmPipelineManager = scm.getPipelineManager();
 
-    LambdaTestUtils.await(60000, 5000,
-        () -> (reconPipelineManager.getPipelines().size() >= 4));
-
     // Verify if Recon has all the pipelines from SCM.
     scmPipelineManager.getPipelines().forEach(p -> {
       try {
@@ -169,6 +166,7 @@ public class TestReconAsPassiveScm {
     PipelineManager scmPipelineManager = scm.getPipelineManager();
     Pipeline pipeline =
         scmPipelineManager.getPipeline(containerInfo.getPipelineID());
+    scmPipelineManager.openPipeline(pipeline.getId());
     XceiverClientGrpc client = new XceiverClientGrpc(pipeline, conf);
     runTestOzoneContainerViaDataNode(containerID, client);
     assertFalse(scmContainerManager.getContainers().isEmpty());

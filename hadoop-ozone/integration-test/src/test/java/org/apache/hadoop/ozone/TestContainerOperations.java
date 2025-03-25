@@ -33,9 +33,11 @@ import org.apache.hadoop.hdds.scm.pipeline.PipelineNotFoundException;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import static org.apache.hadoop.hdds.protocol.DatanodeDetails.Port.Name.REPLICATION;
 
+import org.apache.ozone.test.GenericTestUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -129,7 +131,7 @@ public class TestContainerOperations {
   }
 
   @Test
-  public void testDatanodeUsageInfoContainerCount() throws IOException {
+  public void testDatanodeUsageInfoContainerCount() throws IOException, InterruptedException, TimeoutException {
     List<DatanodeDetails> dnList = cluster.getStorageContainerManager()
             .getScmNodeManager()
             .getAllNodes();
@@ -158,7 +160,7 @@ public class TestContainerOperations {
               usageInfoList.get(0).getContainerCount() <= 1);
       totalContainerCount[(int)usageInfoList.get(0).getContainerCount()]++;
     }
-    assertEquals(2, totalContainerCount[0]);
-    assertEquals(1, totalContainerCount[1]);
+
+    GenericTestUtils.waitFor(() -> totalContainerCount[0] == 2 && totalContainerCount[1] == 1, 100, 20_000);
   }
 }
