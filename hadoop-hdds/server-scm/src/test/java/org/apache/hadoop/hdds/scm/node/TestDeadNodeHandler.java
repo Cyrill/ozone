@@ -189,11 +189,12 @@ public class TestDeadNodeHandler {
         HddsTestUtils.createNodeReport(Arrays.asList(storageOne),
             Arrays.asList(metaStorageOne)), null);
 
+    HddsTestUtils.createAllRatisPipelines(pipelineManager);
+
     LambdaTestUtils.await(120000, 1000,
         () -> pipelineManager.getPipelines(RatisReplicationConfig
                 .getInstance(THREE))
             .size() > 3);
-    HddsTestUtils.openAllRatisPipelines(pipelineManager);
 
     ContainerInfo container1 =
         HddsTestUtils.allocateContainer(containerManager);

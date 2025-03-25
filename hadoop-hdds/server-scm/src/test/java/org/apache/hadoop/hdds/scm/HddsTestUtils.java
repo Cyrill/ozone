@@ -83,6 +83,8 @@ import org.apache.hadoop.ozone.protocol.commands.RegisteredCommand;
 import org.apache.hadoop.security.UserGroupInformation;
 import org.apache.hadoop.security.authentication.client
     .AuthenticationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -101,6 +103,7 @@ import static org.mockito.Mockito.when;
  * Stateless helper functions for Hdds tests.
  */
 public final class HddsTestUtils {
+  static final Logger LOG = LoggerFactory.getLogger(HddsTestUtils.class);
 
   private static ThreadLocalRandom random = ThreadLocalRandom.current();
   private static PipelineID randomPipelineID = PipelineID.randomId();
@@ -411,6 +414,19 @@ public final class HddsTestUtils {
       for (Pipeline pipeline : pipelineManager
           .getPipelines(RatisReplicationConfig.getInstance(factor))) {
         pipelineManager.openPipeline(pipeline.getId());
+      }
+    }
+  }
+
+  public static void createAllRatisPipelines(PipelineManager pipelineManager) {
+    while (true) {
+      try {
+        Pipeline pipeline = pipelineManager.createPipeline(RatisReplicationConfig.getInstance(ReplicationFactor.THREE));
+
+        pipelineManager.openPipeline(pipeline.getId());
+      } catch (Exception e) {
+        LOG.error("Failed to create pipeline", e);
+        return;
       }
     }
   }

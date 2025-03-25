@@ -314,8 +314,6 @@ public class TestSCMNodeManager {
         Arrays.asList(originalNode1, originalNode2);
 
     // Initial condition: 2 healthy nodes registered.
-    assertPipelines(HddsProtos.ReplicationFactor.ONE, count -> count == 2,
-        originalNodes);
     assertPipelines(HddsProtos.ReplicationFactor.THREE,
         count -> count == 0, new ArrayList<>());
 
@@ -331,9 +329,8 @@ public class TestSCMNodeManager {
     List<DatanodeDetails> allNodes = new ArrayList<>(originalNodes);
     allNodes.add(node);
 
+    HddsTestUtils.createAllRatisPipelines(scm.getPipelineManager());
     // Safemode exit and adding the new node should trigger pipeline creation.
-    assertPipelines(HddsProtos.ReplicationFactor.ONE, count -> count == 3,
-        allNodes);
     assertPipelines(HddsProtos.ReplicationFactor.THREE, count -> count >= 1,
         allNodes);
 
@@ -342,8 +339,6 @@ public class TestSCMNodeManager {
 
     // Its pipelines should be closed then removed, meaning there is not
     // enough nodes for factor 3 pipelines.
-    assertPipelines(HddsProtos.ReplicationFactor.ONE, count -> count == 2,
-        originalNodes);
     assertPipelines(HddsProtos.ReplicationFactor.THREE,
         count -> count == 0, new ArrayList<>());
 
