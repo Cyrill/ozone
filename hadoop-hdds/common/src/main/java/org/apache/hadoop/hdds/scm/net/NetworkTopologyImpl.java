@@ -50,6 +50,9 @@ public class NetworkTopologyImpl implements NetworkTopology {
   public static final Logger LOG =
       LoggerFactory.getLogger(NetworkTopologyImpl.class);
 
+  // TODO: Should be extracted into configurable parameter.
+  private static final int READ_COST_LIMIT = 100;
+
   /** The Inner node crate factory. */
   private final InnerNode.Factory factory;
   /** The root cluster tree. */
@@ -788,7 +791,7 @@ public class NetworkTopologyImpl implements NetworkTopology {
     for (int i = 0; i < activeLen; i++) {
       int cost = costs[i];
       N node = nodes.get(i);
-      if (cost < 100 || !forRead) {
+      if (cost < READ_COST_LIMIT || !forRead) {
         tree.computeIfAbsent(cost, k -> Lists.newArrayListWithExpectedSize(1))
                 .add(node);
       }
