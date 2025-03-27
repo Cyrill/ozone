@@ -66,6 +66,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.joining;
+
 /**
  * SCM Pipeline Manager implementation.
  * All the write operations for pipelines must come via PipelineManager.
@@ -733,11 +735,10 @@ public class PipelineManagerImpl implements PipelineManager {
     if (timeout == 0) {
       timeout = pipelineWaitDefaultTimeout;
     }
-    List<String> pipelineIDStrs =
-            pipelineIDs.stream()
-                    .map(id -> id.getId().toString())
-                            .collect(Collectors.toList());
-    String piplineIdsStr = String.join(",", pipelineIDStrs);
+    String piplineIdsStr =
+        pipelineIDs.stream()
+            .map(id -> id.getId().toString())
+            .collect(joining(","));
     Pipeline pipeline = null;
     do {
       boolean found = false;
@@ -761,7 +762,7 @@ public class PipelineManagerImpl implements PipelineManager {
 
       if (pipeline == null) {
         try {
-          Thread.sleep((long)100);
+          Thread.sleep(100);
         } catch (InterruptedException e) {
           Thread.currentThread().interrupt();
         }

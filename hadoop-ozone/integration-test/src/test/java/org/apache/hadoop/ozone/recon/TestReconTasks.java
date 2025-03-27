@@ -129,12 +129,7 @@ public class TestReconTasks {
         cluster.getReconServer().getReconContainerMetadataManager();
 
     StorageContainerManager scm = cluster.getStorageContainerManager();
-    PipelineManager reconPipelineManager = reconScm.getPipelineManager();
     PipelineManager scmPipelineManager = scm.getPipelineManager();
-
-    // Make sure Recon's pipeline state is initialized.
-    LambdaTestUtils.await(60000, 5000,
-        () -> (reconPipelineManager.getPipelines().size() >= 1));
 
     ContainerManager scmContainerManager = scm.getContainerManager();
     ReconContainerManager reconContainerManager =
@@ -209,12 +204,7 @@ public class TestReconTasks {
     ReconContainerMetadataManager reconContainerMetadataManager =
         cluster.getReconServer().getReconContainerMetadataManager();
     StorageContainerManager scm = cluster.getStorageContainerManager();
-    PipelineManager reconPipelineManager = reconScm.getPipelineManager();
     PipelineManager scmPipelineManager = scm.getPipelineManager();
-
-    // Make sure Recon's pipeline state is initialized.
-    LambdaTestUtils.await(60000, 1000,
-        () -> (reconPipelineManager.getPipelines().size() >= 1));
 
     ContainerManager scmContainerManager = scm.getContainerManager();
     ReconContainerManager reconContainerManager =

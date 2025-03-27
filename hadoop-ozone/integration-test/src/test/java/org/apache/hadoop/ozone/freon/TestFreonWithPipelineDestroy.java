@@ -21,7 +21,6 @@ package org.apache.hadoop.ozone.freon;
 import org.apache.hadoop.hdds.HddsConfigKeys;
 import org.apache.hadoop.hdds.conf.DatanodeRatisServerConfig;
 import org.apache.hadoop.hdds.conf.OzoneConfiguration;
-import org.apache.hadoop.hdds.protocol.proto.HddsProtos;
 import org.apache.hadoop.hdds.protocol.proto.StorageContainerDatanodeProtocolProtos;
 import org.apache.hadoop.hdds.ratis.conf.RatisClientConfig;
 import org.apache.hadoop.hdds.scm.ScmConfigKeys;
@@ -60,7 +59,7 @@ public class TestFreonWithPipelineDestroy {
     conf.setTimeDuration(ScmConfigKeys.OZONE_SCM_PIPELINE_DESTROY_TIMEOUT,
             1, TimeUnit.SECONDS);
     conf.setTimeDuration(HddsConfigKeys.HDDS_PIPELINE_REPORT_INTERVAL,
-            1, TimeUnit.SECONDS);
+            10, TimeUnit.SECONDS);
     DatanodeRatisServerConfig ratisServerConfig =
         conf.getObject(DatanodeRatisServerConfig.class);
     ratisServerConfig.setRequestTimeOut(Duration.ofSeconds(3));
@@ -96,8 +95,6 @@ public class TestFreonWithPipelineDestroy {
   public void testRestart() throws Exception {
     startFreon();
     destroyPipeline();
-    cluster.waitForPipelineTobeReady(HddsProtos.ReplicationFactor.THREE,
-            180000);
     startFreon();
   }
 
