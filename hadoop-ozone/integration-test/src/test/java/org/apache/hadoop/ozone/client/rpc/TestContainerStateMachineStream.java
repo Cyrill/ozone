@@ -21,7 +21,6 @@ import org.apache.hadoop.conf.StorageUnit;
 import org.apache.hadoop.hdds.client.ReplicationType;
 import org.apache.hadoop.hdds.conf.DatanodeRatisServerConfig;
 import org.apache.hadoop.hdds.conf.OzoneConfiguration;
-import org.apache.hadoop.hdds.protocol.proto.HddsProtos;
 import org.apache.hadoop.hdds.ratis.conf.RatisClientConfig;
 import org.apache.hadoop.hdds.scm.OzoneClientConfig;
 import org.apache.hadoop.hdds.utils.IOUtils;
@@ -135,7 +134,6 @@ public class TestContainerStateMachineStream {
             .setStreamBufferSizeUnit(StorageUnit.BYTES)
             .build();
     cluster.waitForClusterToBeReady();
-    cluster.waitForPipelineTobeReady(HddsProtos.ReplicationFactor.ONE, 60000);
     //the easiest way to create an open container is creating a key
     client = OzoneClientFactory.getRpcClient(conf);
     objectStore = client.getObjectStore();

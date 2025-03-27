@@ -70,11 +70,13 @@ import org.junit.Assert;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
 /**
  * This class verifies the watchForCommit Handling by xceiverClient.
  */
 @Flaky("HDDS-5818")
+@Timeout(300)
 public class TestWatchForCommit {
 
   private MiniOzoneCluster cluster;
@@ -144,7 +146,6 @@ public class TestWatchForCommit {
         .setStreamBufferSizeUnit(StorageUnit.BYTES)
         .build();
     cluster.waitForClusterToBeReady();
-    cluster.waitForPipelineTobeReady(HddsProtos.ReplicationFactor.THREE, 60000);
     //the easiest way to create an open container is creating a key
     client = OzoneClientFactory.getRpcClient(conf);
     objectStore = client.getObjectStore();

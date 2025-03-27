@@ -24,7 +24,6 @@ import org.apache.hadoop.hdds.utils.IOUtils;
 import org.apache.hadoop.hdds.client.ReplicationFactor;
 import org.apache.hadoop.hdds.client.ReplicationType;
 import org.apache.hadoop.hdds.conf.OzoneConfiguration;
-import org.apache.hadoop.hdds.protocol.proto.HddsProtos;
 import org.apache.hadoop.hdds.scm.server.OzoneStorageContainerManager;
 import org.apache.hadoop.ozone.MiniOzoneCluster;
 import org.apache.hadoop.ozone.client.ObjectStore;
@@ -78,7 +77,6 @@ public class TestReconWithOzoneManagerFSO {
                     .includeRecon(true)
                     .build();
     cluster.waitForClusterToBeReady();
-    cluster.waitForPipelineTobeReady(HddsProtos.ReplicationFactor.ONE, 30000);
 
     client = cluster.newClient();
     store = client.getObjectStore();

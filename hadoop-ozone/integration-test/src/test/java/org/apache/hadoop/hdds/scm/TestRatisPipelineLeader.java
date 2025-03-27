@@ -64,7 +64,6 @@ public class TestRatisPipelineLeader {
         .setNumDatanodes(3)
         .build();
     cluster.waitForClusterToBeReady();
-    cluster.waitForPipelineTobeReady(ReplicationFactor.THREE, 5000);
   }
 
   @AfterAll

@@ -479,7 +479,6 @@ public class TestStorageContainerManager {
         .setNumDatanodes(1)
         .build();
     cluster.waitForClusterToBeReady();
-    cluster.waitForPipelineTobeReady(HddsProtos.ReplicationFactor.ONE, 30000);
 
     try {
       DeletedBlockLog delLog = cluster.getStorageContainerManager()
@@ -861,7 +860,6 @@ public class TestStorageContainerManager {
         .setNumDatanodes(1)
         .build();
     cluster.waitForClusterToBeReady();
-    cluster.waitForPipelineTobeReady(HddsProtos.ReplicationFactor.ONE, 30000);
 
     try {
       TestStorageContainerManagerHelper helper =

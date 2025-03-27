@@ -20,7 +20,6 @@ package org.apache.hadoop.ozone.freon;
 
 import org.apache.hadoop.hdds.conf.DatanodeRatisServerConfig;
 import org.apache.hadoop.hdds.conf.OzoneConfiguration;
-import org.apache.hadoop.hdds.protocol.proto.HddsProtos;
 import org.apache.hadoop.hdds.ratis.conf.RatisClientConfig;
 import org.apache.hadoop.ozone.MiniOzoneCluster;
 import org.junit.Assert;
@@ -52,8 +51,6 @@ public abstract class TestDataValidate {
     cluster = MiniOzoneCluster.newBuilder(conf)
         .setNumDatanodes(5).setTotalPipelineNumLimit(8).build();
     cluster.waitForClusterToBeReady();
-    cluster.waitForPipelineTobeReady(HddsProtos.ReplicationFactor.THREE,
-            180000);
   }
 
   static void shutdownCluster() {

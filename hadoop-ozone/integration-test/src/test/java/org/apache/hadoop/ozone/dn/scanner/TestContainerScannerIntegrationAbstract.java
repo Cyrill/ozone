@@ -104,7 +104,6 @@ public abstract class TestContainerScannerIntegrationAbstract {
     cluster = MiniOzoneCluster.newBuilder(ozoneConfig).setNumDatanodes(1)
         .build();
     cluster.waitForClusterToBeReady();
-    cluster.waitForPipelineTobeReady(HddsProtos.ReplicationFactor.ONE, 30000);
     ozClient = OzoneClientFactory.getRpcClient(ozoneConfig);
     store = ozClient.getObjectStore();
 

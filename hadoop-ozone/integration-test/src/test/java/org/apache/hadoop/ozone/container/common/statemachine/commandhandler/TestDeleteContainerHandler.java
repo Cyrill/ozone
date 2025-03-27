@@ -121,7 +121,6 @@ public class TestDeleteContainerHandler {
     cluster = MiniOzoneCluster.newBuilder(conf)
         .setNumDatanodes(1).build();
     cluster.waitForClusterToBeReady();
-    cluster.waitForPipelineTobeReady(ONE, 30000);
 
     client = OzoneClientFactory.getRpcClient(conf);
     objectStore = client.getObjectStore();

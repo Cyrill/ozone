@@ -68,7 +68,6 @@ class TestReadRetries {
 
     try (MiniOzoneCluster cluster = newCluster(conf)) {
       cluster.waitForClusterToBeReady();
-      cluster.waitForPipelineTobeReady(THREE, 180000);
 
       try (OzoneClient client = cluster.newClient()) {
         ObjectStore store = client.getObjectStore();
