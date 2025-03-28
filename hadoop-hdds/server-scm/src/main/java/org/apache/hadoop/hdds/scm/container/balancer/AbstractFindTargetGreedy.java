@@ -32,6 +32,7 @@ import org.apache.hadoop.hdds.scm.node.DatanodeUsageInfo;
 import org.apache.hadoop.hdds.scm.node.NodeManager;
 import org.slf4j.Logger;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -94,8 +95,8 @@ public abstract class AbstractFindTargetGreedy implements FindTargetStrategy {
     return uuidA.compareTo(uuidB);
   }
 
-  private void setConfiguration(ContainerBalancerConfiguration conf) {
-    config = conf;
+  private void setConfiguration(ContainerBalancerConfiguration balancerConfiguration) {
+    config = balancerConfiguration;
   }
 
   private String getDCForDatanode(DatanodeDetails dn) {
