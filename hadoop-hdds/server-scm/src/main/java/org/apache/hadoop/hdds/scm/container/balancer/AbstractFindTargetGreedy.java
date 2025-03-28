@@ -41,7 +41,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.apache.hadoop.hdds.protocol.DatanodeDetails.Port.Name.RATIS;
-import static org.apache.hadoop.ozone.OzoneConfigKeys.HDDS_CONTAINER_RATIS_IPC_PORT;
 
 /**
  * Find a target for a source datanode with greedy strategy.
@@ -95,6 +94,10 @@ public abstract class AbstractFindTargetGreedy implements FindTargetStrategy {
     return uuidA.compareTo(uuidB);
   }
 
+  private void setConfiguration(ContainerBalancerConfiguration conf) {
+    config = conf;
+  }
+
   private String getDCForDatanode(DatanodeDetails dn) {
     String datanode = dn.getHostName() + ":" + dn.getPort(RATIS).getValue();
     String dcConf = conf.get("ozone.scm.dc.datanode.mapping");
@@ -106,10 +109,6 @@ public abstract class AbstractFindTargetGreedy implements FindTargetStrategy {
 
   private boolean isDcConfigured() {
     return conf.get("ozone.scm.dc.datanode.mapping") != null;
-  }
-
-  private void setConfiguration(ContainerBalancerConfiguration conf) {
-    config = conf;
   }
 
   /**
@@ -271,9 +270,9 @@ public abstract class AbstractFindTargetGreedy implements FindTargetStrategy {
    */
   @Override
   public void reInitialize(List<DatanodeUsageInfo> potentialDataNodes,
-                           ContainerBalancerConfiguration conf,
+                           ContainerBalancerConfiguration balancerConfiguration,
                            Double upLimit) {
-    setConfiguration(conf);
+    setConfiguration(balancerConfiguration);
     setUpperLimit(upLimit);
     sizeEnteringNode.clear();
     resetTargets(potentialDataNodes);
