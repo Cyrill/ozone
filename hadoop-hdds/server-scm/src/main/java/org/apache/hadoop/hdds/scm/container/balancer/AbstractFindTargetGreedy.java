@@ -19,9 +19,11 @@
 package org.apache.hadoop.hdds.scm.container.balancer;
 
 import com.google.common.annotations.VisibleForTesting;
+import org.apache.hadoop.hdds.conf.OzoneConfiguration;
 import org.apache.hadoop.hdds.protocol.DatanodeDetails;
 import org.apache.hadoop.hdds.scm.ContainerPlacementStatus;
 import org.apache.hadoop.hdds.scm.PlacementPolicyValidateProxy;
+import org.apache.hadoop.hdds.scm.ScmUtils;
 import org.apache.hadoop.hdds.scm.container.ContainerID;
 import org.apache.hadoop.hdds.scm.container.ContainerInfo;
 import org.apache.hadoop.hdds.scm.container.ContainerManager;
@@ -29,15 +31,14 @@ import org.apache.hadoop.hdds.scm.container.ContainerNotFoundException;
 import org.apache.hadoop.hdds.scm.container.ContainerReplica;
 import org.apache.hadoop.hdds.scm.node.DatanodeUsageInfo;
 import org.apache.hadoop.hdds.scm.node.NodeManager;
+import org.apache.hadoop.ozone.HddsDatanodeService;
 import org.slf4j.Logger;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
+
+import static org.apache.hadoop.hdds.protocol.DatanodeDetails.Port.Name.RATIS;
+import static org.apache.hadoop.ozone.OzoneConfigKeys.HDDS_CONTAINER_RATIS_IPC_PORT;
 
 /**
  * Find a target for a source datanode with greedy strategy.
@@ -51,15 +52,18 @@ public abstract class AbstractFindTargetGreedy implements FindTargetStrategy {
   private ContainerBalancerConfiguration config;
   private Double upperLimit;
   private Collection<DatanodeUsageInfo> potentialTargets;
+  private OzoneConfiguration conf;
 
   protected AbstractFindTargetGreedy(
       ContainerManager containerManager,
       PlacementPolicyValidateProxy placementPolicyValidateProxy,
-      NodeManager nodeManager) {
+      NodeManager nodeManager,
+      OzoneConfiguration ozoneConfiguration) {
     sizeEnteringNode = new HashMap<>();
     this.containerManager = containerManager;
     this.placementPolicyValidateProxy = placementPolicyValidateProxy;
     this.nodeManager = nodeManager;
+    this.conf = ozoneConfiguration;
   }
 
   protected void setLogger(Logger log) {
@@ -88,6 +92,19 @@ public abstract class AbstractFindTargetGreedy implements FindTargetStrategy {
     return uuidA.compareTo(uuidB);
   }
 
+  private String getDCForDatanode(DatanodeDetails dn) {
+    String datanode = dn.getHostName() + ":" + dn.getPort(RATIS).getValue();
+    String dcConf = conf.get("ozone.scm.dc.datanode.mapping");
+    Map<String, String> dcConfMap = Arrays.stream(dcConf.split(","))
+            .map(s -> s.split("=", 2))
+            .collect(Collectors.toMap(parts -> parts[0], parts -> parts[1]));
+    return dcConfMap.get(datanode);
+  }
+
+  private boolean isDcConfigured() {
+    return conf.get("ozone.scm.dc.datanode.mapping") != null;
+  }
+
   private void setConfiguration(ContainerBalancerConfiguration conf) {
     config = conf;
   }
@@ -107,8 +124,15 @@ public abstract class AbstractFindTargetGreedy implements FindTargetStrategy {
   public ContainerMoveSelection findTargetForContainerMove(
       DatanodeDetails source, Set<ContainerID> candidateContainers) {
     sortTargetForSource(source);
+    String sourceDC = getDCForDatanode(source);
     for (DatanodeUsageInfo targetInfo : potentialTargets) {
       DatanodeDetails target = targetInfo.getDatanodeDetails();
+      if (isDcConfigured()) {
+        String targetDC = getDCForDatanode(target);
+        if (targetDC == null || !targetDC.equals(sourceDC)) {
+          continue;
+        }
+      }
       for (ContainerID container : candidateContainers) {
         Set<ContainerReplica> replicas;
         ContainerInfo containerInfo;
@@ -118,6 +142,10 @@ public abstract class AbstractFindTargetGreedy implements FindTargetStrategy {
         } catch (ContainerNotFoundException e) {
           logger.warn("Could not get Container {} from Container Manager for " +
               "obtaining replicas in Container Balancer.", container, e);
+          continue;
+        }
+
+        if (isDcConfigured() && !containerInfo.getDatacenters().contains(sourceDC)) {
           continue;
         }
 
