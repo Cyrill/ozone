@@ -58,8 +58,9 @@ Datanode Recommission is Finished
 Run Container Balancer
     ${result} =             Execute                         ozone admin containerbalancer start -t 1 -d 100 -i 5
                             Should Contain                  ${result}             Container Balancer started successfully.
-                            Sleep                   120000ms
+                            Sleep                   60000ms
                             Execute                         ozone admin containerbalancer stop
+                            Sleep                   60000ms
 
 Create Multiple Keys
     [arguments]             ${NUM_KEYS}
@@ -102,7 +103,7 @@ Get Datanode Ozone Used Bytes Info
     [return]          ${result}
 
 ** Test Cases ***
-Verify Container Balancer for RATIS containers
+Verify Container Balancer for cross dc
     Prepare For Tests
 
     Datanode In Maintenance Mode

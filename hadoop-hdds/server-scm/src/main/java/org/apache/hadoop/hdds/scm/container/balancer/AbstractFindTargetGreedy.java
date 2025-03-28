@@ -127,10 +127,11 @@ public abstract class AbstractFindTargetGreedy implements FindTargetStrategy {
   public ContainerMoveSelection findTargetForContainerMove(
       DatanodeDetails source, Set<ContainerID> candidateContainers) {
     sortTargetForSource(source);
-    String sourceDC = getDCForDatanode(source);
+    String sourceDC = "";
     for (DatanodeUsageInfo targetInfo : potentialTargets) {
       DatanodeDetails target = targetInfo.getDatanodeDetails();
       if (isDcConfigured()) {
+        sourceDC = getDCForDatanode(source);
         String targetDC = getDCForDatanode(target);
         if (targetDC == null || !targetDC.equals(sourceDC)) {
           continue;
