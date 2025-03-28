@@ -20,6 +20,7 @@ package org.apache.hadoop.hdds.scm;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.hadoop.hdds.HddsConfigKeys;
 import org.apache.hadoop.hdds.client.RatisReplicationConfig;
@@ -64,6 +65,9 @@ public class TestRatisPipelineLeader {
         .setNumDatanodes(3)
         .build();
     cluster.waitForClusterToBeReady();
+    HddsTestUtils.createAllRatisPipelines(cluster.getStorageContainerManager()
+        .getPipelineManager());
+
   }
 
   @AfterAll
@@ -75,15 +79,21 @@ public class TestRatisPipelineLeader {
 
   @Test @Timeout(unit = TimeUnit.MILLISECONDS, value = 120000)
   public void testLeaderIdUsedOnFirstCall() throws Exception {
-    List<Pipeline> pipelines = cluster.getStorageContainerManager()
-        .getPipelineManager().getPipelines(RatisReplicationConfig.getInstance(
-            ReplicationFactor.THREE));
-    Assertions.assertFalse(pipelines.isEmpty());
-    Optional<Pipeline> optional = pipelines.stream()
-        .filter(Pipeline::isHealthy)
-        .findFirst();
-    Assertions.assertTrue(optional.isPresent());
-    Pipeline ratisPipeline = optional.get();
+    AtomicReference<Optional<Pipeline>> optionalPipeline = new AtomicReference<>();
+    GenericTestUtils.waitFor(() -> {
+      List<Pipeline> pipelines = cluster.getStorageContainerManager()
+          .getPipelineManager().getPipelines(RatisReplicationConfig.getInstance(
+              ReplicationFactor.THREE));
+      Assertions.assertFalse(pipelines.isEmpty());
+      Optional<Pipeline> optional = pipelines.stream()
+          .filter(Pipeline::isHealthy)
+          .findFirst();
+      optionalPipeline.set(optional);
+      return optional.isPresent();
+    }, 200, 20000);
+
+    Pipeline ratisPipeline = optionalPipeline.get().get();
+
     // Verify correct leader info populated
     GenericTestUtils.waitFor(() -> {
       try {
@@ -114,15 +124,20 @@ public class TestRatisPipelineLeader {
 
   @Test @Timeout(unit = TimeUnit.MILLISECONDS, value = 120000)
   public void testLeaderIdAfterLeaderChange() throws Exception {
-    List<Pipeline> pipelines = cluster.getStorageContainerManager()
-        .getPipelineManager().getPipelines(RatisReplicationConfig.getInstance(
-            ReplicationFactor.THREE));
-    Assertions.assertFalse(pipelines.isEmpty());
-    Optional<Pipeline> optional = pipelines.stream()
-        .filter(Pipeline::isHealthy)
-        .findFirst();
-    Assertions.assertTrue(optional.isPresent());
-    Pipeline ratisPipeline = optional.get();
+    AtomicReference<Optional<Pipeline>> optionalPipeline = new AtomicReference<>();
+    GenericTestUtils.waitFor(() -> {
+      List<Pipeline> pipelines = cluster.getStorageContainerManager()
+          .getPipelineManager().getPipelines(RatisReplicationConfig.getInstance(
+              ReplicationFactor.THREE));
+      Assertions.assertFalse(pipelines.isEmpty());
+      Optional<Pipeline> optional = pipelines.stream()
+          .filter(Pipeline::isHealthy)
+          .findFirst();
+      optionalPipeline.set(optional);
+      return optional.isPresent();
+    }, 200, 20000);
+
+    Pipeline ratisPipeline = optionalPipeline.get().get();
     Optional<HddsDatanodeService> dnToStop =
         cluster.getHddsDatanodes().stream().filter(s ->
             !s.getDatanodeStateMachine().getDatanodeDetails().getUuid().equals(
