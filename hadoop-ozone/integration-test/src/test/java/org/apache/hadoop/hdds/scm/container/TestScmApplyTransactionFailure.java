@@ -24,6 +24,7 @@ import org.apache.hadoop.hdds.conf.OzoneConfiguration;
 import org.apache.hadoop.hdds.protocol.proto.HddsProtos;
 import org.apache.hadoop.hdds.protocol.proto.HddsProtos.ContainerInfoProto;
 import org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationFactor;
+import org.apache.hadoop.hdds.scm.HddsTestUtils;
 import org.apache.hadoop.hdds.scm.ScmConfigKeys;
 import org.apache.hadoop.hdds.scm.exceptions.SCMException;
 import org.apache.hadoop.hdds.scm.pipeline.DuplicatedPipelineIdException;
@@ -74,6 +75,7 @@ public class TestScmApplyTransactionFailure {
     scm = cluster.getStorageContainerManager();
     containerManager = scm.getContainerManager();
     pipelineManager = (PipelineManagerImpl) scm.getPipelineManager();
+    HddsTestUtils.createAllRatisPipelines(pipelineManager);
   }
 
   /**

@@ -24,6 +24,7 @@ import org.apache.hadoop.hdds.protocol.DatanodeDetails;
 import org.apache.hadoop.hdds.protocol.proto.HddsProtos;
 import org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationFactor;
 
+import org.apache.hadoop.hdds.scm.HddsTestUtils;
 import org.apache.hadoop.hdds.scm.ScmConfigKeys;
 import org.apache.hadoop.hdds.scm.node.NodeManager;
 import org.apache.hadoop.hdds.scm.server.StorageContainerManager;
@@ -67,6 +68,7 @@ public class  TestMultiRaftSetup {
     scm = cluster.getStorageContainerManager();
     nodeManager = scm.getScmNodeManager();
     pipelineManager = scm.getPipelineManager();
+    HddsTestUtils.createAllRatisPipelines(pipelineManager);
   }
 
   /**
