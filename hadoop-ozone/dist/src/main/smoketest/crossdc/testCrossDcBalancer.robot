@@ -60,7 +60,7 @@ Run Container Balancer
                             Should Contain                  ${result}             Container Balancer started successfully.
                             Sleep                   60000ms
                             Execute                         ozone admin containerbalancer stop
-                            Sleep                   60000ms
+                            Sleep                   120000ms
 
 Create Multiple Keys
     [arguments]             ${NUM_KEYS}

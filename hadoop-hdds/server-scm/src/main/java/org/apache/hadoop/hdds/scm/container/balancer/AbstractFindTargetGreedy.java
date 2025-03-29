@@ -23,6 +23,7 @@ import org.apache.hadoop.hdds.conf.OzoneConfiguration;
 import org.apache.hadoop.hdds.protocol.DatanodeDetails;
 import org.apache.hadoop.hdds.scm.ContainerPlacementStatus;
 import org.apache.hadoop.hdds.scm.PlacementPolicyValidateProxy;
+import org.apache.hadoop.hdds.scm.ScmUtils;
 import org.apache.hadoop.hdds.scm.container.ContainerID;
 import org.apache.hadoop.hdds.scm.container.ContainerInfo;
 import org.apache.hadoop.hdds.scm.container.ContainerManager;
@@ -101,11 +102,7 @@ public abstract class AbstractFindTargetGreedy implements FindTargetStrategy {
 
   private String getDCForDatanode(DatanodeDetails dn) {
     String datanode = dn.getHostName() + ":" + dn.getPort(RATIS).getValue();
-    String dcConf = conf.get("ozone.scm.dc.datanode.mapping");
-    Map<String, String> dcConfMap = Arrays.stream(dcConf.split(","))
-            .map(s -> s.split("=", 2))
-            .collect(Collectors.toMap(parts -> parts[0], parts -> parts[1]));
-    return dcConfMap.get(datanode);
+    return ScmUtils.getDcMapping(conf).get(datanode);
   }
 
   private boolean isDcConfigured() {
@@ -128,12 +125,13 @@ public abstract class AbstractFindTargetGreedy implements FindTargetStrategy {
       DatanodeDetails source, Set<ContainerID> candidateContainers) {
     sortTargetForSource(source);
     String sourceDC = "";
+    String targetDC;
     for (DatanodeUsageInfo targetInfo : potentialTargets) {
       DatanodeDetails target = targetInfo.getDatanodeDetails();
       if (isDcConfigured()) {
         sourceDC = getDCForDatanode(source);
-        String targetDC = getDCForDatanode(target);
-        if (targetDC == null || !targetDC.equals(sourceDC)) {
+        targetDC = getDCForDatanode(target);
+        if (!targetDC.equals(sourceDC)) {
           continue;
         }
       }
@@ -149,7 +147,7 @@ public abstract class AbstractFindTargetGreedy implements FindTargetStrategy {
           continue;
         }
 
-        if (isDcConfigured() && !containerInfo.getDatacenters().contains(sourceDC)) {
+        if (!containerInfo.getDatacenters().isEmpty() && !containerInfo.getDatacenters().contains(sourceDC)) {
           continue;
         }
 
