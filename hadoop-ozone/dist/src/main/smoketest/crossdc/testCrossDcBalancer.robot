@@ -56,11 +56,16 @@ Datanode Recommission is Finished
                             Should Not Contain   ${result}   ENTERING_MAINTENANCE
 
 Run Container Balancer
-    ${result} =             Execute                         ozone admin containerbalancer start -t 1 -d 100 -i 5
+    ${result} =             Execute                         ozone admin containerbalancer start -t 1 -d 100 -i 1
                             Should Contain                  ${result}             Container Balancer started successfully.
+    ${result} =             Execute                         ozone admin containerbalancer status
+                            Should Contain                  ${result}             ContainerBalancer is Running.
+                            Wait Until Keyword Succeeds      3min    10sec    ContainerBalancer is Not Running
                             Sleep                   60000ms
-                            Execute                         ozone admin containerbalancer stop
-                            Sleep                   120000ms
+
+ContainerBalancer is Not Running
+    ${result} =         Execute          ozone admin containerbalancer status
+                        Should contain   ${result}   ContainerBalancer is Not Running.
 
 Create Multiple Keys
     [arguments]             ${NUM_KEYS}
