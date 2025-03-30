@@ -42,8 +42,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static org.apache.hadoop.hdds.protocol.DatanodeDetails.Port.Name.RATIS;
-
 /**
  * Find a target for a source datanode with greedy strategy.
  */
