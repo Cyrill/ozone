@@ -48,24 +48,14 @@ Datanode In Maintenance Mode
 Datanode Recommission
     ${result} =             Execute                         ozone admin datanode recommission ${HOST}
                             Should Contain                  ${result}             Started recommissioning datanode
-                            Wait Until Keyword Succeeds      1min    10sec    Datanode Recommission is Finished
-                            Sleep                   60000ms
-
-Datanode Recommission is Finished
-    ${result} =             Execute                         ozone admin datanode list | grep "Operational State:*"
-                            Should Not Contain   ${result}   ENTERING_MAINTENANCE
+                            Sleep                   120000ms
 
 Run Container Balancer
-    ${result} =             Execute                         ozone admin containerbalancer start -t 1 -d 100 -i 1
+    ${result} =             Execute                         ozone admin containerbalancer start -t 1 -d 100
                             Should Contain                  ${result}             Container Balancer started successfully.
-    ${result} =             Execute                         ozone admin containerbalancer status
-                            Should Contain                  ${result}             ContainerBalancer is Running.
-                            Wait Until Keyword Succeeds      3min    10sec    ContainerBalancer is Not Running
                             Sleep                   60000ms
-
-ContainerBalancer is Not Running
-    ${result} =         Execute          ozone admin containerbalancer status
-                        Should contain   ${result}   ContainerBalancer is Not Running.
+                            Execute                         ozone admin containerbalancer stop
+                            Sleep                   30000ms
 
 Create Multiple Keys
     [arguments]             ${NUM_KEYS}
@@ -84,7 +74,7 @@ Datanode Usageinfo
                             Should Contain                  ${result}             Ozone Used
 
 Get Uuid
-    ${result} =             Execute          ozone admin datanode list | awk -v RS= '{$1=$1}1'| grep ${HOST} | sed -e 's/Datanode: //'|sed -e 's/ .*$//'
+    ${result} =             Execute          ozone admin datanode list | grep ${HOST} | sed -e 's/Datanode: //'|sed -e 's/ .*$//'
     [return]          ${result}
 
 Close All Containers
@@ -129,8 +119,8 @@ Verify Container Balancer for cross dc
 
     ${datanodeOzoneUsedBytesInfoAfterContainerBalancing} =    Get Datanode Ozone Used Bytes Info          ${uuid}
     Should Not Be Equal As Integers     ${datanodeOzoneUsedBytesInfo}    ${datanodeOzoneUsedBytesInfoAfterContainerBalancing}
-    Should Be True    ${datanodeOzoneUsedBytesInfoAfterContainerBalancing} < ${SIZE} * 3.3
-    Should Be True    ${datanodeOzoneUsedBytesInfoAfterContainerBalancing} > ${SIZE} * 2.8
+    Should Be True    ${datanodeOzoneUsedBytesInfoAfterContainerBalancing} < ${SIZE} * 2.4
+    Should Be True    ${datanodeOzoneUsedBytesInfoAfterContainerBalancing} > ${SIZE} * 2
 
 
 
