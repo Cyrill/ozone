@@ -101,8 +101,7 @@ public abstract class AbstractFindTargetGreedy implements FindTargetStrategy {
   }
 
   private String getDCForDatanode(DatanodeDetails dn) {
-    String datanode = dn.getHostName() + ":" + dn.getPort(RATIS).getValue();
-    return ScmUtils.getDcMapping(conf).get(datanode);
+    return dn.getDc(ScmUtils.getDcMapping(conf));
   }
 
   private boolean isDcConfigured() {
