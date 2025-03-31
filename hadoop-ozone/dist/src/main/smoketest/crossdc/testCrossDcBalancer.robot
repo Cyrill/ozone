@@ -43,12 +43,12 @@ Datanode In Maintenance Mode
                             Should Contain                  ${result}             Entering maintenance mode on datanode
     ${result} =             Execute                         ozone admin datanode list | grep "Operational State:*"
                             Wait Until Keyword Succeeds      30sec   5sec    Should contain   ${result}   ENTERING_MAINTENANCE
-                            Sleep                   60000ms
+                            Sleep                   30000ms
 
 Datanode Recommission
     ${result} =             Execute                         ozone admin datanode recommission ${HOST}
                             Should Contain                  ${result}             Started recommissioning datanode
-                            Sleep                   120000ms
+                            Sleep                   30000ms
 
 Run Container Balancer
     ${result} =             Execute                         ozone admin containerbalancer start -t 1 -d 100
@@ -67,6 +67,7 @@ Create Multiple Keys
             Create Key    ${key}    ${file}
             Key Should Match Local File    ${key}      ${file}
     END
+    Sleep    30000ms
 
 Datanode Usageinfo
     [arguments]             ${uuid}
@@ -88,8 +89,10 @@ Close All Containers
     Wait until keyword succeeds    3min    10sec    All container is closed
 
 All container is closed
-    ${output} =         Execute          ozone admin container list --state OPEN
-                        Should Be Empty   ${output}
+    ${open} =         Execute          ozone admin container list --state OPEN
+                        Should Be Empty   ${open}
+    ${closing} =      Execute          ozone admin container list --state CLOSING
+                        Should Be Empty   ${closing}
 
 Get Datanode Ozone Used Bytes Info
     [arguments]             ${uuid}
@@ -119,8 +122,8 @@ Verify Container Balancer for cross dc
 
     ${datanodeOzoneUsedBytesInfoAfterContainerBalancing} =    Get Datanode Ozone Used Bytes Info          ${uuid}
     Should Not Be Equal As Integers     ${datanodeOzoneUsedBytesInfo}    ${datanodeOzoneUsedBytesInfoAfterContainerBalancing}
-    Should Be True    ${datanodeOzoneUsedBytesInfoAfterContainerBalancing} < ${SIZE} * 2.4
-    Should Be True    ${datanodeOzoneUsedBytesInfoAfterContainerBalancing} > ${SIZE} * 2
+    Should Be True    ${datanodeOzoneUsedBytesInfoAfterContainerBalancing} < ${SIZE} * 1.2
+    Should Be True    ${datanodeOzoneUsedBytesInfoAfterContainerBalancing} > ${SIZE}
 
 
 

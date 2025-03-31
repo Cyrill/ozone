@@ -19,6 +19,7 @@
 
 COMPOSE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 export COMPOSE_DIR
+export SCM=scm1
 
 export SECURITY_ENABLED=false
 export OZONE_REPLICATION_FACTOR=3
@@ -28,4 +29,4 @@ source "$COMPOSE_DIR/../testlib.sh"
 
 start_docker_env
 
-execute_robot_test scm crossdc/testCrossDcBalancer.robot
+execute_robot_test ${SCM} crossdc/testCrossDcBalancer.robot

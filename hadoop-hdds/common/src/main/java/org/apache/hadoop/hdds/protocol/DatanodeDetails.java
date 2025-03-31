@@ -289,7 +289,8 @@ public class DatanodeDetails extends NodeImpl implements
    *         or {@code UNKNOWN} if no mapping is found.
    */
   public String getDc(Map<String, String> dcMapping) {
-    return dcMapping.getOrDefault(getHostName() + ":" + getPort(Name.RATIS).getValue(), "UNKNOWN");
+    String key2 = getIpAddress() + ":" + getPort(Name.RATIS).getValue();
+    return dcMapping.getOrDefault(key2, "UNKNOWN");
   }
 
   /**
