@@ -132,7 +132,6 @@ class TestThreeDCKeyWrite {
           }
           configuration.set(OZONE_SCM_DC_DATANODE_MAPPING_KEY, sb.toString());
           conf.set(OZONE_SCM_DC_DATANODE_MAPPING_KEY, sb.toString());
-          System.out.println("RECONF: "+ conf.get(OZONE_SCM_DC_DATANODE_MAPPING_KEY));
         })
         .build();
     cluster.waitForClusterToBeReady();
@@ -259,8 +258,8 @@ class TestThreeDCKeyWrite {
     for (OmKeyLocationInfo info: keyInfo.getLatestVersionLocations().getLocationList()) {
       ContainerInfo container = storageContainerLocationClient.getContainer(info.getContainerID());
       if (!ReplicationConfig.getLegacyFactor(container.getReplicationConfig())
-         .equals(replicationFactor) || (
-         container.getReplicationType() != replicationType)) {
+          .equals(replicationFactor) || (
+          container.getReplicationType() != replicationType)) {
         return false;
       }
     }
