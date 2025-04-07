@@ -276,56 +276,11 @@ networks:
           gateway: 10.5.0.1
 volumes:
   tmpfs1:
-    driver: local
-    driver_opts:
-      o: "size=1g,uid=1000"
-      device: tmpfs
-      type: tmpfs
   tmpfs2:
-    driver: local
-    driver_opts:
-      o: "size=1g,uid=2000"
-      device: tmpfs
-      type: tmpfs
   tmpfs3:
-    driver: local
-    driver_opts:
-      o: "size=1g,uid=3000"
-      device: tmpfs
-      type: tmpfs
   tmpfs4:
-    driver: local
-    driver_opts:
-      o: "size=1g,uid=4000"
-      device: tmpfs
-      type: tmpfs
   tmpfs5:
-    driver: local
-    driver_opts:
-      o: "size=1g,uid=5000"
-      device: tmpfs
-      type: tmpfs
   tmpfs6:
-    driver: local
-    driver_opts:
-      o: "size=1g,uid=6000"
-      device: tmpfs
-      type: tmpfs
   tmpfs7:
-    driver: local
-    driver_opts:
-      o: "size=1g,uid=7000"
-      device: tmpfs
-      type: tmpfs
   tmpfs8:
-    driver: local
-    driver_opts:
-      o: "size=1g,uid=8000"
-      device: tmpfs
-      type: tmpfs
   tmpfs9:
-    driver: local
-    driver_opts:
-      o: "size=1g,uid=9000"
-      device: tmpfs
-      type: tmpfs
