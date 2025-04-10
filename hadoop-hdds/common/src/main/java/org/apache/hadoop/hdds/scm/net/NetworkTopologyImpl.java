@@ -33,6 +33,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Consumer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.hadoop.hdds.conf.ConfigurationSource;
+import org.apache.hadoop.ozone.OzoneConfigKeys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,6 +67,8 @@ public class NetworkTopologyImpl implements NetworkTopology {
   /** Lock to coordinate cluster tree access. */
   private final ReadWriteLock netlock = new ReentrantReadWriteLock(true);
 
+  private final int clusterSeparationLevel;
+
   public NetworkTopologyImpl(ConfigurationSource conf) {
     schemaManager = NodeSchemaManager.getInstance();
     schemaManager.init(conf);
@@ -75,11 +78,32 @@ public class NetworkTopologyImpl implements NetworkTopology {
     clusterTree = factory.newInnerNode(ROOT, null, null,
         NetConstants.ROOT_LEVEL,
         schemaManager.getCost(NetConstants.ROOT_LEVEL));
+
+    clusterSeparationLevel = calculateClusterSeparationLevel(conf, maxLevel);
+  }
+
+  private static int calculateClusterSeparationLevel(ConfigurationSource conf, int maxLevel) {
+    int clusterSeparationLevel = conf.getInt(
+            OzoneConfigKeys.OZONE_NETWORK_TOPOLOGY_CLUSTER_SEPARATION_LEVEL,
+            OzoneConfigKeys.OZONE_NETWORK_TOPOLOGY_CLUSTER_SEPARATION_LEVEL_DEFAULT
+    );
+
+    if (clusterSeparationLevel > maxLevel) {
+      throw new IllegalArgumentException("Incorrect cluster separation level: " + clusterSeparationLevel);
+    }
+
+    if (clusterSeparationLevel < 0) {
+      clusterSeparationLevel = maxLevel;
+    }
+
+    return clusterSeparationLevel;
   }
 
   @VisibleForTesting
-  public NetworkTopologyImpl(NodeSchemaManager manager,
-                             Consumer<List<? extends Node>> shuffleOperation) {
+  public NetworkTopologyImpl(
+          NodeSchemaManager manager,
+          Consumer<List<? extends Node>> shuffleOperation
+  ) {
     schemaManager = manager;
     this.shuffleOperation = shuffleOperation;
     maxLevel = schemaManager.getMaxLevel();
@@ -87,6 +111,8 @@ public class NetworkTopologyImpl implements NetworkTopology {
     clusterTree = factory.newInnerNode(ROOT, null, null,
         NetConstants.ROOT_LEVEL,
         schemaManager.getCost(NetConstants.ROOT_LEVEL));
+
+    clusterSeparationLevel = OzoneConfigKeys.OZONE_NETWORK_TOPOLOGY_CLUSTER_SEPARATION_LEVEL_DEFAULT;
   }
 
   @VisibleForTesting
@@ -284,6 +310,17 @@ public class NetworkTopologyImpl implements NetworkTopology {
       return node.getAncestor(ancestorGen);
     } finally {
       netlock.readLock().unlock();
+    }
+  }
+
+  @Override
+  public Node getRegionAncestor(Node node) {
+    int nodeLevel = node.getLevel();
+
+    if (nodeLevel < clusterSeparationLevel) {
+      return node;
+    } else {
+      return getAncestor(node, nodeLevel - clusterSeparationLevel);
     }
   }
 

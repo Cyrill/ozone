@@ -18,16 +18,14 @@
 
 package org.apache.hadoop.hdds.scm.pipeline;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.io.File;
 import java.util.Collections;
 import java.util.List;
-
 import org.apache.hadoop.hdds.HddsConfigKeys;
 import org.apache.hadoop.hdds.conf.OzoneConfiguration;
-
 import org.apache.hadoop.hdds.conf.StorageUnit;
 import org.apache.hadoop.hdds.protocol.DatanodeDetails;
 import org.apache.hadoop.hdds.protocol.MockDatanodeDetails;
@@ -59,6 +57,7 @@ import static org.apache.hadoop.hdds.scm.ScmConfigKeys.OZONE_SCM_PIPELINE_PLACEM
 import static org.apache.hadoop.hdds.scm.net.NetConstants.LEAF_SCHEMA;
 import static org.apache.hadoop.hdds.scm.net.NetConstants.RACK_SCHEMA;
 import static org.apache.hadoop.hdds.scm.net.NetConstants.ROOT_SCHEMA;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
@@ -147,7 +146,7 @@ public class TestPipelinePlacementFactory {
   @Test
   public void testDefaultPolicy() throws IOException {
     PlacementPolicy policy = PipelinePlacementPolicyFactory
-        .getPolicy(null, null, conf);
+        .getPolicy(mock(NodeManager.class), null, conf);
     Assertions.assertSame(PipelinePlacementPolicy.class, policy.getClass());
   }
 

@@ -19,20 +19,6 @@
 package org.apache.hadoop.hdds.scm.container.balancer;
 
 import com.google.common.annotations.VisibleForTesting;
-import org.apache.hadoop.hdds.conf.OzoneConfiguration;
-import org.apache.hadoop.hdds.protocol.DatanodeDetails;
-import org.apache.hadoop.hdds.scm.ContainerPlacementStatus;
-import org.apache.hadoop.hdds.scm.PlacementPolicyValidateProxy;
-import org.apache.hadoop.hdds.scm.ScmUtils;
-import org.apache.hadoop.hdds.scm.container.ContainerID;
-import org.apache.hadoop.hdds.scm.container.ContainerInfo;
-import org.apache.hadoop.hdds.scm.container.ContainerManager;
-import org.apache.hadoop.hdds.scm.container.ContainerNotFoundException;
-import org.apache.hadoop.hdds.scm.container.ContainerReplica;
-import org.apache.hadoop.hdds.scm.node.DatanodeUsageInfo;
-import org.apache.hadoop.hdds.scm.node.NodeManager;
-import org.slf4j.Logger;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -41,6 +27,22 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.apache.hadoop.hdds.conf.OzoneConfiguration;
+import org.apache.hadoop.hdds.protocol.DatanodeDetails;
+import org.apache.hadoop.hdds.scm.ContainerPlacementStatus;
+import org.apache.hadoop.hdds.scm.PlacementPolicyValidateProxy;
+import org.apache.hadoop.hdds.scm.container.ContainerID;
+import org.apache.hadoop.hdds.scm.container.ContainerInfo;
+import org.apache.hadoop.hdds.scm.container.ContainerManager;
+import org.apache.hadoop.hdds.scm.container.ContainerNotFoundException;
+import org.apache.hadoop.hdds.scm.container.ContainerReplica;
+import org.apache.hadoop.hdds.scm.net.NetworkTopology;
+import org.apache.hadoop.hdds.scm.node.DatanodeUsageInfo;
+import org.apache.hadoop.hdds.scm.node.NodeManager;
+import org.slf4j.Logger;
+
+import static org.apache.hadoop.ozone.OzoneConfigKeys.OZONE_NETWORK_TOPOLOGY_CLUSTER_SEPARATION_LEVEL;
+import static org.apache.hadoop.ozone.OzoneConfigKeys.OZONE_NETWORK_TOPOLOGY_CLUSTER_SEPARATION_LEVEL_DEFAULT;
 
 /**
  * Find a target for a source datanode with greedy strategy.
@@ -55,17 +57,26 @@ public abstract class AbstractFindTargetGreedy implements FindTargetStrategy {
   private Double upperLimit;
   private Collection<DatanodeUsageInfo> potentialTargets;
   private OzoneConfiguration conf;
+  private final NetworkTopology networkTopology;
+  private final int cutoutLevel;
 
   protected AbstractFindTargetGreedy(
       ContainerManager containerManager,
       PlacementPolicyValidateProxy placementPolicyValidateProxy,
       NodeManager nodeManager,
-      OzoneConfiguration ozoneConfiguration) {
+      OzoneConfiguration ozoneConfiguration,
+      NetworkTopology networkTopology
+  ) {
     sizeEnteringNode = new HashMap<>();
     this.containerManager = containerManager;
     this.placementPolicyValidateProxy = placementPolicyValidateProxy;
     this.nodeManager = nodeManager;
     this.conf = ozoneConfiguration;
+    this.networkTopology = networkTopology;
+    this.cutoutLevel = conf.getInt(
+        OZONE_NETWORK_TOPOLOGY_CLUSTER_SEPARATION_LEVEL,
+        OZONE_NETWORK_TOPOLOGY_CLUSTER_SEPARATION_LEVEL_DEFAULT
+    );
   }
 
   protected void setLogger(Logger log) {
@@ -99,11 +110,19 @@ public abstract class AbstractFindTargetGreedy implements FindTargetStrategy {
   }
 
   private String getDCForDatanode(DatanodeDetails dn) {
-    return dn.getDc(ScmUtils.getDcMapping(conf));
+    int maxTopologyLevel = networkTopology.getMaxLevel();
+    int generation = cutoutLevel > maxTopologyLevel ? 0 : maxTopologyLevel - cutoutLevel;
+
+    return networkTopology.getAncestor(dn, generation).getNetworkFullPath();
   }
 
-  private boolean isDcConfigured() {
-    return conf.get("ozone.scm.dc.datanode.mapping") != null;
+  private boolean isNotSameDatacenter(String source, DatanodeDetails target) {
+    if (cutoutLevel > 0) {
+      String targetDC = getDCForDatanode(target);
+      return !Objects.equals(targetDC, source);
+    } else {
+      return false;
+    }
   }
 
   /**
@@ -122,16 +141,13 @@ public abstract class AbstractFindTargetGreedy implements FindTargetStrategy {
       DatanodeDetails source, Set<ContainerID> candidateContainers) {
     sortTargetForSource(source);
     String sourceDC = "";
-    String targetDC;
     for (DatanodeUsageInfo targetInfo : potentialTargets) {
       DatanodeDetails target = targetInfo.getDatanodeDetails();
-      if (isDcConfigured()) {
-        sourceDC = getDCForDatanode(source);
-        targetDC = getDCForDatanode(target);
-        if (!Objects.equals(targetDC, sourceDC)) {
-          continue;
-        }
+
+      if (!isNotSameDatacenter(sourceDC, target)) {
+        continue;
       }
+
       for (ContainerID container : candidateContainers) {
         Set<ContainerReplica> replicas;
         ContainerInfo containerInfo;

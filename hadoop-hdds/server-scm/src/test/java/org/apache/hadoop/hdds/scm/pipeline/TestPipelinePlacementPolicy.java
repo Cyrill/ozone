@@ -91,6 +91,7 @@ public class TestPipelinePlacementPolicy {
   private File testDir;
   private DBStore dbStore;
   private SCMHAManager scmhaManager;
+  private NetworkTopology networkTopology;
 
   private List<DatanodeDetails> nodesWithOutRackAwareness = new ArrayList<>();
   private List<DatanodeDetails> nodesWithRackAwareness = new ArrayList<>();
@@ -118,8 +119,14 @@ public class TestPipelinePlacementPolicy {
         .setNodeManager(nodeManager)
         .setSCMDBTransactionBuffer(scmhaManager.getDBTransactionBuffer())
         .build();
+
+    networkTopology = new NetworkTopologyImpl(conf);
+
     placementPolicy = new PipelinePlacementPolicy(
-        nodeManager, stateManager, conf);
+        nodeManager,
+        stateManager,
+        conf
+    );
   }
 
   @AfterEach
@@ -202,7 +209,11 @@ public class TestPipelinePlacementPolicy {
         .build();
 
     PipelinePlacementPolicy localPlacementPolicy = new PipelinePlacementPolicy(
-        localNodeManager, tempPipelineStateManager, conf);
+        localNodeManager,
+        tempPipelineStateManager,
+        conf
+    );
+
     int nodesRequired = HddsProtos.ReplicationFactor.THREE.getNumber();
     List<DatanodeDetails> results = localPlacementPolicy.chooseDatanodes(
         new ArrayList<>(datanodes.size()),
@@ -240,7 +251,11 @@ public class TestPipelinePlacementPolicy {
         .build();
 
     PipelinePlacementPolicy localPlacementPolicy = new PipelinePlacementPolicy(
-        localNodeManager, tempPipelineStateManager, conf);
+        localNodeManager,
+        tempPipelineStateManager,
+        conf
+    );
+
     int nodesRequired = HddsProtos.ReplicationFactor.THREE.getNumber();
 
     String expectedMessageSubstring = "Unable to find enough nodes that meet " +
@@ -482,7 +497,10 @@ public class TestPipelinePlacementPolicy {
     nodeManager = new MockNodeManager(cluster, getNodesWithRackAwareness(),
         false, PIPELINE_PLACEMENT_MAX_NODES_COUNT);
     placementPolicy = new PipelinePlacementPolicy(
-        nodeManager, stateManager, conf);
+        nodeManager,
+        stateManager,
+        conf
+    );
 
     List<DatanodeDetails> dns = new ArrayList<>();
     dns.add(MockDatanodeDetails
@@ -535,7 +553,10 @@ public class TestPipelinePlacementPolicy {
     nodeManager = new MockNodeManager(cluster, new ArrayList<>(),
         false, PIPELINE_PLACEMENT_MAX_NODES_COUNT);
     placementPolicy = new PipelinePlacementPolicy(
-        nodeManager, stateManager, conf);
+        nodeManager,
+        stateManager,
+        conf
+    );
 
     List<DatanodeDetails> dns = new ArrayList<>();
     dns.add(MockDatanodeDetails
@@ -627,7 +648,11 @@ public class TestPipelinePlacementPolicy {
     nodeManager = new MockNodeManager(cluster, dns,
         false, PIPELINE_PLACEMENT_MAX_NODES_COUNT);
     placementPolicy = new PipelinePlacementPolicy(
-        nodeManager, stateManager, conf);
+        nodeManager,
+        stateManager,
+        conf
+    );
+
     return dns;
   }
 
