@@ -167,6 +167,9 @@ services:
       - "9862"
     hostname: om1
     command: ["ozone","om"]
+    volumes:
+      - ../..:/opt/hadoop
+      - om1:/data
     networks:
       ozone_net:
         ipv4_address: 10.5.0.11
@@ -181,6 +184,9 @@ services:
       - "9862"
     hostname: om2
     command: ["ozone","om"]
+    volumes:
+      - ../..:/opt/hadoop
+      - om2:/data
     networks:
       ozone_net:
         ipv4_address: 10.5.0.12
@@ -195,6 +201,9 @@ services:
       - "9862"
     hostname: om3
     command: ["ozone","om"]
+    volumes:
+      - ../..:/opt/hadoop
+      - om3:/data
     networks:
       ozone_net:
         ipv4_address: 10.5.0.13
@@ -207,6 +216,9 @@ services:
       OZONE-SITE.XML_hdds.scm.safemode.min.datanode: ${OZONE_SAFEMODE_MIN_DATANODES:-1}
       <<: *replication
     command: ["ozone","scm"]
+    volumes:
+      - ../..:/opt/hadoop
+      - scm1:/data
     networks:
       ozone_net:
         ipv4_address: 10.5.0.14
@@ -220,6 +232,9 @@ services:
       OZONE-SITE.XML_hdds.scm.safemode.min.datanode: ${OZONE_SAFEMODE_MIN_DATANODES:-1}
       <<: *replication
     command: ["ozone","scm"]
+    volumes:
+      - ../..:/opt/hadoop
+      - scm2:/data
     networks:
       ozone_net:
         ipv4_address: 10.5.0.15
@@ -233,6 +248,9 @@ services:
       OZONE-SITE.XML_hdds.scm.safemode.min.datanode: ${OZONE_SAFEMODE_MIN_DATANODES:-1}
       <<: *replication
     command: ["ozone","scm"]
+    volumes:
+      - ../..:/opt/hadoop
+      - scm3:/data
     networks:
       ozone_net:
         ipv4_address: 10.5.0.16
@@ -264,6 +282,9 @@ services:
     environment:
       <<: *replication
     command: ["ozone","recon"]
+    volumes:
+      - ../..:/opt/hadoop
+      - recon:/data
     networks:
       ozone_net:
         ipv4_address: 10.5.0.19
@@ -284,3 +305,10 @@ volumes:
   datanode7:
   datanode8:
   datanode9:
+  om1:
+  om2:
+  om3:
+  scm1:
+  scm2:
+  scm3:
+  recon:
