@@ -343,49 +343,6 @@ jobs:
         run: |
           hadoop-ozone/dev-support/checks/${{ github.job }}.sh
         continue-on-error: true
-  repro:
-    needs:
-      - build-info
-      - build
-      - basic
-      - dependency
-      - license
-    runs-on: ubuntu-24.04
-    timeout-minutes: 30
-    steps:
-      - name: Checkout project
-        uses: actions/checkout@v4
-      - name: Cache for maven dependencies
-        uses: actions/cache/restore@v4
-        with:
-          path: |
-            ~/.m2/repository/*/*/*
-            !~/.m2/repository/org/apache/ozone
-          key: maven-repo-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            maven-repo-
-      - name: Download Ozone repo
-        id: download-ozone-repo
-        uses: actions/download-artifact@v4
-        with:
-          name: ozone-repo
-          path: |
-            ~/.m2/repository/org/apache/ozone
-      - name: Download Ratis repo
-        if: ${{ inputs.ratis_args != '' }}
-        uses: actions/download-artifact@v4
-        with:
-          name: ratis-jars
-          path: |
-            ~/.m2/repository/org/apache/ratis
-      - name: Setup java ${{ env.TEST_JAVA_VERSION }}
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: ${{ env.TEST_JAVA_VERSION }}
-      - name: Execute tests
-        run: |
-          hadoop-ozone/dev-support/checks/${{ github.job }}.sh -Pdist -Psrc -Dmaven.javadoc.skip=true ${{ inputs.ratis_args }}
       - name: Summary of failures
         run: hadoop-ozone/dev-support/checks/_summary.sh target/${{ github.job }}/summary.txt
         if: ${{ !cancelled() }}

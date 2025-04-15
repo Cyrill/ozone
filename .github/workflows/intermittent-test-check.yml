@@ -92,62 +92,6 @@ jobs:
           printf -v x "%s," "${splits[@]}"
           split_matrix="[${x%,}]"
           echo "matrix=$split_matrix" >> $GITHUB_OUTPUT
-  ratis:
-    uses: ./.github/workflows/build-ratis.yml
-    if: ${{ github.event.inputs.ratis-ref != '' }}
-    with:
-      repo: ${{ github.event.inputs.ratis-repo || format('{0}/ratis', github.repository_owner) }}
-      ref: ${{ github.event.inputs.ratis-ref }}
-  build:
-    if: ${{ always() }}
-    needs:
-      - prepare-job
-      - ratis
-    runs-on: ubuntu-24.04
-    timeout-minutes: 60
-    steps:
-      - name: Checkout project
-        uses: actions/checkout@v4
-      - name: Cache for maven dependencies
-        uses: actions/cache/restore@v4
-        with:
-          path: |
-            ~/.m2/repository/*/*/*
-            !~/.m2/repository/org/apache/ozone
-          key: maven-repo-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            maven-repo-
-      - name: Download Ratis repo
-        if: ${{ github.event.inputs.ratis-ref != '' }}
-        uses: actions/download-artifact@v4
-        with:
-          name: ratis-jars
-          path: |
-            ~/.m2/repository/org/apache/ratis
-      - name: Setup java
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: 8
-      - name: Build (most) of Ozone
-        run: |
-          args="-DskipRecon -DskipShade -Dmaven.javadoc.skip=true"
-          if [[ "${{ github.event.inputs.ratis-ref }}" != "" ]]; then
-            args="$args -Dratis.version=${{ needs.ratis.outputs.ratis-version }}"
-            args="$args -Dratis.thirdparty.version=${{ needs.ratis.outputs.thirdparty-version }}"
-            args="$args -Dio.grpc.version=${{ needs.ratis.outputs.grpc-version }}"
-            args="$args -Dnetty.version=${{ needs.ratis.outputs.netty-version }}"
-            args="$args -Dgrpc.protobuf-compile.version=${{ needs.ratis.outputs.protobuf-version }}"
-          fi
-
-          hadoop-ozone/dev-support/checks/build.sh $args
-      - name: Store Maven repo for tests
-        uses: actions/upload-artifact@v4
-        with:
-          name: ozone-repo
-          path: |
-            ~/.m2/repository/org/apache/ozone
-          retention-days: 1
   run-test:
     needs: prepare-job
     name: Run-Split
