@@ -45,6 +45,7 @@ Test ozone shell
     ${result} =     Execute             ozone sh bucket create ${protocol}${server}/${volume}/bb1 --space-quota 10TB --namespace-quota 100
                     Should Be Empty     ${result}
                     Execute             pwd
+                    Execute             ls -la .
                     Execute             ozone sh bucket info ${protocol}${server}/${volume}/bb1 > bb1.json
     ${result} =     Execute             jq -r '. | select(.name=="bb1") | .storageType' bb1.json
                     Should Be Equal     ${result}       DISK
