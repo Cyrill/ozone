@@ -17,6 +17,10 @@
  */
 package org.apache.hadoop.hdds.scm.net;
 
+import static org.apache.hadoop.hdds.scm.net.NetConstants.ANCESTOR_GENERATION_DEFAULT;
+import static org.apache.hadoop.hdds.scm.net.NetConstants.ROOT;
+import static org.apache.hadoop.hdds.scm.net.NetConstants.SCOPE_REVERSE_STR;
+
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -37,10 +41,6 @@ import org.apache.hadoop.ozone.OzoneConfigKeys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.apache.hadoop.hdds.scm.net.NetConstants.ANCESTOR_GENERATION_DEFAULT;
-import static org.apache.hadoop.hdds.scm.net.NetConstants.ROOT;
-import static org.apache.hadoop.hdds.scm.net.NetConstants.SCOPE_REVERSE_STR;
-
 /**
  * The class represents a cluster of computers with a tree hierarchical
  * network topology. In the network topology, leaves represent data nodes
@@ -50,9 +50,6 @@ import static org.apache.hadoop.hdds.scm.net.NetConstants.SCOPE_REVERSE_STR;
 public class NetworkTopologyImpl implements NetworkTopology {
   public static final Logger LOG =
       LoggerFactory.getLogger(NetworkTopologyImpl.class);
-
-  // TODO: Should be extracted into configurable parameter.
-  private static final int READ_COST_LIMIT = 100;
 
   /** The Inner node crate factory. */
   private final InnerNode.Factory factory;
@@ -808,8 +805,7 @@ public class NetworkTopologyImpl implements NetworkTopology {
    * by activeLen parameter.
    */
   @Override
-  public <N extends Node> List<N> sortByDistanceCost(Node reader,
-      List<N> nodes, int activeLen, boolean forRead) {
+  public <N extends Node> List<N> sortByDistanceCost(Node reader, List<N> nodes, int activeLen) {
     // shuffle input list of nodes if reader is not defined
     if (reader == null) {
       List<N> shuffledNodes =
@@ -828,10 +824,8 @@ public class NetworkTopologyImpl implements NetworkTopology {
     for (int i = 0; i < activeLen; i++) {
       int cost = costs[i];
       N node = nodes.get(i);
-      if (cost < READ_COST_LIMIT || !forRead) {
-        tree.computeIfAbsent(cost, k -> Lists.newArrayListWithExpectedSize(1))
-                .add(node);
-      }
+      tree.computeIfAbsent(cost, k -> Lists.newArrayListWithExpectedSize(1))
+          .add(node);
     }
 
     List<N> ret = new ArrayList<>();
@@ -842,9 +836,7 @@ public class NetworkTopologyImpl implements NetworkTopology {
       }
     }
 
-    if (!forRead) {
-      Preconditions.checkState(ret.size() == activeLen,  "Wrong number of nodes sorted!");
-    }
+    Preconditions.checkState(ret.size() == activeLen, "Wrong number of nodes sorted!");
 
     return ret;
   }
