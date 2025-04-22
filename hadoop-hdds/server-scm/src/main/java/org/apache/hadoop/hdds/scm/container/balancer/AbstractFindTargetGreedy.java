@@ -53,7 +53,6 @@ public abstract class AbstractFindTargetGreedy implements FindTargetStrategy {
   private ContainerBalancerConfiguration config;
   private Double upperLimit;
   private Collection<DatanodeUsageInfo> potentialTargets;
-  private OzoneConfiguration conf;
   private final NetworkTopology networkTopology;
 
   protected AbstractFindTargetGreedy(
@@ -67,7 +66,6 @@ public abstract class AbstractFindTargetGreedy implements FindTargetStrategy {
     this.containerManager = containerManager;
     this.placementPolicyValidateProxy = placementPolicyValidateProxy;
     this.nodeManager = nodeManager;
-    this.conf = ozoneConfiguration;
     this.networkTopology = networkTopology;
   }
 
