@@ -254,7 +254,7 @@ public interface NetworkTopology {
    * by activeLen parameter.
    */
   default <N extends Node> List<N> sortByDistanceCost(Node reader,
-      List<N> nodes, int activeLen) {
+                                                      List<N> nodes, int activeLen) {
     return sortByDistanceCost(reader, nodes, activeLen, true);
   }
 
