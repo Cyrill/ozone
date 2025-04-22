@@ -16,6 +16,8 @@
  */
 package org.apache.hadoop.ozone.container.placement;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -32,8 +34,6 @@ import org.apache.hadoop.hdds.scm.node.NodeStatus;
 import org.apache.hadoop.ozone.OzoneConsts;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Asserts that allocation strategy works as expected.
@@ -82,7 +82,7 @@ public class TestContainerPlacement {
         new OzoneConfiguration(),
         null, true, null);
     SCMContainerPlacementRandom randomPlacer = new
-        SCMContainerPlacementRandom(nodeManagerRandom, new OzoneConfiguration());
+        SCMContainerPlacementRandom(nodeManagerRandom, new OzoneConfiguration(), null, false, null);
 
     for (int x = 0; x < opsCount; x++) {
       long containerSize = random.nextInt(10) * OzoneConsts.GB;

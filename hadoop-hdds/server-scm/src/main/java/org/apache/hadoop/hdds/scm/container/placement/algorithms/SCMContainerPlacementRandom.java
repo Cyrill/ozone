@@ -55,8 +55,11 @@ public final class SCMContainerPlacementRandom extends SCMCommonPlacementPolicy
    * @param conf Config
    */
   public SCMContainerPlacementRandom(
-      NodeManager nodeManager,
-      ConfigurationSource conf
+          NodeManager nodeManager,
+          ConfigurationSource conf,
+          NetworkTopology networkTopology,
+          boolean fallback,
+          SCMContainerPlacementMetrics metrics
   ) {
     super(nodeManager, conf);
 

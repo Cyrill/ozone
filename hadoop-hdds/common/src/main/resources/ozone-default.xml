@@ -4369,4 +4369,13 @@
       This does not affect container placement or replication decisions.
     </description>
   </property>
+
+  <property>
+    <name>ozone.network.topology.cluster.separation.level</name>
+    <value>-1</value>
+    <tag>CLIENT</tag>
+    <description>
+      When this property is set we will treat nodes on this level in network topology as a separate regions.
+    </description>
+  </property>
 </configuration>

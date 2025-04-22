@@ -41,9 +41,6 @@ import org.apache.hadoop.hdds.scm.node.DatanodeUsageInfo;
 import org.apache.hadoop.hdds.scm.node.NodeManager;
 import org.slf4j.Logger;
 
-import static org.apache.hadoop.ozone.OzoneConfigKeys.OZONE_NETWORK_TOPOLOGY_CLUSTER_SEPARATION_LEVEL;
-import static org.apache.hadoop.ozone.OzoneConfigKeys.OZONE_NETWORK_TOPOLOGY_CLUSTER_SEPARATION_LEVEL_DEFAULT;
-
 /**
  * Find a target for a source datanode with greedy strategy.
  */
@@ -58,7 +55,6 @@ public abstract class AbstractFindTargetGreedy implements FindTargetStrategy {
   private Collection<DatanodeUsageInfo> potentialTargets;
   private OzoneConfiguration conf;
   private final NetworkTopology networkTopology;
-  private final int cutoutLevel;
 
   protected AbstractFindTargetGreedy(
       ContainerManager containerManager,
@@ -73,10 +69,6 @@ public abstract class AbstractFindTargetGreedy implements FindTargetStrategy {
     this.nodeManager = nodeManager;
     this.conf = ozoneConfiguration;
     this.networkTopology = networkTopology;
-    this.cutoutLevel = conf.getInt(
-        OZONE_NETWORK_TOPOLOGY_CLUSTER_SEPARATION_LEVEL,
-        OZONE_NETWORK_TOPOLOGY_CLUSTER_SEPARATION_LEVEL_DEFAULT
-    );
   }
 
   protected void setLogger(Logger log) {
@@ -110,19 +102,12 @@ public abstract class AbstractFindTargetGreedy implements FindTargetStrategy {
   }
 
   private String getDCForDatanode(DatanodeDetails dn) {
-    int maxTopologyLevel = networkTopology.getMaxLevel();
-    int generation = cutoutLevel > maxTopologyLevel ? 0 : maxTopologyLevel - cutoutLevel;
-
-    return networkTopology.getAncestor(dn, generation).getNetworkFullPath();
+    return networkTopology.getRegionAncestor(dn).getNetworkFullPath();
   }
 
   private boolean isNotSameDatacenter(String source, DatanodeDetails target) {
-    if (cutoutLevel > 0) {
-      String targetDC = getDCForDatanode(target);
-      return !Objects.equals(targetDC, source);
-    } else {
-      return false;
-    }
+    String targetDC = getDCForDatanode(target);
+    return !Objects.equals(targetDC, source);
   }
 
   /**
@@ -139,12 +124,15 @@ public abstract class AbstractFindTargetGreedy implements FindTargetStrategy {
   @Override
   public ContainerMoveSelection findTargetForContainerMove(
       DatanodeDetails source, Set<ContainerID> candidateContainers) {
+
     sortTargetForSource(source);
-    String sourceDC = "";
+    String sourceDC;
     for (DatanodeUsageInfo targetInfo : potentialTargets) {
       DatanodeDetails target = targetInfo.getDatanodeDetails();
 
-      if (!isNotSameDatacenter(sourceDC, target)) {
+      sourceDC = getDCForDatanode(source);
+
+      if (!Objects.equals(sourceDC, source.getNetworkFullPath()) && !isNotSameDatacenter(sourceDC, target)) {
         continue;
       }
 
