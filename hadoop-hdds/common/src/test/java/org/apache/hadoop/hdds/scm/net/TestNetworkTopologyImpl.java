@@ -52,7 +52,6 @@ import java.util.Random;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.apache.hadoop.hdds.conf.ConfigurationSource;
 import org.apache.hadoop.hdds.conf.OzoneConfiguration;
 import org.apache.hadoop.hdds.scm.ScmConfigKeys;
 import org.junit.jupiter.api.BeforeEach;
@@ -75,10 +74,12 @@ public class TestNetworkTopologyImpl {
   private Random random = new Random();
   private Consumer<List<? extends Node>> mockedShuffleOperation;
 
-  private final ConfigurationSource conf = new OzoneConfiguration();
+  private OzoneConfiguration conf = new OzoneConfiguration();
 
   @BeforeEach
   void beforeAll() {
+    conf = new OzoneConfiguration();
+
     mockedShuffleOperation =
         Mockito.mock(Consumer.class);
     doAnswer(args -> {
@@ -256,10 +257,8 @@ public class TestNetworkTopologyImpl {
   @Test
   public void testInitWithConfigFile() {
     ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-    OzoneConfiguration conf = new OzoneConfiguration();
     try {
-      String filePath = classLoader.getResource(
-          "./networkTopologyTestFiles/good.xml").getPath();
+      String filePath = classLoader.getResource("./networkTopologyTestFiles/good.xml").getPath();
       conf.set(ScmConfigKeys.OZONE_SCM_NETWORK_TOPOLOGY_SCHEMA_FILE, filePath);
       NetworkTopology newCluster = new NetworkTopologyImpl(conf);
       LOG.info("network topology max level = {}", newCluster.getMaxLevel());

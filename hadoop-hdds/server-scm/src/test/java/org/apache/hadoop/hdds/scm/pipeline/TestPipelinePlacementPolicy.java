@@ -89,7 +89,7 @@ public class TestPipelinePlacementPolicy {
   private DBStore dbStore;
   private SCMHAManager scmhaManager;
 
-    private List<DatanodeDetails> nodesWithOutRackAwareness = new ArrayList<>();
+  private List<DatanodeDetails> nodesWithOutRackAwareness = new ArrayList<>();
   private List<DatanodeDetails> nodesWithRackAwareness = new ArrayList<>();
 
   @BeforeEach
