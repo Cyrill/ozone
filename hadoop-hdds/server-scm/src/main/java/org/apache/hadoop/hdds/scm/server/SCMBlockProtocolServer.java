@@ -43,6 +43,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.hadoop.fs.CommonConfigurationKeys;
 import org.apache.hadoop.hdds.client.BlockID;
@@ -372,15 +373,17 @@ public class SCMBlockProtocolServer implements
         }
       });
 
-      String clientRegion = nodeManager.getClusterNetworkTopologyMap().getRegionAncestor(client).getNetworkFullPath();
-
       List<DatanodeDetails> sortedDatanodesList = scm.getClusterMap()
               .sortByDistanceCost(client, nodeList, nodeList.size());
 
-      if (!Objects.equals(clientRegion, client.getNetworkFullPath())) {
-        sortedDatanodesList = sortedDatanodesList.stream()
-                .filter(node -> checkIsInSameRegion(node, clientRegion))
-                .collect(Collectors.toList());
+      if (client != null) {
+        String clientRegion = nodeManager.getClusterNetworkTopologyMap().getRegionAncestor(client).getNetworkFullPath();
+
+        if (!Objects.equals(clientRegion, client.getNetworkFullPath())) {
+          sortedDatanodesList = sortedDatanodesList.stream()
+                  .filter(node -> checkIsInSameRegion(node, clientRegion))
+                  .collect(Collectors.toList());
+        }
       }
 
       return sortedDatanodesList;
@@ -405,7 +408,7 @@ public class SCMBlockProtocolServer implements
     return Objects.equals(datanodeRegion, clientRegionNode);
   }
 
-  private Node getClientNode(String clientMachine) {
+  private @Nullable Node getClientNode(String clientMachine) {
     if (StringUtils.isEmpty(clientMachine)) {
       return null;
     }

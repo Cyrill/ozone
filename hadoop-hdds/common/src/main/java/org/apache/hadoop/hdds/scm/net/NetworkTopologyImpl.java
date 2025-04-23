@@ -99,7 +99,8 @@ public class NetworkTopologyImpl implements NetworkTopology {
   @VisibleForTesting
   public NetworkTopologyImpl(
           NodeSchemaManager manager,
-          Consumer<List<? extends Node>> shuffleOperation
+          Consumer<List<? extends Node>> shuffleOperation,
+          ConfigurationSource conf
   ) {
     schemaManager = manager;
     this.shuffleOperation = shuffleOperation;
@@ -109,12 +110,12 @@ public class NetworkTopologyImpl implements NetworkTopology {
         NetConstants.ROOT_LEVEL,
         schemaManager.getCost(NetConstants.ROOT_LEVEL));
 
-    clusterSeparationLevel = OzoneConfigKeys.OZONE_NETWORK_TOPOLOGY_CLUSTER_SEPARATION_LEVEL_DEFAULT;
+    clusterSeparationLevel = calculateClusterSeparationLevel(conf, maxLevel);
   }
 
   @VisibleForTesting
-  public NetworkTopologyImpl(NodeSchemaManager manager) {
-    this(manager, Collections::shuffle);
+  public NetworkTopologyImpl(NodeSchemaManager manager, ConfigurationSource conf) {
+    this(manager, Collections::shuffle, conf);
   }
 
   /**

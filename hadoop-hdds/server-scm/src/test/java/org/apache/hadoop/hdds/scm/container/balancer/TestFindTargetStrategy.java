@@ -151,7 +151,8 @@ public class TestFindTargetStrategy {
 
     NodeSchemaManager manager = NodeSchemaManager.getInstance();
     manager.init(schemas.toArray(new NodeSchema[0]), true);
-    NetworkTopology newCluster = new NetworkTopologyImpl(manager);
+
+    NetworkTopology newCluster = new NetworkTopologyImpl(manager, config);
 
     DatanodeDetails source =
         MockDatanodeDetails.createDatanodeDetails("1.1.1.1", "/r1/ng1");

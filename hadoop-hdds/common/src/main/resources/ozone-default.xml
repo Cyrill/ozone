@@ -4375,7 +4375,7 @@
     <value>-1</value>
     <tag>CLIENT</tag>
     <description>
-      When this property is set we will treat nodes on this level in network topology as a separate regions.
+      When this property is set, we will treat nodes at this level in the network topology as separate regions.
     </description>
   </property>
 </configuration>

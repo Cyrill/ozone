@@ -17,6 +17,19 @@
  */
 package org.apache.hadoop.hdds.scm.pipeline;
 
+import static java.util.stream.Collectors.toSet;
+import static org.apache.hadoop.hdds.HddsConfigKeys.HDDS_SCM_BACKGROUND_PIPELINE_CREATOR_ENABLED;
+import static org.apache.hadoop.hdds.HddsConfigKeys.HDDS_SCM_BACKGROUND_PIPELINE_CREATOR_ENABLED_DEFAULT;
+import static org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationType.RATIS;
+import static org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationType.STAND_ALONE;
+import static org.apache.hadoop.hdds.scm.ScmConfigKeys.OZONE_SCM_RATIS_PIPELINE_LIMIT;
+import static org.apache.hadoop.hdds.scm.ScmConfigKeys.OZONE_SCM_RATIS_PIPELINE_LIMIT_DEFAULT;
+import static org.apache.hadoop.hdds.scm.ha.SCMService.Event.NEW_NODE_HANDLER_TRIGGERED;
+import static org.apache.hadoop.hdds.scm.ha.SCMService.Event.NODE_ADDRESS_UPDATE_HANDLER_TRIGGERED;
+import static org.apache.hadoop.hdds.scm.ha.SCMService.Event.PRE_CHECK_COMPLETED;
+import static org.apache.hadoop.hdds.scm.ha.SCMService.Event.UNHEALTHY_TO_HEALTHY_NODE_HANDLER_TRIGGERED;
+import static org.apache.hadoop.ozone.OzoneConfigKeys.OZONE_NETWORK_TOPOLOGY_CLUSTER_SEPARATION_LEVEL_DEFAULT;
+
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import java.io.IOException;
 import java.time.Clock;
@@ -44,20 +57,6 @@ import org.apache.hadoop.hdds.scm.net.Node;
 import org.apache.hadoop.ozone.OzoneConfigKeys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static java.util.stream.Collectors.toSet;
-import static org.apache.hadoop.hdds.HddsConfigKeys.HDDS_SCM_BACKGROUND_PIPELINE_CREATOR_ENABLED;
-import static org.apache.hadoop.hdds.HddsConfigKeys.HDDS_SCM_BACKGROUND_PIPELINE_CREATOR_ENABLED_DEFAULT;
-import static org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationType.RATIS;
-import static org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationType.STAND_ALONE;
-import static org.apache.hadoop.hdds.scm.ScmConfigKeys.OZONE_SCM_RATIS_PIPELINE_LIMIT;
-import static org.apache.hadoop.hdds.scm.ScmConfigKeys.OZONE_SCM_RATIS_PIPELINE_LIMIT_DEFAULT;
-import static org.apache.hadoop.hdds.scm.ha.SCMService.Event.NEW_NODE_HANDLER_TRIGGERED;
-import static org.apache.hadoop.hdds.scm.ha.SCMService.Event.NODE_ADDRESS_UPDATE_HANDLER_TRIGGERED;
-import static org.apache.hadoop.hdds.scm.ha.SCMService.Event.PRE_CHECK_COMPLETED;
-import static org.apache.hadoop.hdds.scm.ha.SCMService.Event.UNHEALTHY_TO_HEALTHY_NODE_HANDLER_TRIGGERED;
-import static org.apache.hadoop.ozone.OzoneConfigKeys.OZONE_NETWORK_TOPOLOGY_CLUSTER_SEPARATION_LEVEL;
-import static org.apache.hadoop.ozone.OzoneConfigKeys.OZONE_NETWORK_TOPOLOGY_CLUSTER_SEPARATION_LEVEL_DEFAULT;
 
 /**
  * Implements api for running background pipeline creation jobs.
@@ -111,12 +110,13 @@ public class BackgroundPipelineCreator implements SCMService {
     this.conf = conf;
     this.scmContext = scmContext;
     this.clock = clock;
-    int clusterSeparationLevel = conf.getInt(
-        OZONE_NETWORK_TOPOLOGY_CLUSTER_SEPARATION_LEVEL,
-        OZONE_NETWORK_TOPOLOGY_CLUSTER_SEPARATION_LEVEL_DEFAULT
-    );
+    // TODO: Make this class compatible with different network topology.
+    // int clusterSeparationLevel = conf.getInt(
+    //   OZONE_NETWORK_TOPOLOGY_CLUSTER_SEPARATION_LEVEL,
+    //   OZONE_NETWORK_TOPOLOGY_CLUSTER_SEPARATION_LEVEL_DEFAULT
+    // );
 
-    this.datacenters = calculateDatacenters(networkTopology, clusterSeparationLevel);
+    this.datacenters = calculateDatacenters(networkTopology, OZONE_NETWORK_TOPOLOGY_CLUSTER_SEPARATION_LEVEL_DEFAULT);
 
     this.createPipelineInSafeMode = conf.getBoolean(
         HddsConfigKeys.HDDS_SCM_SAFEMODE_PIPELINE_CREATION,
