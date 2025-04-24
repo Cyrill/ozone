@@ -19,6 +19,7 @@
 package org.apache.hadoop.ozone.om.request;
 
 import static java.util.stream.Collectors.toSet;
+import static org.apache.hadoop.ozone.om.request.DatacenterUtils.resolveDatacenterMetadata;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
@@ -46,7 +47,7 @@ public class TestDatacenterUtils {
   @ParameterizedTest
   @MethodSource("datacenterSource")
   public void testResolveDatacenterMetadata(String datacenters, Set<String> expected) {
-    Set<String> result = DatacenterUtils.resolveDatacenterMetadata(datacenters);
+    Set<String> result = resolveDatacenterMetadata(datacenters);
     
     assertEquals(expected, result);
   }
@@ -58,7 +59,7 @@ public class TestDatacenterUtils {
   @ParameterizedTest
   @MethodSource("emptyDatacenterSource")
   public void testResolveDatacenterMetadataWithEmptyOrNullString(@Nullable String datacenters) {
-    Set<String> result = DatacenterUtils.resolveDatacenterMetadata(datacenters);
+    Set<String> result = resolveDatacenterMetadata(datacenters);
     
     assertTrue(result.isEmpty());
   }
@@ -71,7 +72,7 @@ public class TestDatacenterUtils {
     expected.add("/dc2");
     expected.add("/dc3");
     
-    Set<String> result = DatacenterUtils.resolveDatacenterMetadata(datacenters);
+    Set<String> result = resolveDatacenterMetadata(datacenters);
     
     assertEquals(expected, result);
   }
