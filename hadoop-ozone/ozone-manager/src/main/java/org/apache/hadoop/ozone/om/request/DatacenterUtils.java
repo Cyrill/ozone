@@ -25,26 +25,28 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-/** Datacenter related utils. */
-public class DatacenterUtils {
-    private DatacenterUtils() {
+/**
+ * Datacenter related utils.
+ */
+public final class DatacenterUtils {
+  private DatacenterUtils() {
 
-    }
+  }
 
-    /**
-     * Resolves and formats datacenters metadata into a set of strings prefixed with a "/" character.
-     * The input string is expected to be a comma-separated list of datacenter names.
-     *
-     * @param datacenters the comma-separated string containing datacenter names.
-     * @return a set of strings where each string is a datacenter name prefixed with "/".
-     */
-    public static Set<String> resolveDatacenterMetadata(String datacenters) {
-        if (isNotBlank(datacenters)) {
-            return stream(datacenters.split(","))
-                    .map(datacenter -> "/" + datacenter)
-                    .collect(Collectors.toSet());
-        } else {
-            return emptySet();
-        }
+  /**
+   * Resolves and formats datacenters metadata into a set of strings prefixed with a "/" character.
+   * The input string is expected to be a comma-separated list of datacenter names.
+   *
+   * @param datacenters the comma-separated string containing datacenter names.
+   * @return a set of strings where each string is a datacenter name prefixed with "/".
+   */
+  public static Set<String> resolveDatacenterMetadata(String datacenters) {
+    if (isNotBlank(datacenters)) {
+      return stream(datacenters.split(","))
+          .map(datacenter -> "/" + datacenter.trim())
+          .collect(Collectors.toSet());
+    } else {
+      return emptySet();
     }
+  }
 }
