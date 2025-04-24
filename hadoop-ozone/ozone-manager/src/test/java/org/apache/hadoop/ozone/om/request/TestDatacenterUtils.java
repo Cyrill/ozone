@@ -24,11 +24,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -40,6 +38,7 @@ public class TestDatacenterUtils {
   private static Stream<Arguments> datacenterSource() {
     return Stream.of(
             arguments("dc1,dc2,dc3", Stream.of("/dc1", "/dc2", "/dc3").collect(toSet())),
+            arguments("dc1, dc2 , dc3", Stream.of("/dc1", "/dc2", "/dc3").collect(toSet())),
             arguments("dc1", Stream.of("/dc1").collect(toSet()))
     );
   }
@@ -62,18 +61,5 @@ public class TestDatacenterUtils {
     Set<String> result = resolveDatacenterMetadata(datacenters);
     
     assertTrue(result.isEmpty());
-  }
-
-  @Test
-  public void testResolveDatacenterMetadataWithWhitespaceInDatacenters() {
-    String datacenters = "dc1, dc2 , dc3";
-    Set<String> expected = new HashSet<>();
-    expected.add("/dc1");
-    expected.add("/dc2");
-    expected.add("/dc3");
-    
-    Set<String> result = resolveDatacenterMetadata(datacenters);
-    
-    assertEquals(expected, result);
   }
 }
