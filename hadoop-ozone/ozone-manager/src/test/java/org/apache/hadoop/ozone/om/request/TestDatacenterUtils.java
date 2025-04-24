@@ -26,6 +26,7 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Stream;
+import javax.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -35,7 +36,6 @@ import org.junit.jupiter.params.provider.MethodSource;
  * Test class for {@link DatacenterUtils}.
  */
 public class TestDatacenterUtils {
-
   private static Stream<Arguments> datacenterSource() {
     return Stream.of(
             arguments("dc1,dc2,dc3", Stream.of("/dc1", "/dc2", "/dc3").collect(toSet())),
@@ -51,30 +51,18 @@ public class TestDatacenterUtils {
     assertEquals(expected, result);
   }
 
-  @Test
-  public void testResolveDatacenterMetadataWithEmptyString() {
-    String datacenters = "";
+  private static Stream<String> emptyDatacenterSource() {
+    return Stream.of("", " ", null);
+  }
+
+  @ParameterizedTest
+  @MethodSource("emptyDatacenterSource")
+  public void testResolveDatacenterMetadataWithEmptyOrNullString(@Nullable String datacenters) {
     Set<String> result = DatacenterUtils.resolveDatacenterMetadata(datacenters);
     
     assertTrue(result.isEmpty());
   }
-  
-  @Test
-  public void testResolveDatacenterMetadataWithNull() {
-    String datacenters = null;
-    Set<String> result = DatacenterUtils.resolveDatacenterMetadata(datacenters);
-    
-    assertTrue(result.isEmpty());
-  }
-  
-  @Test
-  public void testResolveDatacenterMetadataWithWhitespace() {
-    String datacenters = "  ";
-    Set<String> result = DatacenterUtils.resolveDatacenterMetadata(datacenters);
-    
-    assertTrue(result.isEmpty());
-  }
-  
+
   @Test
   public void testResolveDatacenterMetadataWithWhitespaceInDatacenters() {
     String datacenters = "dc1, dc2 , dc3";
