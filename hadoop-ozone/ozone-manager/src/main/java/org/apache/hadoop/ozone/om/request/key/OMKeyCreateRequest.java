@@ -139,7 +139,9 @@ public class OMKeyCreateRequest extends OMKeyRequest {
       Set<String> datacenters = Collections.emptySet();
       final String datacentersMetadata = bucketInfo.getMetadata().get(OzoneConsts.DATACENTERS);
       if (StringUtils.isNotEmpty(datacentersMetadata)) {
-        datacenters = Arrays.stream(datacentersMetadata.split(",")).collect(Collectors.toSet());
+        datacenters = Arrays.stream(datacentersMetadata.split(","))
+                .map(datacenter -> "/" + datacenter)
+                .collect(Collectors.toSet());
       }
 
       final ReplicationConfig repConfig = OzoneConfigUtil

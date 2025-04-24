@@ -107,7 +107,9 @@ public class OMAllocateBlockRequest extends OMKeyRequest {
     Set<String> datacenters = Collections.emptySet();
     String datacentersMetadata = omBucketInfo != null ? omBucketInfo.getMetadata().get(OzoneConsts.DATACENTERS) : null;
     if (StringUtils.isNotEmpty(datacentersMetadata)) {
-      datacenters = Arrays.stream(datacentersMetadata.split(",")).collect(Collectors.toSet());
+      datacenters = Arrays.stream(datacentersMetadata.split(","))
+              .map(datacenter -> "/" + datacenter)
+              .collect(Collectors.toSet());
     }
 
     // TODO: Here we are allocating block with out any check for key exist in
