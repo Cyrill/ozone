@@ -18,7 +18,6 @@
 
 package org.apache.hadoop.ozone.om.request.key;
 
-import static java.util.Collections.emptySet;
 import static org.apache.hadoop.ozone.om.exceptions.OMException.ResultCodes.NOT_A_FILE;
 import static org.apache.hadoop.ozone.om.request.DatacenterUtils.resolveDatacenterMetadata;
 import static org.apache.hadoop.ozone.om.request.file.OMFileRequest.OMDirectoryResult.DIRECTORY_EXISTS;
@@ -134,9 +133,7 @@ public class OMKeyCreateRequest extends OMKeyRequest {
       final OmBucketInfo bucketInfo = ozoneManager
           .getBucketInfo(keyArgs.getVolumeName(), keyArgs.getBucketName());
 
-      Set<String> datacenters = bucketInfo != null
-          ? resolveDatacenterMetadata(bucketInfo.getMetadata().get(OzoneConsts.DATACENTERS))
-          : emptySet();
+      Set<String> datacenters = resolveDatacenterMetadata(bucketInfo.getMetadata().get(OzoneConsts.DATACENTERS));
 
       final ReplicationConfig repConfig = OzoneConfigUtil
           .resolveReplicationConfigPreference(type, factor,
