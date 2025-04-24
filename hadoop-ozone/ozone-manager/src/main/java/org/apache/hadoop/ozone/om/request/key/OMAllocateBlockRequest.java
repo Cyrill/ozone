@@ -18,6 +18,7 @@
 
 package org.apache.hadoop.ozone.om.request.key;
 
+import static java.util.Collections.emptySet;
 import static org.apache.hadoop.ozone.om.exceptions.OMException.ResultCodes.KEY_NOT_FOUND;
 import static org.apache.hadoop.ozone.om.lock.OzoneManagerLock.Resource.BUCKET_LOCK;
 import static org.apache.hadoop.ozone.om.request.DatacenterUtils.resolveDatacenterMetadata;
@@ -101,7 +102,9 @@ public class OMAllocateBlockRequest extends OMKeyRequest {
     OmBucketInfo omBucketInfo = getBucketInfo(ozoneManager.getMetadataManager(), keyArgs.getVolumeName(),
         keyArgs.getBucketName());
 
-    Set<String> datacenters = resolveDatacenterMetadata(omBucketInfo.getMetadata().get(OzoneConsts.DATACENTERS));
+    Set<String> datacenters = omBucketInfo != null
+        ? resolveDatacenterMetadata(omBucketInfo.getMetadata().get(OzoneConsts.DATACENTERS))
+        : emptySet();
 
     // TODO: Here we are allocating block with out any check for key exist in
     //  open table or not and also with out any authorization checks.
