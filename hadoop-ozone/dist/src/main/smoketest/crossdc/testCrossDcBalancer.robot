@@ -24,7 +24,7 @@ Test Timeout        20 minutes
 
 *** Variables ***
 ${SECURITY_ENABLED}                 false
-${HOST}                             datanode4
+${HOST}                             10.5.0.5
 ${VOLUME}                           volume1
 ${BUCKET}                           bucket1
 ${SIZE}                             104857600
@@ -48,14 +48,14 @@ Datanode In Maintenance Mode
 Datanode Recommission
     ${result} =             Execute                         ozone admin datanode recommission ${HOST}
                             Should Contain                  ${result}             Started recommissioning datanode
-                            Sleep                   30000ms
+                            Sleep                   60000ms
 
 Run Container Balancer
     ${result} =             Execute                         ozone admin containerbalancer start -t 1 -d 100
                             Should Contain                  ${result}             Container Balancer started successfully.
                             Sleep                   60000ms
                             Execute                         ozone admin containerbalancer stop
-                            Sleep                   30000ms
+                            Sleep                   50000ms
 
 Create Multiple Keys
     [arguments]             ${NUM_KEYS}
