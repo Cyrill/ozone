@@ -454,6 +454,17 @@ public class TestSCMContainerPlacementRackScatter {
         favoredNodes.get(0).getNetworkFullPath());
   }
 
+  @Test
+  public void chooseNodeWithDcThrowsIllegalStateExceptionWhenNoDcLevelPresent() {
+    int nodesPerRack = 2;
+    setup(nodesPerRack);
+
+    IllegalStateException exception = Assertions.assertThrows(IllegalStateException.class, () -> policy.chooseDatanodes(
+        Collections.emptyList(), Collections.emptyList(), Collections.singleton("/dc1"), 1, 0, 15));
+    Assertions.assertEquals("Can't find racks within requested datacenters, " +
+        "because topology doesn't have a datacenter level.", exception.getMessage());
+  }
+
   @ParameterizedTest
   @MethodSource("numDatanodes")
   public void testNoInfiniteLoop(int datanodeCount) {

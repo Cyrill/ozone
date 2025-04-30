@@ -18,6 +18,7 @@
 
 package org.apache.hadoop.ozone.om.request.bucket;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.hadoop.crypto.CipherSuite;
 import org.apache.hadoop.crypto.key.KeyProvider;
 import org.apache.hadoop.crypto.key.KeyProviderCryptoExtension;
@@ -71,6 +72,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.apache.hadoop.ozone.om.exceptions.OMException.ResultCodes.BUCKET_ALREADY_EXISTS;
+import static org.apache.hadoop.ozone.om.exceptions.OMException.ResultCodes.TOO_MANY_DATACENTERS;
 import static org.apache.hadoop.ozone.om.exceptions.OMException.ResultCodes.VOLUME_NOT_FOUND;
 import static org.apache.hadoop.ozone.om.lock.OzoneManagerLock.Resource.BUCKET_LOCK;
 import static org.apache.hadoop.ozone.om.lock.OzoneManagerLock.Resource.VOLUME_LOCK;
@@ -162,6 +164,7 @@ public class OMBucketCreateRequest extends OMClientRequest {
   }
 
   @Override
+  @SuppressWarnings("checkstyle:methodlength")
   public OMClientResponse validateAndUpdateCache(OzoneManager ozoneManager,
       long transactionLogIndex) {
     OMMetrics omMetrics = ozoneManager.getMetrics();
@@ -240,6 +243,14 @@ public class OMBucketCreateRequest extends OMClientRequest {
       if (!bucketInfo.hasSourceBucket()) {
         checkQuotaBytesValid(metadataManager, omVolumeArgs, omBucketInfo,
             volumeKey);
+      }
+
+      // Check no more than 1 DC set for the bucket with EC replication
+      if (isECBucket(bucketInfo)) {
+        String datacentersRaw = omBucketInfo.getMetadata().get(OzoneConsts.DATACENTERS);
+        if (StringUtils.isNotEmpty(datacentersRaw) && datacentersRaw.split(",").length > 1) {
+          throw new OMException("Only 1 DC per bucket is allowed for EC replication type", TOO_MANY_DATACENTERS);
+        }
       }
 
       // Add objectID and updateID
