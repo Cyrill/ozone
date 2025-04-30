@@ -32,12 +32,15 @@ import org.apache.hadoop.hdds.protocol.DatanodeDetails;
 import org.apache.hadoop.hdds.scm.ContainerPlacementStatus;
 import org.apache.hadoop.hdds.scm.SCMCommonPlacementPolicy;
 import org.apache.hadoop.hdds.scm.exceptions.SCMException;
+import org.apache.hadoop.hdds.scm.net.InnerNode;
 import org.apache.hadoop.hdds.scm.net.NetworkTopology;
 import org.apache.hadoop.hdds.scm.net.Node;
 import org.apache.hadoop.hdds.scm.node.NodeManager;
 import org.apache.hadoop.hdds.scm.pipeline.PipelineStateManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.stream.Collectors;
 
 import static org.apache.hadoop.hdds.scm.exceptions.SCMException.ResultCodes.FAILED_TO_FIND_SUITABLE_NODE;
 
@@ -63,6 +66,7 @@ public final class SCMContainerPlacementRackScatter
   private static final int OUTER_LOOP_MAX_RETRY = 3;
   // INNER_LOOP is to choose node in each rack
   private static final int INNER_LOOP_MAX_RETRY = 5;
+  private static final int DC_MIN_SUPPORTED_DEPTH = 4;
   private final SCMContainerPlacementMetrics metrics;
 
   /**
@@ -82,6 +86,7 @@ public final class SCMContainerPlacementRackScatter
   /**
    * Constructor for Pipeline Provider Pipeline Placement with rack awareness.
    * @param nodeManager Node Manager
+   * @param stateManager State Manager
    * @param conf Configuration
    */
   public SCMContainerPlacementRackScatter(
@@ -258,7 +263,7 @@ public final class SCMContainerPlacementRackScatter
     if (usedNodes == null) {
       usedNodes = Collections.emptyList();
     }
-    List<Node> racks = getAllRacks();
+    List<Node> racks = getAllRacks(datacenters);
     // usedRacksCntMap maps a rack to the number of usedNodes it contains
     Map<Node, Integer> usedRacksCntMap = new HashMap<>();
     for (Node node : usedNodes) {
@@ -544,9 +549,26 @@ public final class SCMContainerPlacementRackScatter
     return result;
   }
 
-  private List<Node> getAllRacks() {
-    int rackLevel = networkTopology.getMaxLevel() - 1;
-    List<Node> racks = networkTopology.getNodes(rackLevel);
+  private List<Node> getAllRacks(Set<String> datacenters) {
+    int maxLevel = networkTopology.getMaxLevel();
+    List<Node> racks;
+
+    if (!datacenters.isEmpty()) {
+      if (maxLevel < DC_MIN_SUPPORTED_DEPTH) {
+        throw new IllegalStateException(
+            "Can't find racks within requested datacenters, because topology doesn't have a datacenter level.");
+      }
+
+      int datacenterLevel = maxLevel - 2;
+      racks = networkTopology.getNodes(datacenterLevel).stream()
+          .filter(node -> node instanceof InnerNode && datacenters.contains(node.getNetworkFullPath()))
+          .flatMap(node -> ((InnerNode) node).getNodes(2).stream())
+          .collect(Collectors.toList());
+    } else {
+      int rackLevel = maxLevel - 1;
+      racks = networkTopology.getNodes(rackLevel);
+    }
+
     Collections.shuffle(racks);
     return racks;
   }
