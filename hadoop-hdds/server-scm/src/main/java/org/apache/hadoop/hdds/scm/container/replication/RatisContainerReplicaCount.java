@@ -98,7 +98,7 @@ public class RatisContainerReplicaCount implements ContainerReplicaCount {
     this(containerInfo,
         replicas,
         replicaPendingOps,
-        containerInfo.getReplicationFactor().getNumber(),
+        containerInfo.getReplicationFactor(),
         minHealthyForMaintenance,
         considerUnhealthy);
   }

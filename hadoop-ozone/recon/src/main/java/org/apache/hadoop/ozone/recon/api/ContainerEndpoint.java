@@ -509,7 +509,7 @@ public class ContainerEndpoint {
         deletedContainerInfo.setReplicationConfig(
             containerInfo.getReplicationConfig());
         deletedContainerInfo.setReplicationFactor(
-            containerInfo.getReplicationFactor().name());
+            containerInfo.getReplicationFactor());
         deletedContainerInfoList.add(deletedContainerInfo);
       });
     } catch (IllegalArgumentException e) {

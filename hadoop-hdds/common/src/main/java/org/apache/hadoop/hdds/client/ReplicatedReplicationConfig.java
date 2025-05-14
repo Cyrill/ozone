@@ -30,5 +30,5 @@ public interface ReplicatedReplicationConfig extends ReplicationConfig {
    * Returns the associated replication factor of this ReplicationConfig.
    * @return the replication factor
    */
-  HddsProtos.ReplicationFactor getReplicationFactor();
+  int getReplicationFactor();
 }

@@ -19,7 +19,6 @@ package org.apache.hadoop.hdds.scm.protocol;
 
 import org.apache.hadoop.hdds.client.ReplicationConfig;
 import org.apache.hadoop.hdds.protocol.DatanodeDetails;
-import org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationFactor;
 import org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationType;
 import org.apache.hadoop.hdds.scm.AddSCMRequest;
 import org.apache.hadoop.hdds.scm.ScmConfig;
@@ -64,7 +63,7 @@ public interface ScmBlockLocationProtocol extends Closeable {
    */
   @Deprecated
   default List<AllocatedBlock> allocateBlock(long size, int numBlocks,
-      ReplicationType type, ReplicationFactor factor, String owner,
+      ReplicationType type, int factor, String owner,
       ExcludeList excludeList) throws IOException, TimeoutException {
     return allocateBlock(size, numBlocks, ReplicationConfig
         .fromProtoTypeAndFactor(type, factor), owner, excludeList);

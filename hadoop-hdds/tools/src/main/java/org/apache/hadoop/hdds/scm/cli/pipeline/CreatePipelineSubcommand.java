@@ -51,7 +51,7 @@ public class CreatePipelineSubcommand extends ScmSubcommand {
           " --replicationFactor will be removed in later versions.",
       defaultValue = "ONE"
   )
-  private HddsProtos.ReplicationFactor factor;
+  private int factor;
 
   @Override
   public void execute(ScmClient scmClient) throws IOException {

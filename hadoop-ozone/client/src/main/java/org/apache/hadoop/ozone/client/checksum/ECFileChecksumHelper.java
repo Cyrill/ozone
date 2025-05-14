@@ -176,7 +176,7 @@ public class ECFileChecksumHelper extends BaseFileChecksumHelper {
 
     pipeline = Pipeline.newBuilder(pipeline)
         .setReplicationConfig(StandaloneReplicationConfig
-            .getInstance(HddsProtos.ReplicationFactor.THREE))
+            .getInstance(3))
         .setNodes(nodes)
         .build();
 

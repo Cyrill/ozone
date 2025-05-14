@@ -182,7 +182,7 @@ public final class ContainerInfo implements Comparable<ContainerInfo> {
   }
 
   @JsonIgnore
-  public HddsProtos.ReplicationFactor getReplicationFactor() {
+  public int getReplicationFactor() {
     return ReplicationConfig.getLegacyFactor(replicationConfig);
   }
 

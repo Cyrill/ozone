@@ -119,7 +119,7 @@ message Pipeline {
     // TODO: remove the state and leaderID from this class
     optional PipelineState state = 2 [default = PIPELINE_ALLOCATED];
     optional ReplicationType type = 3 [default = STAND_ALONE];
-    optional ReplicationFactor factor = 4 [default = ONE];
+    optional int32 factor = 4 [default = 1];
     required PipelineID id = 5;
     optional string leaderID = 6;
     repeated uint32 memberOrders = 7;
@@ -237,7 +237,7 @@ message ContainerInfoProto {
     required string owner = 7;
     optional int64 deleteTransactionId = 8;
     optional int64 sequenceId = 9;
-    optional ReplicationFactor replicationFactor  = 10;
+    optional int32 replicationFactor  = 10;
     required ReplicationType replicationType  = 11;
     optional ECReplicationConfig ecReplicationConfig = 12;
     repeated string datacenters = 13;
@@ -288,13 +288,6 @@ enum ReplicationType {
     NONE = -1; // Invalid Type
 }
 
-enum ReplicationFactor {
-    ONE = 1;
-    THREE = 3;
-    SIX = 6;
-    ZERO = 0; // Invalid Factor
-}
-
 message ECReplicationConfig {
     required int32 data = 1;
     required int32 parity = 2;
@@ -304,7 +297,7 @@ message ECReplicationConfig {
 
 message DefaultReplicationConfig {
     required ReplicationType type = 1;
-    optional ReplicationFactor factor = 2;
+    optional int32 factor = 2;
     optional ECReplicationConfig ecReplicationConfig = 3;
 }
 

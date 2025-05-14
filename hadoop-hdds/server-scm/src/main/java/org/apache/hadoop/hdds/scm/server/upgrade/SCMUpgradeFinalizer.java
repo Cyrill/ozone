@@ -190,7 +190,7 @@ public class SCMUpgradeFinalizer extends
       ReplicationConfig ratisThree =
           ReplicationConfig.fromProtoTypeAndFactor(
               HddsProtos.ReplicationType.RATIS,
-              HddsProtos.ReplicationFactor.THREE);
+              3);
       int pipelineCount =
           pipelineManager.getPipelines(ratisThree, Pipeline.PipelineState.OPEN)
               .size();

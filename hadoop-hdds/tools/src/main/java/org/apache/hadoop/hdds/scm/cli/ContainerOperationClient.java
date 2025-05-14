@@ -73,7 +73,7 @@ public class ContainerOperationClient implements ScmClient {
   private static final Logger LOG =
       LoggerFactory.getLogger(ContainerOperationClient.class);
   private final long containerSizeB;
-  private final HddsProtos.ReplicationFactor replicationFactor;
+  private final int replicationFactor;
   private final HddsProtos.ReplicationType replicationType;
   private final StorageContainerLocationProtocol
       storageContainerLocationClient;
@@ -100,10 +100,10 @@ public class ContainerOperationClient implements ScmClient {
         ScmConfigKeys.HDDS_CONTAINER_RATIS_ENABLED_KEY,
         ScmConfigKeys.HDDS_CONTAINER_RATIS_ENABLED_DEFAULT);
     if (useRatis) {
-      replicationFactor = HddsProtos.ReplicationFactor.THREE;
+      replicationFactor = 3;
       replicationType = HddsProtos.ReplicationType.RATIS;
     } else {
-      replicationFactor = HddsProtos.ReplicationFactor.ONE;
+      replicationFactor = 1;
       replicationType = HddsProtos.ReplicationType.STAND_ALONE;
     }
     containerTokenEnabled = conf.getBoolean(HDDS_CONTAINER_TOKEN_ENABLED,
@@ -194,7 +194,7 @@ public class ContainerOperationClient implements ScmClient {
 
   @Override
   public ContainerWithPipeline createContainer(HddsProtos.ReplicationType type,
-      HddsProtos.ReplicationFactor factor, String owner) throws IOException {
+      int factor, String owner) throws IOException {
     XceiverClientSpi client = null;
     XceiverClientManager clientManager = getXceiverClientManager();
     try {
@@ -246,7 +246,7 @@ public class ContainerOperationClient implements ScmClient {
 
   @Override
   public Pipeline createReplicationPipeline(HddsProtos.ReplicationType type,
-      HddsProtos.ReplicationFactor factor, HddsProtos.NodePool nodePool)
+      int factor, HddsProtos.NodePool nodePool)
       throws IOException {
     return storageContainerLocationClient.createReplicationPipeline(type,
         factor, nodePool);

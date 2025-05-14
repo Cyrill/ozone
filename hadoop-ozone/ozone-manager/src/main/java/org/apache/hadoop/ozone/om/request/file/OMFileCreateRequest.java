@@ -120,7 +120,7 @@ public class OMFileCreateRequest extends OMKeyRequest {
     final long requestedSize = keyArgs.getDataSize() > 0 ?
         keyArgs.getDataSize() : scmBlockSize;
 
-    HddsProtos.ReplicationFactor factor = keyArgs.getFactor();
+    int factor = keyArgs.getFactor();
     HddsProtos.ReplicationType type = keyArgs.getType();
 
     final OmBucketInfo bucketInfo = ozoneManager

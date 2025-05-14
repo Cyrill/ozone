@@ -74,7 +74,7 @@ public interface StorageContainerLocationProtocol extends Closeable {
    */
   ContainerWithPipeline allocateContainer(
       HddsProtos.ReplicationType replicationType,
-      HddsProtos.ReplicationFactor factor, String owner)
+      int factor, String owner)
       throws IOException;
 
   /**
@@ -196,7 +196,7 @@ public interface StorageContainerLocationProtocol extends Closeable {
    */
   List<ContainerInfo> listContainer(long startContainerID,
       int count, HddsProtos.LifeCycleState state,
-      HddsProtos.ReplicationFactor factor) throws IOException;
+      int factor) throws IOException;
 
 
   /**
@@ -268,7 +268,7 @@ public interface StorageContainerLocationProtocol extends Closeable {
    * @throws IOException
    */
   Pipeline createReplicationPipeline(HddsProtos.ReplicationType type,
-      HddsProtos.ReplicationFactor factor, HddsProtos.NodePool nodePool)
+      int factor, HddsProtos.NodePool nodePool)
       throws IOException;
 
   /**

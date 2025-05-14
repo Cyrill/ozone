@@ -68,7 +68,7 @@ public class SimplePipelineProvider
         .setState(PipelineState.OPEN)
         .setReplicationConfig(replicationConfig)
         .setNodes(dns.subList(0,
-            replicationConfig.getReplicationFactor().getNumber()))
+            replicationConfig.getReplicationFactor()))
         .build();
   }
 

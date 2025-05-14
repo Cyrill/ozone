@@ -127,7 +127,7 @@ public class RatisOverReplicationHandler
       replicaCount = new RatisContainerReplicaCount(containerInfo, healthyReplicas,
           pendingOps, minHealthyForMaintenance, true);
     } else {
-      int replicasPerDc = containerInfo.getReplicationFactor().getNumber() / containerInfo.getDatacenters().size();
+      int replicasPerDc = containerInfo.getReplicationFactor() / containerInfo.getDatacenters().size();
       replicaCount = new RatisContainerReplicaCount(containerInfo, healthyReplicas,
           pendingOps, replicasPerDc, minHealthyForMaintenance, true);
     }
@@ -321,13 +321,13 @@ public class RatisOverReplicationHandler
     Set<ContainerReplica> replicaSet = new HashSet<>(replicas);
     // iterate through replicas in deterministic order
     ContainerPlacementStatus originalPlacementStatus = getPlacementStatus(replicaSet,
-        containerInfo.getReplicationFactor().getNumber());
+        containerInfo.getReplicationFactor());
     for (ContainerReplica replica : replicas) {
       if (excess == 0) {
         break;
       }
       if (super.isPlacementStatusActuallyEqualAfterRemove(originalPlacementStatus, replicaSet, replica,
-          containerInfo.getReplicationFactor().getNumber())) {
+          containerInfo.getReplicationFactor())) {
         try {
           replicationManager.sendThrottledDeleteCommand(containerInfo,
               replica.getReplicaIndex(), replica.getDatanodeDetails(), true);

@@ -38,7 +38,6 @@ import org.apache.hadoop.hdds.client.DefaultReplicationConfig;
 import org.apache.hadoop.hdds.client.ECReplicationConfig;
 import org.apache.hadoop.hdds.client.ReplicationConfig;
 import org.apache.hadoop.hdds.client.ReplicationConfigValidator;
-import org.apache.hadoop.hdds.client.ReplicationFactor;
 import org.apache.hadoop.hdds.client.ReplicationType;
 import org.apache.hadoop.hdds.conf.ConfigurationSource;
 import org.apache.hadoop.hdds.protocol.DatanodeDetails;
@@ -1327,7 +1326,7 @@ public class RpcClient implements ClientProtocol {
   @Override
   @Deprecated
   public OzoneOutputStream createKey(String volumeName, String bucketName,
-      String keyName, long size, ReplicationType type, ReplicationFactor factor,
+      String keyName, long size, ReplicationType type, int factor,
       Map<String, String> metadata) throws IOException {
 
     return createKey(volumeName, bucketName, keyName, size,
@@ -1778,7 +1777,7 @@ public class RpcClient implements ClientProtocol {
   @Override
   public OmMultipartInfo initiateMultipartUpload(String volumeName,
       String bucketName, String keyName, ReplicationType type,
-      ReplicationFactor factor) throws IOException {
+      int factor) throws IOException {
     return initiateMultipartUpload(volumeName, bucketName, keyName,
         ReplicationConfig.fromTypeAndFactor(type, factor));
   }
@@ -2054,7 +2053,7 @@ public class RpcClient implements ClientProtocol {
   @Override
   @Deprecated
   public OzoneOutputStream createFile(String volumeName, String bucketName,
-      String keyName, long size, ReplicationType type, ReplicationFactor factor,
+      String keyName, long size, ReplicationType type, int factor,
       boolean overWrite, boolean recursive) throws IOException {
     return createFile(volumeName, bucketName, keyName, size,
         ReplicationConfig.fromTypeAndFactor(type, factor), overWrite,

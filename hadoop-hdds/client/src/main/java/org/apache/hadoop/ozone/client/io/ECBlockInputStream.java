@@ -184,8 +184,7 @@ public class ECBlockInputStream extends BlockExtendedInputStream {
       // dataLocations array indexed from zero.
       DatanodeDetails dataLocation = dataLocations[locationIndex];
       Pipeline pipeline = Pipeline.newBuilder()
-          .setReplicationConfig(StandaloneReplicationConfig.getInstance(
-              HddsProtos.ReplicationFactor.ONE))
+          .setReplicationConfig(StandaloneReplicationConfig.getInstance(1))
           .setNodes(Arrays.asList(dataLocation))
           .setId(PipelineID.valueOf(dataLocation.getUuid()))
           .setReplicaIndexes(ImmutableMap.of(dataLocation, locationIndex + 1))
@@ -200,8 +199,7 @@ public class ECBlockInputStream extends BlockExtendedInputStream {
           .setPartNumber(blockInfo.getPartNumber())
           .build();
       stream = streamFactory.create(
-          StandaloneReplicationConfig.getInstance(
-              HddsProtos.ReplicationFactor.ONE),
+          StandaloneReplicationConfig.getInstance(1),
           blkInfo, pipeline,
           blockInfo.getToken(), xceiverClientFactory,
           ecPipelineRefreshFunction(locationIndex + 1, refreshFunction),
@@ -235,8 +233,7 @@ public class ECBlockInputStream extends BlockExtendedInputStream {
         return null;
       }
       Pipeline pipeline = Pipeline.newBuilder().setReplicationConfig(
-              StandaloneReplicationConfig.getInstance(
-                  HddsProtos.ReplicationFactor.ONE))
+              StandaloneReplicationConfig.getInstance(1))
           .setNodes(Collections.singletonList(curIndexNode))
           .setId(PipelineID.randomId())
           .setReplicaIndexes(Collections.singletonMap(curIndexNode, replicaIndex))

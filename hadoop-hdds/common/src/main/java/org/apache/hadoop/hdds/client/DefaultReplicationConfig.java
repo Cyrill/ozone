@@ -70,9 +70,8 @@ public class DefaultReplicationConfig {
     if (this.ecReplicationConfig != null) {
       builder.setEcReplicationConfig(this.ecReplicationConfig.toProto());
     } else {
-      ReplicationFactor factor =
-          ReplicationFactor.valueOf(replicationConfig.getRequiredNodes());
-      builder.setFactor(factor.toProto());
+      int factor = replicationConfig.getRequiredNodes();
+      builder.setFactor(factor);
     }
     return builder.build();
   }

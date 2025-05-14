@@ -186,7 +186,7 @@ public interface ScmClient extends Closeable {
    * @throws IOException - in case of error.
    */
   ContainerWithPipeline createContainer(HddsProtos.ReplicationType type,
-      HddsProtos.ReplicationFactor replicationFactor,
+      int replicationFactor,
       String owner) throws IOException;
 
   /**
@@ -253,7 +253,7 @@ public interface ScmClient extends Closeable {
    * @throws IOException
    */
   Pipeline createReplicationPipeline(HddsProtos.ReplicationType type,
-      HddsProtos.ReplicationFactor factor, HddsProtos.NodePool nodePool)
+      int factor, HddsProtos.NodePool nodePool)
       throws IOException;
 
   /**

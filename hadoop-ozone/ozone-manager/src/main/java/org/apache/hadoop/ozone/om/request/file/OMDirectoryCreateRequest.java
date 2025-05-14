@@ -380,8 +380,8 @@ public class OMDirectoryCreateRequest extends OMKeyRequest {
             .setCreationTime(keyArgs.getModificationTime())
             .setModificationTime(keyArgs.getModificationTime())
             .setDataSize(0);
-    if (keyArgs.getFactor() != null && keyArgs
-        .getFactor() != HddsProtos.ReplicationFactor.ZERO && keyArgs
+    if (keyArgs.getFactor() != 0 && keyArgs
+        .getFactor() != 0 && keyArgs
         .getType() != HddsProtos.ReplicationType.EC) {
       // Factor available and not an EC replication config.
       keyInfoBuilder.setReplicationConfig(ReplicationConfig

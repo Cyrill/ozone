@@ -87,7 +87,7 @@ public class HealthyPipelineSafeModeRule extends SafeModeExitRule<Pipeline> {
         HddsConfigKeys.HDDS_SCM_SAFEMODE_MIN_DATANODE_DEFAULT);
 
     // We only care about THREE replica pipeline
-    return minDatanodes / HddsProtos.ReplicationFactor.THREE_VALUE;
+    return minDatanodes / 3;
 
   }
 
@@ -126,7 +126,7 @@ public class HealthyPipelineSafeModeRule extends SafeModeExitRule<Pipeline> {
     Preconditions.checkNotNull(pipeline);
     if (pipeline.getType() == HddsProtos.ReplicationType.RATIS &&
         ((RatisReplicationConfig) pipeline.getReplicationConfig())
-            .getReplicationFactor() == HddsProtos.ReplicationFactor.THREE &&
+            .getReplicationFactor() == 3 &&
         !processedPipelineIDs.contains(pipeline.getId())) {
       getSafeModeMetrics().incCurrentHealthyPipelinesCount();
       currentHealthyPipelineCount++;
@@ -155,7 +155,7 @@ public class HealthyPipelineSafeModeRule extends SafeModeExitRule<Pipeline> {
 
   private synchronized void initializeRule(boolean refresh) {
     int pipelineCount = pipelineManager.getPipelines(
-        RatisReplicationConfig.getInstance(HddsProtos.ReplicationFactor.THREE),
+        RatisReplicationConfig.getInstance(3),
         Pipeline.PipelineState.OPEN).size();
 
     healthyPipelineThresholdCount = Math.max(minHealthyPipelines,

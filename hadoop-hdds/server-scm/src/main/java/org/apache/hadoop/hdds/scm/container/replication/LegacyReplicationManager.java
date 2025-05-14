@@ -2250,7 +2250,7 @@ public class LegacyReplicationManager {
       if (excessDeleted) {
         report.incrementAndSample(HealthState.OVER_REPLICATED,
             container.containerID());
-        int replicationFactor = container.getReplicationFactor().getNumber();
+        int replicationFactor = container.getReplicationFactor();
         LOG.info("Container {} has all unhealthy replicas and is over " +
                 "replicated. Expected replica count" +
                 " is {}, but found {}.", container.getContainerID(),

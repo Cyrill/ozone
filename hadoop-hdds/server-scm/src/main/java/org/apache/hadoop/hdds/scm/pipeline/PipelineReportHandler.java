@@ -25,7 +25,6 @@ import org.apache.hadoop.hdds.client.RatisReplicationConfig;
 import org.apache.hadoop.hdds.conf.ConfigurationSource;
 import org.apache.hadoop.hdds.HddsConfigKeys;
 import org.apache.hadoop.hdds.protocol.DatanodeDetails;
-import org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationFactor;
 import org.apache.hadoop.hdds.protocol.proto
     .StorageContainerDatanodeProtocolProtos.PipelineReport;
 import org.apache.hadoop.hdds.protocol.proto
@@ -155,7 +154,7 @@ public class PipelineReportHandler implements
     // ONE replica pipeline doesn't have leader flag
     if (report.getIsLeader() ||
         RatisReplicationConfig.hasFactor(pipeline.getReplicationConfig(),
-            ReplicationFactor.ONE)) {
+            1)) {
       pipeline.setLeaderId(dn.getUuid());
       metrics.incNumPipelineBytesWritten(pipeline, report.getBytesWritten());
     }

@@ -208,7 +208,7 @@ public final class StorageContainerLocationProtocolClientSideTranslatorPB
    */
   @Override
   public ContainerWithPipeline allocateContainer(
-      HddsProtos.ReplicationType type, HddsProtos.ReplicationFactor factor,
+      HddsProtos.ReplicationType type, int factor,
       String owner) throws IOException {
 
     ContainerRequestProto request = ContainerRequestProto.newBuilder()
@@ -450,7 +450,7 @@ public final class StorageContainerLocationProtocolClientSideTranslatorPB
   @Deprecated
   @Override
   public List<ContainerInfo> listContainer(long startContainerID, int count,
-      HddsProtos.LifeCycleState state, HddsProtos.ReplicationFactor factor)
+      HddsProtos.LifeCycleState state, int factor)
       throws IOException {
     throw new UnsupportedOperationException("Should no longer be called from " +
         "the client side");
@@ -622,7 +622,7 @@ public final class StorageContainerLocationProtocolClientSideTranslatorPB
    */
   @Override
   public Pipeline createReplicationPipeline(HddsProtos.ReplicationType
-      replicationType, HddsProtos.ReplicationFactor factor, HddsProtos
+      replicationType, int factor, HddsProtos
       .NodePool nodePool) throws IOException {
     PipelineRequestProto request = PipelineRequestProto.newBuilder()
         .setTraceID(TracingUtil.exportCurrentSpan())

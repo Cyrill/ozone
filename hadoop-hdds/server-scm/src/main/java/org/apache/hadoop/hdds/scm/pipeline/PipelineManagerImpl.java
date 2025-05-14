@@ -27,7 +27,6 @@ import org.apache.hadoop.hdds.client.StandaloneReplicationConfig;
 import org.apache.hadoop.hdds.conf.ConfigurationSource;
 import org.apache.hadoop.hdds.protocol.DatanodeDetails;
 import org.apache.hadoop.hdds.protocol.proto.HddsProtos;
-import org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationFactor;
 import org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationType;
 import org.apache.hadoop.hdds.scm.ScmConfigKeys;
 import org.apache.hadoop.hdds.scm.container.ContainerID;
@@ -307,13 +306,13 @@ public class PipelineManagerImpl implements PipelineManager {
   private boolean factorOne(ReplicationConfig replicationConfig) {
     if (replicationConfig.getReplicationType() == ReplicationType.RATIS) {
       return ((RatisReplicationConfig) replicationConfig).getReplicationFactor()
-          == ReplicationFactor.ONE;
+          == 1;
 
     } else if (replicationConfig.getReplicationType()
         == ReplicationType.STAND_ALONE) {
       return ((StandaloneReplicationConfig) replicationConfig)
           .getReplicationFactor()
-          == ReplicationFactor.ONE;
+          == 1;
     }
     return false;
   }

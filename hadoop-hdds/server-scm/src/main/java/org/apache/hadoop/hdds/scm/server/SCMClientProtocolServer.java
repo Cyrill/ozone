@@ -231,7 +231,7 @@ public class SCMClientProtocolServer implements
 
   @Override
   public ContainerWithPipeline allocateContainer(HddsProtos.ReplicationType
-      replicationType, HddsProtos.ReplicationFactor factor,
+      replicationType, int factor,
       String owner) throws IOException {
     if (scm.getScmContext().isInSafeMode()) {
       throw new SCMException("SafeModePrecheck failed for allocateContainer",
@@ -485,7 +485,7 @@ public class SCMClientProtocolServer implements
   @Deprecated
   public List<ContainerInfo> listContainer(long startContainerID,
       int count, HddsProtos.LifeCycleState state,
-      HddsProtos.ReplicationFactor factor) throws IOException {
+      int factor) throws IOException {
     boolean auditSuccess = true;
     Map<String, String> auditMap = Maps.newHashMap();
     auditMap.put("startContainerID", String.valueOf(startContainerID));
@@ -493,13 +493,13 @@ public class SCMClientProtocolServer implements
     if (state != null) {
       auditMap.put("state", state.name());
     }
-    if (factor != null) {
-      auditMap.put("factor", factor.name());
+    if (factor != 0) {
+      auditMap.put("factor", String.valueOf(factor));
     }
     try {
       final ContainerID containerId = ContainerID.valueOf(startContainerID);
       if (state != null) {
-        if (factor != null) {
+        if (factor != 0) {
           return scm.getContainerManager().getContainers(state).stream()
               .filter(info -> info.containerID().getId() >= startContainerID)
               //Filtering EC replication type as EC will not have factor.
@@ -513,7 +513,7 @@ public class SCMClientProtocolServer implements
               .sorted().limit(count).collect(Collectors.toList());
         }
       } else {
-        if (factor != null) {
+        if (factor != 0) {
           return scm.getContainerManager().getContainers().stream()
               .filter(info -> info.containerID().getId() >= startContainerID)
               //Filtering EC replication type as EC will not have factor.
@@ -726,15 +726,15 @@ public class SCMClientProtocolServer implements
 
   @Override
   public Pipeline createReplicationPipeline(HddsProtos.ReplicationType type,
-      HddsProtos.ReplicationFactor factor, HddsProtos.NodePool nodePool)
+      int factor, HddsProtos.NodePool nodePool)
       throws IOException {
     getScm().checkAdminAccess(getRemoteUser(), false);
     Map<String, String> auditMap = Maps.newHashMap();
     if (type != null) {
       auditMap.put("replicationType", type.toString());
     }
-    if (factor != null) {
-      auditMap.put("replicationFactor", factor.toString());
+    if (factor != 0) {
+      auditMap.put("replicationFactor", String.valueOf(factor));
     }
     if (nodePool != null && !nodePool.getNodesList().isEmpty()) {
       List<String> nodeIpAddresses = new ArrayList<>();

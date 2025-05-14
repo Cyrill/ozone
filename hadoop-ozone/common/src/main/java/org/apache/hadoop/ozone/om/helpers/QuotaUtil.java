@@ -48,7 +48,7 @@ public final class QuotaUtil {
       long dataSize, ReplicationConfig repConfig) {
     if (repConfig.getReplicationType() == RATIS) {
       return dataSize * ((RatisReplicationConfig) repConfig)
-          .getReplicationFactor().getNumber();
+          .getReplicationFactor();
     } else if (repConfig.getReplicationType() == EC) {
       ECReplicationConfig rc = (ECReplicationConfig) repConfig;
       int dataStripeSize = rc.getData() * rc.getEcChunkSize();
@@ -77,7 +77,7 @@ public final class QuotaUtil {
                                  ReplicationConfig repConfig) {
     if (repConfig.getReplicationType() == RATIS) {
       final int ratisReplicationFactor = ((RatisReplicationConfig) repConfig)
-          .getReplicationFactor().getNumber();
+          .getReplicationFactor();
       // May not be divisible. But it's fine to ignore remainder in our use case
       return replicatedSize / ratisReplicationFactor;
     } else if (repConfig.getReplicationType() == EC) {

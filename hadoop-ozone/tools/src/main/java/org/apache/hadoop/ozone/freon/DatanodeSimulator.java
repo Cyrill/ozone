@@ -26,7 +26,6 @@ import org.apache.hadoop.hdds.cli.HddsVersionProvider;
 import org.apache.hadoop.hdds.conf.ConfigurationSource;
 import org.apache.hadoop.hdds.protocol.DatanodeDetails;
 import org.apache.hadoop.hdds.protocol.proto.HddsProtos;
-import org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationFactor;
 import org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationType;
 import org.apache.hadoop.hdds.protocol.proto.StorageContainerDatanodeProtocolProtos.ContainerReportsProto;
 import org.apache.hadoop.hdds.protocol.proto.StorageContainerDatanodeProtocolProtos.LayoutVersionProto;
@@ -313,7 +312,7 @@ public class DatanodeSimulator implements Callable<Void> {
     while (totalAssignedContainers < totalExpectedContainers) {
       ContainerWithPipeline cp =
           scmContainerClient.allocateContainer(ReplicationType.RATIS,
-              ReplicationFactor.THREE, "test");
+              3, "test");
 
       for (DatanodeDetails datanode : cp.getPipeline().getNodeSet()) {
         if (datanodesMap.containsKey(datanode.getUuid())) {

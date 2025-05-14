@@ -77,7 +77,7 @@ public final class OzoneConfigUtil {
 
   public static ReplicationConfig resolveReplicationConfigPreference(
       HddsProtos.ReplicationType clientType,
-      HddsProtos.ReplicationFactor clientFactor,
+      int clientFactor,
       HddsProtos.ECReplicationConfig clientECReplicationConfig,
       DefaultReplicationConfig bucketDefaultReplicationConfig,
       OzoneManager ozoneManager) throws OMException {

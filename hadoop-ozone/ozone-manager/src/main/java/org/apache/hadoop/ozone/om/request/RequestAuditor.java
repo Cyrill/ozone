@@ -75,8 +75,8 @@ public interface RequestAuditor {
       if (keyArgs.hasType()) {
         auditMap.put(OzoneConsts.REPLICATION_TYPE, keyArgs.getType().name());
       }
-      if (keyArgs.hasFactor() && keyArgs.getFactor() != HddsProtos.ReplicationFactor.ZERO) {
-        auditMap.put(OzoneConsts.REPLICATION_FACTOR, keyArgs.getFactor().name());
+      if (keyArgs.hasFactor() && keyArgs.getFactor() != 0) {
+        auditMap.put(OzoneConsts.REPLICATION_FACTOR, String.valueOf(keyArgs.getFactor()));
       }
       if (keyArgs.hasEcReplicationConfig()) {
         auditMap.put(OzoneConsts.REPLICATION_CONFIG,

@@ -812,7 +812,7 @@ public final class StorageContainerLocationProtocolServerSideTranslatorPB
     }
     count = request.getCount();
     HddsProtos.LifeCycleState state = null;
-    HddsProtos.ReplicationFactor factor = null;
+    int factor = 0;
     HddsProtos.ReplicationType replicationType = null;
     ReplicationConfig repConfig = null;
     if (request.hasState()) {
@@ -838,7 +838,7 @@ public final class StorageContainerLocationProtocolServerSideTranslatorPB
       factor = request.getFactor();
     }
     List<ContainerInfo> containerList;
-    if (factor != null) {
+    if (factor != 0) {
       // Call from a legacy client
       containerList =
           impl.listContainer(startContainerID, count, state, factor);

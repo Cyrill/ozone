@@ -21,7 +21,6 @@ package org.apache.hadoop.ozone.client;
 import java.time.Instant;
 
 import org.apache.hadoop.hdds.client.ReplicationConfig;
-import org.apache.hadoop.hdds.client.ReplicationFactor;
 import org.apache.hadoop.hdds.client.ReplicationType;
 
 /**
@@ -45,7 +44,7 @@ public class OzoneMultipartUpload {
   public OzoneMultipartUpload(String volumeName, String bucketName,
       String keyName, String uploadId, Instant creationTime,
       ReplicationType replicationType,
-      ReplicationFactor replicationFactor) {
+      int replicationFactor) {
     this.volumeName = volumeName;
     this.bucketName = bucketName;
     this.keyName = keyName;
@@ -98,9 +97,8 @@ public class OzoneMultipartUpload {
   }
 
   @Deprecated
-  public ReplicationFactor getReplicationFactor() {
-    return ReplicationFactor
-            .fromProto(ReplicationConfig.getLegacyFactor(replicationConfig));
+  public int getReplicationFactor() {
+    return ReplicationConfig.getLegacyFactor(replicationConfig);
   }
 
   public ReplicationConfig getReplicationConfig() {

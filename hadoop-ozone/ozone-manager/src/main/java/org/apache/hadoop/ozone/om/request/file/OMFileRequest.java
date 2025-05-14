@@ -749,7 +749,7 @@ public final class OMFileRequest {
         .setUpdateID(dirInfo.getUpdateID())
         .setFileName(dirInfo.getName())
         .setReplicationConfig(RatisReplicationConfig
-            .getInstance(HddsProtos.ReplicationFactor.ONE))
+            .getInstance(1))
         .setOmKeyLocationInfos(Collections.singletonList(
             new OmKeyLocationInfoGroup(0, new ArrayList<>())))
         .build();

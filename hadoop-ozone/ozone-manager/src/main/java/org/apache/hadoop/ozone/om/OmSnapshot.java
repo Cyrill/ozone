@@ -291,7 +291,7 @@ public class OmSnapshot implements IOmMetadataReader, Closeable {
       .setModificationTime(Time.now())
       .setDataSize(0)
       .setReplicationConfig(RatisReplicationConfig
-          .getInstance(HddsProtos.ReplicationFactor.ZERO))
+          .getInstance(0))
       .build();
   }
 

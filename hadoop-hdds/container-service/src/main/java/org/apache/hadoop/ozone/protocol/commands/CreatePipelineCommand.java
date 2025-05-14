@@ -24,7 +24,6 @@ import org.apache.hadoop.hdds.protocol.proto.
     StorageContainerDatanodeProtocolProtos.SCMCommandProto;
 import org.apache.hadoop.hdds.scm.pipeline.PipelineID;
 import org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationType;
-import org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationFactor;
 import org.apache.hadoop.ozone.container.common.transport.server.ratis.XceiverServerRatis;
 
 import java.util.ArrayList;
@@ -42,13 +41,13 @@ public class CreatePipelineCommand
   private static final Integer LOW_PRIORITY = 0;
 
   private final PipelineID pipelineID;
-  private final ReplicationFactor factor;
+  private final int factor;
   private final ReplicationType type;
   private final List<DatanodeDetails> nodelist;
   private final List<Integer> priorityList;
 
   public CreatePipelineCommand(final PipelineID pipelineID,
-      final ReplicationType type, final ReplicationFactor factor,
+      final ReplicationType type, final int factor,
       final List<DatanodeDetails> datanodeList) {
     super();
     this.pipelineID = pipelineID;
@@ -65,7 +64,7 @@ public class CreatePipelineCommand
   }
 
   public CreatePipelineCommand(final PipelineID pipelineID,
-      final ReplicationType type, final ReplicationFactor factor,
+      final ReplicationType type, final int factor,
       final List<DatanodeDetails> datanodeList,
       final DatanodeDetails suggestedLeader) {
     super();
@@ -89,7 +88,7 @@ public class CreatePipelineCommand
   }
 
   public CreatePipelineCommand(long cmdId, final PipelineID pipelineID,
-      final ReplicationType type, final ReplicationFactor factor,
+      final ReplicationType type, final int factor,
       final List<DatanodeDetails> datanodeList,
       final List<Integer> priorityList) {
     super(cmdId);
@@ -152,7 +151,7 @@ public class CreatePipelineCommand
     return type;
   }
 
-  public ReplicationFactor getFactor() {
+  public int getFactor() {
     return factor;
   }
 }

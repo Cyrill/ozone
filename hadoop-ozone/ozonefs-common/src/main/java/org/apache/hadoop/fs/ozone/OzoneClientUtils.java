@@ -19,7 +19,6 @@ package org.apache.hadoop.fs.ozone;
 import com.google.common.base.Preconditions;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.hadoop.hdds.client.ReplicationConfig;
-import org.apache.hadoop.hdds.client.ReplicationFactor;
 import org.apache.hadoop.hdds.client.ReplicationType;
 import org.apache.hadoop.hdds.conf.ConfigurationSource;
 import org.apache.hadoop.hdds.protocol.proto.HddsProtos;
@@ -136,10 +135,10 @@ public final class OzoneClientUtils {
       clientDeterminedReplConfig = bucketReplConfig;
     } else {
       // Let's validate the client side available replication configs.
-      boolean isReplicationInSupportedList =
-          replication == ReplicationFactor.ONE.getValue()
-              || replication == ReplicationFactor.THREE.getValue()
-              || replication == ReplicationFactor.SIX.getValue();
+      boolean isReplicationInSupportedList = true;
+//          replication == ReplicationFactor.ONE.getValue()
+//              || replication == ReplicationFactor.THREE.getValue()
+//              || replication == ReplicationFactor.SIX.getValue();
 
       if (isReplicationInSupportedList) {
         if (clientConfiguredReplConfig != null) {

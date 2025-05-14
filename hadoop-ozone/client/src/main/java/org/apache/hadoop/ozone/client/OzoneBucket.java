@@ -28,7 +28,6 @@ import org.apache.hadoop.hdds.client.OzoneQuota;
 import org.apache.hadoop.hdds.client.ReplicationConfig;
 import org.apache.hadoop.hdds.conf.ConfigurationSource;
 import org.apache.hadoop.hdds.protocol.StorageType;
-import org.apache.hadoop.hdds.client.ReplicationFactor;
 import org.apache.hadoop.hdds.client.ReplicationType;
 import org.apache.hadoop.hdds.scm.client.HddsClientUtils;
 import org.apache.hadoop.ozone.OmUtils;
@@ -433,7 +432,7 @@ public class OzoneBucket extends WithMetadata {
   @Deprecated
   public OzoneOutputStream createKey(String key, long size,
       ReplicationType type,
-      ReplicationFactor factor,
+      int factor,
       Map<String, String> keyMetadata)
       throws IOException {
     return proxy
@@ -665,7 +664,7 @@ public class OzoneBucket extends WithMetadata {
   @Deprecated
   public OmMultipartInfo initiateMultipartUpload(String keyName,
       ReplicationType type,
-      ReplicationFactor factor)
+      int factor)
       throws IOException {
     return proxy.initiateMultipartUpload(volumeName, name, keyName, type,
         factor);
@@ -834,7 +833,7 @@ public class OzoneBucket extends WithMetadata {
    */
   @Deprecated
   public OzoneOutputStream createFile(String keyName, long size,
-      ReplicationType type, ReplicationFactor factor, boolean overWrite,
+      ReplicationType type, int factor, boolean overWrite,
       boolean recursive) throws IOException {
     return proxy
         .createFile(volumeName, name, keyName, size, type, factor, overWrite,

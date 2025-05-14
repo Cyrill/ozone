@@ -30,7 +30,6 @@ import org.apache.hadoop.hdds.client.RatisReplicationConfig;
 import org.apache.hadoop.hdds.conf.ConfigurationSource;
 import org.apache.hadoop.hdds.conf.StorageUnit;
 import org.apache.hadoop.hdds.protocol.DatanodeDetails;
-import org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationFactor;
 import org.apache.hadoop.hdds.scm.ScmConfigKeys;
 import org.apache.hadoop.hdds.scm.container.ContainerReplica;
 import org.apache.hadoop.hdds.scm.events.SCMEvents;
@@ -111,7 +110,7 @@ public class RatisPipelineProvider
 
   private boolean exceedPipelineNumberLimit(
       RatisReplicationConfig replicationConfig) {
-    if (replicationConfig.getReplicationFactor() != ReplicationFactor.THREE) {
+    if (replicationConfig.getReplicationFactor() != 3) {
       // Only put limits for Factor THREE pipelines.
       return false;
     }
@@ -131,7 +130,7 @@ public class RatisPipelineProvider
               replicationConfig, PipelineState.CLOSED).size()) >
           (pipelineNumberLimit - getPipelineStateManager()
               .getPipelines(RatisReplicationConfig
-                  .getInstance(ReplicationFactor.ONE))
+                  .getInstance(1))
               .size());
     }
 
@@ -163,15 +162,15 @@ public class RatisPipelineProvider
 
     List<DatanodeDetails> dns;
 
-    final ReplicationFactor factor =
+    final int factor =
         replicationConfig.getReplicationFactor();
     switch (factor) {
-    case ONE:
+    case 1:
       dns = pickNodesNotUsed(replicationConfig, minRatisVolumeSizeBytes,
           containerSizeBytes, conf);
       break;
-    case THREE:
-    case SIX:
+    case 3:
+    case 6:
       List<DatanodeDetails> excludeDueToEngagement = filterPipelineEngagement();
       if (!excludeDueToEngagement.isEmpty()) {
         if (excludedNodes.isEmpty()) {
@@ -181,11 +180,11 @@ public class RatisPipelineProvider
         }
       }
       dns = placementPolicy.chooseDatanodes(excludedNodes,
-          favoredNodes, datacenters, factor.getNumber(), minRatisVolumeSizeBytes,
+          favoredNodes, datacenters, factor, minRatisVolumeSizeBytes,
           containerSizeBytes);
       break;
     default:
-      throw new IllegalStateException("Unknown factor: " + factor.name());
+      throw new IllegalStateException("Unknown factor: " + factor);
     }
 
     DatanodeDetails suggestedLeader = leaderChoosePolicy.chooseLeader(dns);

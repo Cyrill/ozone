@@ -26,7 +26,6 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 import org.apache.hadoop.crypto.key.KeyProvider;
 import org.apache.hadoop.hdds.client.ReplicationConfig;
-import org.apache.hadoop.hdds.client.ReplicationFactor;
 import org.apache.hadoop.hdds.client.ReplicationType;
 import org.apache.hadoop.hdds.protocol.DatanodeDetails;
 import org.apache.hadoop.hdds.protocol.StorageType;
@@ -335,7 +334,7 @@ public interface ClientProtocol {
   @Deprecated
   OzoneOutputStream createKey(String volumeName, String bucketName,
                               String keyName, long size, ReplicationType type,
-                              ReplicationFactor factor,
+                              int factor,
                               Map<String, String> metadata)
       throws IOException;
 
@@ -517,7 +516,7 @@ public interface ClientProtocol {
    */
   @Deprecated
   OmMultipartInfo initiateMultipartUpload(String volumeName, String
-      bucketName, String keyName, ReplicationType type, ReplicationFactor
+      bucketName, String keyName, ReplicationType type, int
       factor) throws IOException;
 
   /**
@@ -871,7 +870,7 @@ public interface ClientProtocol {
   @SuppressWarnings("checkstyle:parameternumber")
   @Deprecated
   OzoneOutputStream createFile(String volumeName, String bucketName,
-      String keyName, long size, ReplicationType type, ReplicationFactor factor,
+      String keyName, long size, ReplicationType type, int factor,
       boolean overWrite, boolean recursive) throws IOException;
 
 

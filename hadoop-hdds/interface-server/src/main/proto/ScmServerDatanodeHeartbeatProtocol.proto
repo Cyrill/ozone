@@ -451,7 +451,7 @@ This command asks the datanode to create a pipeline.
 message CreatePipelineCommandProto {
   required PipelineID pipelineID = 1;
   required ReplicationType type = 2;
-  required ReplicationFactor factor = 3;
+  required int32 factor = 3;
   repeated DatanodeDetailsProto datanode = 4;
   required int64 cmdId = 5;
   repeated int32 priority = 6;

@@ -126,7 +126,7 @@ public class RatisUnderReplicationHandler
           new RatisContainerReplicaCount(containerInfo, replicas, pendingOps,
               minHealthyForMaintenance, false);
     } else {
-      int replicasPerDc = containerInfo.getReplicationFactor().getNumber() / containerInfo.getDatacenters().size();
+      int replicasPerDc = containerInfo.getReplicationFactor() / containerInfo.getDatacenters().size();
       withUnhealthy =
           new RatisContainerReplicaCount(containerInfo, replicas, pendingOps, replicasPerDc,
               minHealthyForMaintenance, true);

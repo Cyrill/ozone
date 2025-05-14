@@ -18,7 +18,6 @@
 package org.apache.hadoop.ozone.freon;
 
 import org.apache.hadoop.hdds.client.ReplicationConfig;
-import org.apache.hadoop.hdds.client.ReplicationFactor;
 import org.apache.hadoop.hdds.client.ReplicationType;
 import org.apache.hadoop.hdds.conf.ConfigurationSource;
 import org.apache.hadoop.ozone.shell.ReplicationOptions;
@@ -37,7 +36,7 @@ public class FreonReplicationOptions extends ReplicationOptions {
 
   private static final String FACTOR_OPT = "--factor";
 
-  private ReplicationFactor factor;
+  private int factor;
 
   @Spec(MIXEE)
   private CommandSpec spec;
@@ -46,7 +45,7 @@ public class FreonReplicationOptions extends ReplicationOptions {
       description = "[deprecated] Replication factor (ONE, THREE)",
       defaultValue = "THREE"
   )
-  public void setFactor(ReplicationFactor factor) {
+  public void setFactor(int factor) {
     this.factor = factor;
   }
 

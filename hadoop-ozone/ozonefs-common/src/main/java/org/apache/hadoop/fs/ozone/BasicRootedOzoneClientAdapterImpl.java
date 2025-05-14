@@ -44,7 +44,6 @@ import org.apache.hadoop.fs.PathIsNotEmptyDirectoryException;
 import org.apache.hadoop.fs.SafeModeAction;
 import org.apache.hadoop.fs.permission.FsPermission;
 import org.apache.hadoop.hdds.client.ReplicationConfig;
-import org.apache.hadoop.hdds.client.ReplicationFactor;
 import org.apache.hadoop.hdds.conf.ConfigurationSource;
 import org.apache.hadoop.hdds.conf.OzoneConfiguration;
 import org.apache.hadoop.hdds.protocol.DatanodeDetails;
@@ -335,7 +334,7 @@ public class BasicRootedOzoneClientAdapterImpl
       // to provide backward compatibility, we are just retuning 3;
       // However we need to handle with the correct behavior.
       // TODO: Please see HDDS-5646
-      return (short) ReplicationFactor.THREE.getValue();
+      return (short) 3;
     }
     return (short) clientConfiguredReplicationConfig.getRequiredNodes();
   }

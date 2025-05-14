@@ -55,7 +55,6 @@ import org.kohsuke.MetaInfServices;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
-import static org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationFactor.ONE;
 
 /**
  * Class that gives chunk location given a specific key.
@@ -123,7 +122,7 @@ public class ChunkKeyHandler extends KeyHandler implements
         if (!isECKey && keyPipeline.getType() != HddsProtos.ReplicationType.STAND_ALONE) {
           pipeline = Pipeline.newBuilder(keyPipeline)
               .setReplicationConfig(StandaloneReplicationConfig
-                  .getInstance(ONE)).build();
+                  .getInstance(1)).build();
         } else {
           pipeline = keyPipeline;
         }

@@ -24,7 +24,6 @@ import org.apache.hadoop.hdds.client.ReplicationConfig;
 import org.apache.hadoop.hdds.conf.OzoneConfiguration;
 import org.apache.hadoop.hdds.protocol.DatanodeDetails;
 import org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationType;
-import org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationFactor;
 import org.apache.hadoop.hdds.protocol.proto.StorageContainerDatanodeProtocolProtos.ContainerReplicaProto;
 import org.apache.hadoop.hdds.protocol.proto.StorageContainerDatanodeProtocolProtos.SCMHeartbeatRequestProto;
 import org.apache.hadoop.hdds.protocol.proto.StorageContainerDatanodeProtocolProtos.ContainerReportsProto;
@@ -452,7 +451,7 @@ public final class SCMThroughputBenchmark implements Callable<Void> {
       this.failBlockCounter = new AtomicLong();
       ReplicationConfig rc = replication.fromParamsOrConfig(conf);
       if (rc == null) {
-        rc = RatisReplicationConfig.getInstance(ReplicationFactor.THREE);
+        rc = RatisReplicationConfig.getInstance(3);
       }
       replicationConfig = rc;
     }
@@ -584,7 +583,7 @@ public final class SCMThroughputBenchmark implements Callable<Void> {
       }
     }
 
-    private void doAllocateContainer(ReplicationFactor factor) {
+    private void doAllocateContainer(int factor) {
       try {
         scmContainerClient.allocateContainer(
             ReplicationType.RATIS, factor, "STB");
@@ -603,7 +602,7 @@ public final class SCMThroughputBenchmark implements Callable<Void> {
       @Override
       public void run() {
         while (totalContainerCounter.getAndIncrement() < totalContainers) {
-          doAllocateContainer(ReplicationFactor.THREE);
+          doAllocateContainer(3);
         }
       }
     }
@@ -659,7 +658,7 @@ public final class SCMThroughputBenchmark implements Callable<Void> {
       for (int i = 0; i < totalContainers; i++) {
         try {
           ContainerWithPipeline container = scmContainerClient
-              .allocateContainer(ReplicationType.RATIS, ReplicationFactor.ONE,
+              .allocateContainer(ReplicationType.RATIS, 1,
                   "STB");
           containers.add(container.getContainerInfo());
         } catch (IOException e) {

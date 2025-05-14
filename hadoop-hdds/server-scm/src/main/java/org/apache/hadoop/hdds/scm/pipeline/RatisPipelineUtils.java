@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.hadoop.hdds.client.RatisReplicationConfig;
-import org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationFactor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +47,7 @@ public final class RatisPipelineUtils {
       PipelineStateManager stateManager, Pipeline pipeline) {
     return stateManager
         .getPipelines(RatisReplicationConfig
-            .getInstance(ReplicationFactor.THREE))
+            .getInstance(3))
         .stream().filter(p -> !p.getId().equals(pipeline.getId()) &&
             (p.getPipelineState() != Pipeline.PipelineState.CLOSED &&
                 p.sameDatanodes(pipeline)))

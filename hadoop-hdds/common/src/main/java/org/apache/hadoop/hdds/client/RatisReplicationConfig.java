@@ -20,13 +20,9 @@ package org.apache.hadoop.hdds.client;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationFactor;
 import org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationType;
 
 import java.util.Objects;
-
-import static org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationFactor.ONE;
-import static org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationFactor.THREE;
 
 /**
  * Replication configuration for Ratis replication.
@@ -34,14 +30,14 @@ import static org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationFactor
 public final class RatisReplicationConfig
     implements ReplicatedReplicationConfig {
 
-  private final ReplicationFactor replicationFactor;
+  private final int replicationFactor;
   private static final ReplicationType REPLICATION_TYPE = ReplicationType.RATIS;
 
   private static final RatisReplicationConfig RATIS_ONE_CONFIG =
-      new RatisReplicationConfig(ONE);
+      new RatisReplicationConfig(1);
 
   private static final RatisReplicationConfig RATIS_THREE_CONFIG =
-      new RatisReplicationConfig(THREE);
+      new RatisReplicationConfig(3);
 
   /**
    * Get an instance of Ratis Replication Config with the requested factor.
@@ -50,10 +46,10 @@ public final class RatisReplicationConfig
    * @param factor Replication Factor requested
    * @return RatisReplicationConfig object of the requested factor
    */
-  public static RatisReplicationConfig getInstance(ReplicationFactor factor) {
-    if (factor == ONE) {
+  public static RatisReplicationConfig getInstance(int factor) {
+    if (factor == 1) {
       return RATIS_ONE_CONFIG;
-    } else if (factor == THREE) {
+    } else if (factor == 3) {
       return RATIS_THREE_CONFIG;
     }
     return new RatisReplicationConfig(factor);
@@ -63,15 +59,14 @@ public final class RatisReplicationConfig
    * Use the static getInstance method rather than the private constructor.
    * @param replicationFactor
    */
-  private RatisReplicationConfig(ReplicationFactor replicationFactor) {
+  private RatisReplicationConfig(int replicationFactor) {
     this.replicationFactor = replicationFactor;
   }
 
   public static boolean hasFactor(ReplicationConfig replicationConfig,
-      ReplicationFactor factor) {
+      int factor) {
     if (replicationConfig instanceof RatisReplicationConfig) {
-      return ((RatisReplicationConfig) replicationConfig).getReplicationFactor()
-          .equals(factor);
+      return ((RatisReplicationConfig) replicationConfig).getReplicationFactor() == factor;
     }
     return false;
   }
@@ -84,11 +79,11 @@ public final class RatisReplicationConfig
 
   @Override
   public int getRequiredNodes() {
-    return replicationFactor.getNumber();
+    return replicationFactor;
   }
 
   @Override
-  public ReplicationFactor getReplicationFactor() {
+  public int getReplicationFactor() {
     return replicationFactor;
   }
 

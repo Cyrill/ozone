@@ -23,7 +23,6 @@ import org.apache.hadoop.hdds.cli.HddsVersionProvider;
 import org.apache.hadoop.hdds.client.StandaloneReplicationConfig;
 import org.apache.hadoop.hdds.conf.ConfigurationSource;
 import org.apache.hadoop.hdds.protocol.proto.HddsProtos.LifeCycleState;
-import org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationFactor;
 import org.apache.hadoop.hdds.scm.container.ContainerID;
 import org.apache.hadoop.hdds.scm.container.ContainerInfo;
 import org.apache.hadoop.hdds.scm.metadata.SCMDBDefinition;
@@ -79,7 +78,7 @@ public class GeneratorScm extends BaseGenerator {
               .setContainerID(containerId)
               .setState(LifeCycleState.CLOSED)
               .setReplicationConfig(StandaloneReplicationConfig
-                  .getInstance(ReplicationFactor.THREE))
+                  .getInstance(3))
               .setOwner(getUserId())
               .build();
 

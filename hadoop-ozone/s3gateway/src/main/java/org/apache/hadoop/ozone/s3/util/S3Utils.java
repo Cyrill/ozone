@@ -18,7 +18,6 @@
 package org.apache.hadoop.ozone.s3.util;
 
 import org.apache.hadoop.hdds.client.ReplicationConfig;
-import org.apache.hadoop.hdds.client.ReplicationFactor;
 import org.apache.hadoop.hdds.client.ReplicationType;
 import org.apache.hadoop.hdds.protocol.proto.HddsProtos;
 import org.apache.hadoop.ozone.s3.exception.OS3Exception;
@@ -92,12 +91,12 @@ public final class S3Utils {
       // Let's validate the client side available replication configs.
       boolean isUserPassedReplicationInSupportedList =
           s3StorageType != null && (s3StorageType.getFactor()
-              .getValue() == ReplicationFactor.ONE.getValue() || s3StorageType
-              .getFactor().getValue() == ReplicationFactor.THREE.getValue());
+               == 1 || s3StorageType
+              .getFactor() == 3);
       if (isUserPassedReplicationInSupportedList) {
         clientDeterminedReplConfig = ReplicationConfig.fromProtoTypeAndFactor(
             ReplicationType.toProto(s3StorageType.getType()),
-            ReplicationFactor.toProto(s3StorageType.getFactor()));
+            s3StorageType.getFactor());
       } else {
         // API passed replication number is not in supported replication list.
         // So, let's use whatever available in client side configured.

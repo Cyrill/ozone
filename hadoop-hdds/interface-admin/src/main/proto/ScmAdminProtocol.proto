@@ -194,7 +194,7 @@ enum Type {
 */
 message ContainerRequestProto {
   // Ozone only support replication of either 1 or 3.
-  required ReplicationFactor replicationFactor = 2;
+  required int32 replicationFactor = 2;
   required ReplicationType  replicationType = 3;
   required string owner = 4;
   optional string traceID = 5;
@@ -290,7 +290,7 @@ message SCMListContainerRequestProto {
   optional uint64 startContainerID = 2;
   optional string traceID = 3;
   optional LifeCycleState state = 4;
-  optional ReplicationFactor factor = 5;
+  optional int32 factor = 5;
   optional ReplicationType type = 6;
   optional ECReplicationConfig ecReplicationConfig = 7;
 }
@@ -398,7 +398,7 @@ message StartMaintenanceNodesResponseProto {
  */
 message PipelineRequestProto {
   required ReplicationType replicationType = 1;
-  required ReplicationFactor replicationFactor = 2;
+  required int32 replicationFactor = 2;
 
   // if datanodes are specified then pipelines are created using those
   // datanodes.

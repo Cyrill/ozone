@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 import org.apache.hadoop.hdds.client.RatisReplicationConfig;
 import org.apache.hadoop.hdds.conf.ConfigurationSource;
 import org.apache.hadoop.hdds.protocol.DatanodeDetails;
-import org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationFactor;
 import org.apache.hadoop.hdds.scm.SCMCommonPlacementPolicy;
 import org.apache.hadoop.hdds.scm.ScmConfigKeys;
 import org.apache.hadoop.hdds.scm.exceptions.SCMException;
@@ -107,7 +106,7 @@ public final class PipelinePlacementPolicy extends SCMCommonPlacementPolicy {
 
   private static boolean isNonClosedRatisThreePipeline(Pipeline p) {
     return p != null && p.getReplicationConfig()
-        .equals(RatisReplicationConfig.getInstance(ReplicationFactor.THREE))
+        .equals(RatisReplicationConfig.getInstance(3))
         && !p.isClosed();
   }
 
@@ -355,8 +354,8 @@ public final class PipelinePlacementPolicy extends SCMCommonPlacementPolicy {
     Preconditions.checkNotNull(healthyNodes);
     Preconditions.checkState(nodesRequired >= 1);
 
-    if (nodesRequired + usedNodes.size() != ReplicationFactor.THREE.getNumber()
-            && nodesRequired + usedNodes.size() != ReplicationFactor.SIX.getNumber()) {
+    if (nodesRequired + usedNodes.size() != 3
+            && nodesRequired + usedNodes.size() != 6) {
       throw new SCMException("Nodes required number is not supported: " + nodesRequired, INVALID_CAPACITY);
     }
 

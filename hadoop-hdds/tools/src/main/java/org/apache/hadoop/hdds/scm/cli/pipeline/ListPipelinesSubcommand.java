@@ -22,7 +22,6 @@ import com.google.common.base.Strings;
 import org.apache.hadoop.hdds.cli.HddsVersionProvider;
 import org.apache.hadoop.hdds.client.RatisReplicationConfig;
 import org.apache.hadoop.hdds.client.ReplicationConfig;
-import org.apache.hadoop.hdds.client.ReplicationFactor;
 import org.apache.hadoop.hdds.client.ReplicationType;
 import org.apache.hadoop.hdds.conf.OzoneConfiguration;
 import org.apache.hadoop.hdds.scm.cli.ScmSubcommand;
@@ -64,7 +63,7 @@ public class ListPipelinesSubcommand extends ScmSubcommand {
       names = {"-ffc", "--filterByFactor", "--filter-by-factor"},
       description = "[deprecated] Filter pipelines by factor (e.g. ONE, THREE) "
           + " (implies RATIS replication type)")
-  private ReplicationFactor factor;
+  private int factor;
 
   @CommandLine.Option(
       names = {"-s", "--state", "-fst", "--filterByState", "--filter-by-state"},
@@ -102,7 +101,7 @@ public class ListPipelinesSubcommand extends ScmSubcommand {
 
   private Optional<Predicate<? super Pipeline>> getReplicationFilter() {
     boolean hasReplication = !Strings.isNullOrEmpty(replication);
-    boolean hasFactor = factor != null;
+    boolean hasFactor = factor != 0;
     boolean hasReplicationType = !Strings.isNullOrEmpty(replicationType);
 
     if (hasFactor) {
@@ -112,7 +111,7 @@ public class ListPipelinesSubcommand extends ScmSubcommand {
       }
 
       ReplicationConfig replicationConfig =
-          RatisReplicationConfig.getInstance(factor.toProto());
+          RatisReplicationConfig.getInstance(factor);
       return Optional.of(
           p -> replicationConfig.equals(p.getReplicationConfig()));
     }

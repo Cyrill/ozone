@@ -19,7 +19,6 @@
 package org.apache.hadoop.ozone.client;
 
 import org.apache.hadoop.hdds.client.ReplicationConfig;
-import org.apache.hadoop.hdds.client.ReplicationFactor;
 import org.apache.hadoop.hdds.client.ReplicationType;
 
 import java.util.ArrayList;
@@ -45,7 +44,7 @@ public class OzoneMultipartUploadPartListParts {
 
   @Deprecated
   public OzoneMultipartUploadPartListParts(ReplicationType type,
-      ReplicationFactor factor,
+      int factor,
       int nextMarker, boolean truncate) {
     this.nextPartNumberMarker = nextMarker;
     this.truncated = truncate;
@@ -86,9 +85,8 @@ public class OzoneMultipartUploadPartListParts {
   }
 
   @Deprecated
-  public ReplicationFactor getReplicationFactor() {
-    return ReplicationFactor
-            .fromProto(ReplicationConfig.getLegacyFactor(replicationConfig));
+  public int getReplicationFactor() {
+    return ReplicationConfig.getLegacyFactor(replicationConfig);
   }
 
   public ReplicationConfig getReplicationConfig() {

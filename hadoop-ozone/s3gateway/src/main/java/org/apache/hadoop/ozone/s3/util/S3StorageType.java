@@ -20,7 +20,6 @@ package org.apache.hadoop.ozone.s3.util;
 
 import org.apache.hadoop.hdds.client.ECReplicationConfig;
 import org.apache.hadoop.hdds.client.ReplicationConfig;
-import org.apache.hadoop.hdds.client.ReplicationFactor;
 import org.apache.hadoop.hdds.client.ReplicationType;
 import org.apache.hadoop.hdds.conf.ConfigurationSource;
 import org.apache.hadoop.hdds.protocol.proto.HddsProtos;
@@ -32,20 +31,20 @@ import org.apache.hadoop.ozone.OzoneConfigKeys;
 
 public enum S3StorageType {
 
-  REDUCED_REDUNDANCY(ReplicationType.RATIS, ReplicationFactor.ONE),
-  STANDARD(ReplicationType.RATIS, ReplicationFactor.THREE);
+  REDUCED_REDUNDANCY(ReplicationType.RATIS, 1),
+  STANDARD(ReplicationType.RATIS, 3);
 
   private final ReplicationType type;
-  private final ReplicationFactor factor;
+  private final int factor;
 
   S3StorageType(
       ReplicationType type,
-      ReplicationFactor factor) {
+      int factor) {
     this.type = type;
     this.factor = factor;
   }
 
-  public ReplicationFactor getFactor() {
+  public int getFactor() {
     return factor;
   }
 
@@ -61,19 +60,18 @@ public enum S3StorageType {
    */
   public static S3StorageType getDefault(ConfigurationSource config) {
     String replicationString = config.get(OzoneConfigKeys.OZONE_REPLICATION);
-    ReplicationFactor configFactor;
+    int configFactor;
     if (replicationString == null) {
       // if no config is set then let server take decision
       return null;
     }
     try {
-      configFactor = ReplicationFactor.valueOf(
-          Integer.parseInt(replicationString));
+      configFactor = Integer.parseInt(replicationString);
     } catch (NumberFormatException ex) {
       // conservatively defaults to STANDARD on wrong config value
       return STANDARD;
     }
-    return configFactor == ReplicationFactor.ONE
+    return configFactor == 1
         ? REDUCED_REDUNDANCY : STANDARD;
   }
 

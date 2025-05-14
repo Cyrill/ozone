@@ -48,7 +48,6 @@ import org.apache.hadoop.hdds.client.ReplicationConfig;
 import org.apache.hadoop.hdds.client.StandaloneReplicationConfig;
 import org.apache.hadoop.hdds.conf.ConfigurationSource;
 import org.apache.hadoop.hdds.protocol.proto.HddsProtos;
-import org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationFactor;
 import org.apache.hadoop.hdds.scm.ScmConfigKeys;
 import org.apache.hadoop.hdds.scm.ha.SCMContext;
 import org.apache.hadoop.hdds.scm.ha.SCMService;
@@ -224,12 +223,12 @@ public class BackgroundPipelineCreator implements SCMService {
     }
     if (replicationConfig.getReplicationType().equals(RATIS)) {
       return RatisReplicationConfig
-          .hasFactor(replicationConfig, ReplicationFactor.ONE) && (!autoCreate);
+          .hasFactor(replicationConfig, 1) && (!autoCreate);
     } else if (replicationConfig.getReplicationType().equals(STAND_ALONE)) {
       // For STAND_ALONE Replication Type, Replication Factor 3 should not be
       // used.
       return ((StandaloneReplicationConfig) replicationConfig)
-          .getReplicationFactor() != ReplicationFactor.ONE;
+          .getReplicationFactor() != 1;
     }
     return true;
   }
@@ -257,9 +256,9 @@ public class BackgroundPipelineCreator implements SCMService {
 
     List<ReplicationConfig> list =
         new ArrayList<>();
-    for (HddsProtos.ReplicationFactor factor : HddsProtos.ReplicationFactor
-        .values()) {
-      if (factor == ReplicationFactor.ZERO) {
+    //todo
+    for (int factor = 0; factor <= 6; factor++) {
+      if (factor == 0) {
         continue; // Ignore it.
       }
       final ReplicationConfig replicationConfig =

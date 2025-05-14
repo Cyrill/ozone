@@ -61,7 +61,7 @@ public class DeletedContainerInfo {
 
   @JsonProperty("replicationFactor")
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
-  private String replicationFactor;
+  private int replicationFactor;
 
   public DeletedContainerInfo() {
 
@@ -132,11 +132,11 @@ public class DeletedContainerInfo {
     this.replicationConfig = replicationConfig;
   }
 
-  public String getReplicationFactor() {
+  public int getReplicationFactor() {
     return replicationFactor;
   }
 
-  public void setReplicationFactor(String replicationFactor) {
+  public void setReplicationFactor(int replicationFactor) {
     this.replicationFactor = replicationFactor;
   }
 }

@@ -42,7 +42,7 @@ public interface ReplicationConfig {
    */
   static ReplicationConfig fromProtoTypeAndFactor(
       HddsProtos.ReplicationType type,
-      HddsProtos.ReplicationFactor factor
+      int factor
   ) {
     switch (type) {
     case RATIS:
@@ -63,11 +63,11 @@ public interface ReplicationConfig {
    */
   static ReplicationConfig fromTypeAndFactor(
       org.apache.hadoop.hdds.client.ReplicationType type,
-      org.apache.hadoop.hdds.client.ReplicationFactor factor
+      int factor
   ) {
     return fromProtoTypeAndFactor(
         HddsProtos.ReplicationType.valueOf(type.name()),
-        HddsProtos.ReplicationFactor.valueOf(factor.name()));
+        factor);
   }
 
   static ReplicationConfig getDefault(ConfigurationSource config) {
@@ -95,7 +95,7 @@ public interface ReplicationConfig {
    */
   static ReplicationConfig fromProto(
       HddsProtos.ReplicationType type,
-      HddsProtos.ReplicationFactor factor,
+      int factor,
       HddsProtos.ECReplicationConfig ecConfig) {
     switch (type) {
     case EC:
@@ -109,7 +109,7 @@ public interface ReplicationConfig {
     }
   }
 
-  static HddsProtos.ReplicationFactor getLegacyFactor(
+  static int getLegacyFactor(
       ReplicationConfig replicationConfig) {
     if (replicationConfig instanceof ReplicatedReplicationConfig) {
       return ((ReplicatedReplicationConfig) replicationConfig)
@@ -189,17 +189,8 @@ public interface ReplicationConfig {
     switch (type) {
     case RATIS:
     case STAND_ALONE:
-      ReplicationFactor factor;
-      try {
-        factor = ReplicationFactor.valueOf(Integer.parseInt(replication));
-      } catch (NumberFormatException ex) {
-        try {
-          factor = ReplicationFactor.valueOf(replication);
-        } catch (IllegalArgumentException e) {
-          throw new IllegalArgumentException(replication +
-              " is not supported for " + type + " replication type", e);
-        }
-      }
+      int factor;
+      factor = Integer.parseInt(replication);
       replicationConfig = fromTypeAndFactor(type, factor);
       break;
     case EC:

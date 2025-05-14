@@ -24,7 +24,6 @@ import java.util.stream.Collectors;
 import org.apache.hadoop.hdds.HddsConfigKeys;
 import org.apache.hadoop.hdds.client.RatisReplicationConfig;
 import org.apache.hadoop.hdds.conf.ConfigurationSource;
-import org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationFactor;
 import org.apache.hadoop.hdds.protocol.proto.StorageContainerDatanodeProtocolProtos.PipelineReport;
 import org.apache.hadoop.hdds.scm.events.SCMEvents;
 import org.apache.hadoop.hdds.scm.pipeline.Pipeline;
@@ -104,7 +103,7 @@ public class OneReplicaPipelineSafeModeRule extends
       }
 
       if (RatisReplicationConfig
-          .hasFactor(pipeline.getReplicationConfig(), ReplicationFactor.THREE)
+          .hasFactor(pipeline.getReplicationConfig(), 3)
           && pipeline.isOpen() &&
           !reportedPipelineIDSet.contains(pipeline.getId())) {
         if (oldPipelineIDSet.contains(pipeline.getId())) {
@@ -164,7 +163,7 @@ public class OneReplicaPipelineSafeModeRule extends
   private void initializeRule(boolean refresh) {
 
     oldPipelineIDSet = pipelineManager.getPipelines(
-        RatisReplicationConfig.getInstance(ReplicationFactor.THREE),
+        RatisReplicationConfig.getInstance(3),
         Pipeline.PipelineState.OPEN)
         .stream().map(p -> p.getId()).collect(Collectors.toSet());
 
