@@ -45,6 +45,7 @@ import org.apache.commons.collections.iterators.LoopingIterator;
 import org.apache.hadoop.hdds.HddsConfigKeys;
 import org.apache.hadoop.hdds.client.RatisReplicationConfig;
 import org.apache.hadoop.hdds.client.ReplicationConfig;
+import org.apache.hadoop.hdds.client.ReplicationFactor;
 import org.apache.hadoop.hdds.client.StandaloneReplicationConfig;
 import org.apache.hadoop.hdds.conf.ConfigurationSource;
 import org.apache.hadoop.hdds.protocol.proto.HddsProtos;
@@ -256,13 +257,12 @@ public class BackgroundPipelineCreator implements SCMService {
 
     List<ReplicationConfig> list =
         new ArrayList<>();
-    //todo
-    for (int factor = 0; factor <= 6; factor++) {
-      if (factor == 0) {
+    for (ReplicationFactor factor : ReplicationFactor.values()) {
+      if (factor.getValue() == 0) {
         continue; // Ignore it.
       }
       final ReplicationConfig replicationConfig =
-          ReplicationConfig.fromProtoTypeAndFactor(type, factor);
+          ReplicationConfig.fromProtoTypeAndFactor(type, factor.getValue());
       if (skipCreation(replicationConfig, autoCreateFactorOne)) {
         // Skip this iteration for creating pipeline
         continue;
