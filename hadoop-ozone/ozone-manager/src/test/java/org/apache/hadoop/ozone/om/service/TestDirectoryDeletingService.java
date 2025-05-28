@@ -144,8 +144,7 @@ public class TestDirectoryDeletingService {
         .setVolumeName(volumeName)
         .setBucketName(bucketName)
         .setKeyName("dir" + longName)
-        .setReplicationConfig(StandaloneReplicationConfig.getInstance(
-            HddsProtos.ReplicationFactor.ONE))
+        .setReplicationConfig(StandaloneReplicationConfig.getInstance(1))
         .setDataSize(0).setRecursive(true)
         .build();
     writeClient.deleteKey(delArgs);
@@ -196,7 +195,7 @@ public class TestDirectoryDeletingService {
 
     OmKeyArgs delArgs = new OmKeyArgs.Builder()
         .setVolumeName(volumeName).setBucketName(bucketName).setKeyName("dir_base")
-        .setReplicationConfig(StandaloneReplicationConfig.getInstance(ONE))
+        .setReplicationConfig(StandaloneReplicationConfig.getInstance(1))
         .setDataSize(0).setRecursive(true).build();
     writeClient.deleteKey(delArgs);
 

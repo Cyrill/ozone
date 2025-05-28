@@ -199,7 +199,7 @@ public class TestFailureHandlingByClient {
     //get the name of a valid container
     OmKeyArgs keyArgs = new OmKeyArgs.Builder().setVolumeName(volumeName)
         .setBucketName(bucketName)
-        .setReplicationConfig(RatisReplicationConfig.getInstance(THREE))
+        .setReplicationConfig(RatisReplicationConfig.getInstance(3))
         .setKeyName(keyName)
         .build();
     OmKeyInfo keyInfo = cluster.getOzoneManager().lookupKey(keyArgs);
@@ -341,7 +341,7 @@ public class TestFailureHandlingByClient {
     // will be discarded and write a new block
     OmKeyArgs keyArgs = new OmKeyArgs.Builder().setVolumeName(volumeName)
         .setBucketName(bucketName)
-        .setReplicationConfig(RatisReplicationConfig.getInstance(THREE))
+        .setReplicationConfig(RatisReplicationConfig.getInstance(3))
         .setKeyName(keyName)
         .build();
     OmKeyInfo keyInfo = cluster.getOzoneManager().lookupKey(keyArgs);
@@ -402,7 +402,7 @@ public class TestFailureHandlingByClient {
     key.close();
     OmKeyArgs keyArgs = new OmKeyArgs.Builder().setVolumeName(volumeName)
         .setBucketName(bucketName)
-        .setReplicationConfig(RatisReplicationConfig.getInstance(THREE))
+        .setReplicationConfig(RatisReplicationConfig.getInstance(3))
         .setKeyName(keyName)
         .build();
     OmKeyInfo keyInfo = cluster.getOzoneManager().lookupKey(keyArgs);
@@ -465,7 +465,7 @@ public class TestFailureHandlingByClient {
 
     OmKeyArgs keyArgs = new OmKeyArgs.Builder().setVolumeName(volumeName)
         .setBucketName(bucketName)
-        .setReplicationConfig(RatisReplicationConfig.getInstance(THREE))
+        .setReplicationConfig(RatisReplicationConfig.getInstance(3))
         .setKeyName(keyName)
         .build();
     OmKeyInfo keyInfo = cluster.getOzoneManager().lookupKey(keyArgs);
@@ -528,7 +528,7 @@ public class TestFailureHandlingByClient {
 
     OmKeyArgs keyArgs = new OmKeyArgs.Builder().setVolumeName(volumeName)
         .setBucketName(bucketName)
-        .setReplicationConfig(RatisReplicationConfig.getInstance(THREE))
+        .setReplicationConfig(RatisReplicationConfig.getInstance(3))
         .setKeyName(keyName)
         .build();
     OmKeyInfo keyInfo = cluster.getOzoneManager().lookupKey(keyArgs);

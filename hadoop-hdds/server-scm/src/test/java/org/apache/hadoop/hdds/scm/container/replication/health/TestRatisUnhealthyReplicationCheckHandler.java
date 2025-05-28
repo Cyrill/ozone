@@ -65,7 +65,7 @@ public class TestRatisUnhealthyReplicationCheckHandler {
   @BeforeEach
   public void setup() throws IOException {
     handler = new RatisUnhealthyReplicationCheckHandler();
-    repConfig = RatisReplicationConfig.getInstance(THREE);
+    repConfig = RatisReplicationConfig.getInstance(3);
     repQueue = new ReplicationQueue();
     report = new ReplicationManagerReport();
     requestBuilder = new ContainerCheckRequest.Builder()

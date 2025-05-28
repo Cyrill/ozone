@@ -151,7 +151,7 @@ class TestCrossDCKeyWrite {
         .setBucketLayout(bucketLayout)
         .addMetadata(OzoneConsts.DATACENTERS, dcs)
         .setDefaultReplicationConfig(
-            new DefaultReplicationConfig(ReplicationConfig.fromTypeAndFactor(RATIS, replicationFactor)))
+            new DefaultReplicationConfig(ReplicationConfig.fromTypeAndFactor(RATIS, replicationFactor.getValue())))
         .build();
     volume.createBucket(bucketName, bucketArgs);
     OzoneBucket bucket = volume.getBucket(bucketName);
@@ -166,7 +166,7 @@ class TestCrossDCKeyWrite {
     String value = "sample value";
     try (OzoneDataStreamOutput out = bucket.createStreamKey(keyName,
         value.getBytes(StandardCharsets.UTF_8).length,
-        ReplicationConfig.fromTypeAndFactor(RATIS, replicationFactor),
+        ReplicationConfig.fromTypeAndFactor(RATIS, replicationFactor.getValue()),
         new HashMap<>())) {
       out.write(value.getBytes(StandardCharsets.UTF_8));
     }
@@ -179,7 +179,7 @@ class TestCrossDCKeyWrite {
     String value = "sample value";
     try (OzoneOutputStream out = bucket.createKey(keyName,
         value.getBytes(StandardCharsets.UTF_8).length,
-        ReplicationConfig.fromTypeAndFactor(RATIS, replicationFactor),
+        ReplicationConfig.fromTypeAndFactor(RATIS, replicationFactor.getValue()),
         new HashMap<>())) {
       out.write(value.getBytes(StandardCharsets.UTF_8));
     }
@@ -188,7 +188,7 @@ class TestCrossDCKeyWrite {
     // Overwrite the key
     try (OzoneOutputStream out = bucket.createKey(keyName,
         value.getBytes(StandardCharsets.UTF_8).length,
-        ReplicationConfig.fromTypeAndFactor(RATIS, replicationFactor),
+        ReplicationConfig.fromTypeAndFactor(RATIS, replicationFactor.getValue()),
         new HashMap<>())) {
       out.write(value.getBytes(StandardCharsets.UTF_8));
     }
@@ -231,8 +231,8 @@ class TestCrossDCKeyWrite {
     for (OmKeyLocationInfo info :
         keyInfo.getLatestVersionLocations().getLocationList()) {
       ContainerInfo container = storageContainerLocationClient.getContainer(info.getContainerID());
-      if (!ReplicationConfig.getLegacyFactor(container.getReplicationConfig())
-          .equals(replicationFactor) || container.getReplicationType() != replicationType) {
+      if (!(ReplicationConfig.getLegacyFactor(container.getReplicationConfig())
+         == replicationFactor.getNumber()) || container.getReplicationType() != replicationType) {
         return false;
       }
     }

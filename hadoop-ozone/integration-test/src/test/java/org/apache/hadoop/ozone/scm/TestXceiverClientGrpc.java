@@ -69,7 +69,7 @@ public class TestXceiverClientGrpc {
     pipeline = Pipeline.newBuilder()
         .setId(PipelineID.randomId())
         .setReplicationConfig(
-            RatisReplicationConfig.getInstance(ReplicationFactor.THREE))
+            RatisReplicationConfig.getInstance(3))
         .setState(Pipeline.PipelineState.CLOSED)
         .setNodes(dns)
         .setNodesInOrder(dnsInOrder)

@@ -143,8 +143,7 @@ public class TestVolumeOwner {
               .setBucketName(getTestBucketName(j))
               .setKeyName(getTestKeyName(k))
               .setReplicationConfig(
-                  StandaloneReplicationConfig.getInstance(
-                      HddsProtos.ReplicationFactor.ONE))
+                  StandaloneReplicationConfig.getInstance(1))
               .setDataSize(0);
           if (k == 0) {
             keyArgsBuilder.setAcls(OzoneAclUtil.getAclList(

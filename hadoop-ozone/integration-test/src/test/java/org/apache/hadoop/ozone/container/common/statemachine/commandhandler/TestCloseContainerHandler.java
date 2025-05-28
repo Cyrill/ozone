@@ -101,7 +101,7 @@ public class TestCloseContainerHandler {
       objectStore.getVolume("test").createBucket("test");
       OzoneOutputStream key = objectStore.getVolume("test").getBucket("test")
           .createKey("test", 1024, ReplicationType.RATIS,
-              ReplicationFactor.ONE, new HashMap<>());
+              1, new HashMap<>());
       key.write("test".getBytes(UTF_8));
       key.close();
     }
@@ -109,7 +109,7 @@ public class TestCloseContainerHandler {
     //get the name of a valid container
     OmKeyArgs keyArgs =
         new OmKeyArgs.Builder().setVolumeName("test").setBucketName("test")
-            .setReplicationConfig(StandaloneReplicationConfig.getInstance(ONE))
+            .setReplicationConfig(StandaloneReplicationConfig.getInstance(1))
             .setDataSize(1024)
             .setKeyName("test")
             .build();

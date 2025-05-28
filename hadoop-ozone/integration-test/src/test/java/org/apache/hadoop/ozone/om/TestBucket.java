@@ -63,7 +63,7 @@ public final class TestBucket {
   }
 
   public byte[] writeKey(String keyName, int dataLength) throws Exception {
-    ReplicationConfig repConfig = RatisReplicationConfig.getInstance(THREE);
+    ReplicationConfig repConfig = RatisReplicationConfig.getInstance(3);
     return writeKey(keyName, repConfig, dataLength);
   }
 
@@ -87,7 +87,7 @@ public final class TestBucket {
 
   public byte[] writeRandomBytes(String keyName, int dataLength)
       throws Exception {
-    ReplicationConfig repConfig = RatisReplicationConfig.getInstance(THREE);
+    ReplicationConfig repConfig = RatisReplicationConfig.getInstance(3);
     return writeRandomBytes(keyName, repConfig, dataLength);
   }
 

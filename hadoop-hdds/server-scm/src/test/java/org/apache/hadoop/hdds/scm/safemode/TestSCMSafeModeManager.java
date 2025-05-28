@@ -352,8 +352,7 @@ public class TestSCMSafeModeManager {
     for (int i = 0; i < pipelineCount; i++) {
       // Create pipeline
       Pipeline pipeline = pipelineManager.createPipeline(
-          RatisReplicationConfig.getInstance(
-              ReplicationFactor.THREE));
+          RatisReplicationConfig.getInstance(3));
 
       pipelineManager.openPipeline(pipeline.getId());
       // Mark pipeline healthy
@@ -609,8 +608,7 @@ public class TestSCMSafeModeManager {
           mockRatisProvider);
 
       Pipeline pipeline = pipelineManager.createPipeline(
-          RatisReplicationConfig.getInstance(
-              ReplicationFactor.THREE));
+          RatisReplicationConfig.getInstance(3));
 
       pipeline = pipelineManager.getPipeline(pipeline.getId());
       MockRatisPipelineProvider.markPipelineHealthy(pipeline);
@@ -702,7 +700,7 @@ public class TestSCMSafeModeManager {
     assertTrue(scmSafeModeManager.getInSafeMode());
 
     Pipeline pipeline = pipelineManager.createPipeline(
-        RatisReplicationConfig.getInstance(ReplicationFactor.THREE));
+        RatisReplicationConfig.getInstance(3));
 
     // Mark pipeline healthy
     pipeline = pipelineManager.getPipeline(pipeline.getId());

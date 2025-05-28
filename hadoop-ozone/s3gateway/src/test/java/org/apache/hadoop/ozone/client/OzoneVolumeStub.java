@@ -122,8 +122,7 @@ public final class OzoneVolumeStub extends OzoneVolume {
         .setVolumeName(getName())
         .setName(bucketName)
         .setDefaultReplicationConfig(new DefaultReplicationConfig(
-            RatisReplicationConfig.getInstance(
-                HddsProtos.ReplicationFactor.THREE)))
+            RatisReplicationConfig.getInstance(3)))
         .setBucketLayout(bucketArgs.getBucketLayout())
         .setStorageType(bucketArgs.getStorageType())
         .setVersioning(bucketArgs.getVersioning())

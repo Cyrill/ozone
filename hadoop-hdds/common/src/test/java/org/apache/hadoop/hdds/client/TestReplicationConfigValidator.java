@@ -30,9 +30,6 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationFactor.ONE;
-import static org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationFactor.THREE;
-import static org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationFactor.ZERO;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
@@ -84,14 +81,14 @@ class TestReplicationConfigValidator {
 
   @Test
   void acceptsRatis() {
-    defaultValidator.validate(RatisReplicationConfig.getInstance(THREE));
-    defaultValidator.validate(RatisReplicationConfig.getInstance(ONE));
+    defaultValidator.validate(RatisReplicationConfig.getInstance(3));
+    defaultValidator.validate(RatisReplicationConfig.getInstance(1));
   }
 
   @Test
   void acceptsStandalone() {
-    defaultValidator.validate(StandaloneReplicationConfig.getInstance(THREE));
-    defaultValidator.validate(StandaloneReplicationConfig.getInstance(ONE));
+    defaultValidator.validate(StandaloneReplicationConfig.getInstance(3));
+    defaultValidator.validate(StandaloneReplicationConfig.getInstance(1));
   }
 
   @ParameterizedTest
@@ -115,29 +112,29 @@ class TestReplicationConfigValidator {
 
   @Test
   void disabledAcceptsRatis() {
-    disabledValidator.validate(RatisReplicationConfig.getInstance(ONE));
-    disabledValidator.validate(RatisReplicationConfig.getInstance(THREE));
+    disabledValidator.validate(RatisReplicationConfig.getInstance(1));
+    disabledValidator.validate(RatisReplicationConfig.getInstance(3));
   }
 
   @Test
   void disabledAcceptsStandalone() {
-    disabledValidator.validate(StandaloneReplicationConfig.getInstance(ONE));
-    disabledValidator.validate(StandaloneReplicationConfig.getInstance(THREE));
-    disabledValidator.validate(StandaloneReplicationConfig.getInstance(ZERO));
+    disabledValidator.validate(StandaloneReplicationConfig.getInstance(1));
+    disabledValidator.validate(StandaloneReplicationConfig.getInstance(3));
+    disabledValidator.validate(StandaloneReplicationConfig.getInstance(0));
   }
 
   @Test
   void testCustomValidation() {
     MutableConfigurationSource config = new InMemoryConfiguration();
-    config.set("ozone.replication.allowed-configs", "RATIS/THREE");
+    config.set("ozone.replication.allowed-configs", "RATIS/3");
 
     final ReplicationConfigValidator validator =
         config.getObject(ReplicationConfigValidator.class);
 
-    validator.validate(RatisReplicationConfig.getInstance(THREE));
+    validator.validate(RatisReplicationConfig.getInstance(3));
 
     assertThrows(IllegalArgumentException.class,
-        () -> validator.validate(RatisReplicationConfig.getInstance(ONE)));
+        () -> validator.validate(RatisReplicationConfig.getInstance(1)));
 
   }
 }

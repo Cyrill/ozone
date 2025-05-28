@@ -98,7 +98,7 @@ public class TestRatisReplicationCheckHandler {
         .thenReturn(NodeStatus.inServiceHealthy());
     healthCheck = new RatisReplicationCheckHandler(containerPlacementPolicy,
         replicationManager);
-    repConfig = RatisReplicationConfig.getInstance(THREE);
+    repConfig = RatisReplicationConfig.getInstance(3);
     repQueue = new ReplicationQueue();
     report = new ReplicationManagerReport();
     requestBuilder = new ContainerCheckRequest.Builder()

@@ -182,7 +182,7 @@ public class TestS3ExpiredMultipartUploadsAbortRequest
 
     OmMultipartKeyInfo.Builder mpuBuilder = new OmMultipartKeyInfo.Builder()
         .setReplicationConfig(ReplicationConfig.fromTypeAndFactor(
-            ReplicationType.RATIS, ReplicationFactor.THREE));
+            ReplicationType.RATIS, 3));
 
     if (getBucketLayout().equals(BucketLayout.FILE_SYSTEM_OPTIMIZED)) {
       mpuBuilder.setParentID(UniqueId.next());

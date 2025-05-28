@@ -123,7 +123,7 @@ public class TestBCSID {
     OzoneOutputStream key =
         objectStore.getVolume(volumeName).getBucket(bucketName)
             .createKey("ratis", 1024, ReplicationType.RATIS,
-                ReplicationFactor.ONE, new HashMap<>());
+                1, new HashMap<>());
     key.write("ratis".getBytes(UTF_8));
     key.close();
 
@@ -132,7 +132,7 @@ public class TestBCSID {
         setBucketName(bucketName)
         .setReplicationConfig(
             RatisReplicationConfig
-                .getInstance(HddsProtos.ReplicationFactor.ONE))
+                .getInstance(1))
         .setKeyName("ratis")
         .build();
     OmKeyInfo keyInfo = cluster.getOzoneManager().lookupKey(keyArgs);

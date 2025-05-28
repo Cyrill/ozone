@@ -115,7 +115,7 @@ public class TestSCMContainerPlacementPolicyMetrics {
     // Write data into a key
     try (OzoneOutputStream out = bucket.createKey(keyName,
         value.getBytes(UTF_8).length, ReplicationType.RATIS,
-        THREE, new HashMap<>())) {
+        3, new HashMap<>())) {
       out.write(value.getBytes(UTF_8));
     }
 
@@ -124,7 +124,7 @@ public class TestSCMContainerPlacementPolicyMetrics {
         cluster.getStorageContainerManager().getPipelineManager();
     List<Pipeline> pipelines = manager.getPipelines().stream().filter(p ->
         RatisReplicationConfig
-            .hasFactor(p.getReplicationConfig(), ReplicationFactor.THREE))
+            .hasFactor(p.getReplicationConfig(), 3))
         .collect(Collectors.toList());
     Pipeline targetPipeline = pipelines.get(0);
     List<DatanodeDetails> nodes = targetPipeline.getNodes();

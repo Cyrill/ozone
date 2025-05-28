@@ -82,11 +82,9 @@ public class TestContainerStateManager {
     pipelineManager = Mockito.mock(PipelineManager.class);
     pipeline = Pipeline.newBuilder().setState(Pipeline.PipelineState.CLOSED)
             .setId(PipelineID.randomId())
-            .setReplicationConfig(StandaloneReplicationConfig.getInstance(
-                ReplicationFactor.THREE))
+            .setReplicationConfig(StandaloneReplicationConfig.getInstance(3))
             .setNodes(new ArrayList<>()).build();
-    when(pipelineManager.createPipeline(StandaloneReplicationConfig.getInstance(
-        ReplicationFactor.THREE))).thenReturn(pipeline);
+    when(pipelineManager.createPipeline(StandaloneReplicationConfig.getInstance(3))).thenReturn(pipeline);
     when(pipelineManager.containsPipeline(Mockito.any(PipelineID.class)))
         .thenReturn(true);
 
@@ -165,7 +163,7 @@ public class TestContainerStateManager {
         .setNumberOfKeys(0)
         .setOwner("root")
         .setReplicationType(HddsProtos.ReplicationType.RATIS)
-        .setReplicationFactor(ReplicationFactor.THREE);
+        .setReplicationFactor(3);
 
     HddsProtos.ContainerInfoProto container = builder.build();
     HddsProtos.ContainerID cid = HddsProtos.ContainerID.newBuilder().setId(container.getContainerID()).build();
@@ -184,7 +182,7 @@ public class TestContainerStateManager {
         .setNumberOfKeys(0)
         .setOwner("root")
         .setReplicationType(HddsProtos.ReplicationType.RATIS)
-        .setReplicationFactor(ReplicationFactor.THREE);
+        .setReplicationFactor(3);
 
     HddsProtos.ContainerInfoProto container = builder.build();
     HddsProtos.ContainerID cid = HddsProtos.ContainerID.newBuilder().setId(container.getContainerID()).build();

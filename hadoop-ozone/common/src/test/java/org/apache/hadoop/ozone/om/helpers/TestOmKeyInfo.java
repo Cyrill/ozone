@@ -54,7 +54,7 @@ public class TestOmKeyInfo {
   @Test
   public void protobufConversion() throws IOException {
     OmKeyInfo key = createOmKeyInfo(
-        RatisReplicationConfig.getInstance(ReplicationFactor.THREE));
+        RatisReplicationConfig.getInstance(3));
 
     OmKeyInfo keyAfterSerialization = OmKeyInfo.getFromProtobuf(
         key.getProtobuf(ClientVersion.CURRENT_VERSION));
@@ -69,7 +69,7 @@ public class TestOmKeyInfo {
   @Test
   public void getProtobufMessageEC() throws IOException {
     OmKeyInfo key = createOmKeyInfo(
-        RatisReplicationConfig.getInstance(ReplicationFactor.THREE));
+        RatisReplicationConfig.getInstance(3));
     OzoneManagerProtocolProtos.KeyInfo omKeyProto =
         key.getProtobuf(ClientVersion.CURRENT_VERSION);
 
@@ -142,7 +142,7 @@ public class TestOmKeyInfo {
         .setModificationTime(Time.now())
         .setDataSize(100L)
         .setReplicationConfig(
-            RatisReplicationConfig.getInstance(ReplicationFactor.THREE))
+            RatisReplicationConfig.getInstance(3))
         .addMetadata("key1", "value1")
         .addMetadata("key2", "value2")
         .setOmKeyLocationInfos(
@@ -206,7 +206,7 @@ public class TestOmKeyInfo {
   Pipeline getPipeline() {
     return Pipeline.newBuilder()
         .setReplicationConfig(
-            StandaloneReplicationConfig.getInstance(ReplicationFactor.ONE))
+            StandaloneReplicationConfig.getInstance(1))
         .setId(PipelineID.randomId())
         .setNodes(Collections.EMPTY_LIST)
         .setState(Pipeline.PipelineState.OPEN)

@@ -84,7 +84,7 @@ class TestReadRetries {
         String keyName = "a/b/c/" + UUID.randomUUID();
         byte[] content = RandomUtils.nextBytes(128);
         try (OutputStream out = bucket.createKey(keyName, content.length,
-            RatisReplicationConfig.getInstance(THREE), new HashMap<>())) {
+            RatisReplicationConfig.getInstance(3), new HashMap<>())) {
           out.write(content);
         }
 

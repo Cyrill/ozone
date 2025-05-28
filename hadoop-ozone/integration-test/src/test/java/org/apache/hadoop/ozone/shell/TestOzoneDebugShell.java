@@ -193,7 +193,7 @@ public class TestOzoneDebugShell {
       repConfig = new ECReplicationConfig(3, 2);
     } else {
       repConfig = ReplicationConfig.fromTypeAndFactor(ReplicationType.RATIS,
-          ReplicationFactor.THREE);
+          3);
     }
     try (OzoneClient client = OzoneClientFactory.getRpcClient(conf)) {
       TestDataUtil.createVolumeAndBucket(client, volumeName, bucketName);

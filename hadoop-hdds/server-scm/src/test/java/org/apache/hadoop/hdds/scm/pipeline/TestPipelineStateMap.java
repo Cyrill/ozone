@@ -74,10 +74,10 @@ public class TestPipelineStateMap {
     map.updatePipelineState(p.getId(), Pipeline.PipelineState.CLOSED);
 
     assertEquals(2, map.getPipelineCount(
-        StandaloneReplicationConfig.getInstance(ONE),
+        StandaloneReplicationConfig.getInstance(1),
         Pipeline.PipelineState.OPEN));
     assertEquals(1, map.getPipelineCount(
-        RatisReplicationConfig.getInstance(THREE),
+        RatisReplicationConfig.getInstance(3),
         Pipeline.PipelineState.OPEN));
     assertEquals(2, map.getPipelineCount(new ECReplicationConfig(3, 2),
         Pipeline.PipelineState.OPEN));
@@ -86,10 +86,10 @@ public class TestPipelineStateMap {
         Pipeline.PipelineState.OPEN));
 
     assertEquals(1, map.getPipelineCount(
-        StandaloneReplicationConfig.getInstance(ONE),
+        StandaloneReplicationConfig.getInstance(1),
         Pipeline.PipelineState.CLOSED));
     assertEquals(1, map.getPipelineCount(
-        RatisReplicationConfig.getInstance(THREE),
+        RatisReplicationConfig.getInstance(3),
         Pipeline.PipelineState.CLOSED));
     assertEquals(1, map.getPipelineCount(new ECReplicationConfig(3, 2),
         Pipeline.PipelineState.CLOSED));

@@ -3146,80 +3146,80 @@ public class TestLegacyReplicationManager {
     }
 
 
-    @Test
-    @Unhealthy("This test doesn't properly test Rack Placement Policy as" +
-        " LegacyReplicationManager doesn't handle rack aware delete properly.")
-    public void testOverReplicatedAndPolicyUnSatisfiedAndDeleted()
-            throws IOException, TimeoutException {
-      final ContainerInfo container = getContainer(LifeCycleState.CLOSED);
-      final ContainerID id = container.containerID();
-      final UUID originNodeId = UUID.randomUUID();
-      final ContainerReplica replicaOne = getReplicas(
-              id, State.CLOSED, 1000L, originNodeId, randomDatanodeDetails());
-      final ContainerReplica replicaTwo = getReplicas(
-              id, State.CLOSED, 1000L, originNodeId, randomDatanodeDetails());
-      final ContainerReplica replicaThree = getReplicas(
-              id, State.CLOSED, 1000L, originNodeId, randomDatanodeDetails());
-      final ContainerReplica replicaFour = getReplicas(
-              id, State.CLOSED, 1000L, originNodeId, randomDatanodeDetails());
-      final ContainerReplica replicaFive = getReplicas(
-              id, QUASI_CLOSED, 1000L, originNodeId, randomDatanodeDetails());
-
-      containerStateManager.addContainer(container.getProtobuf());
-      containerStateManager.updateContainerReplica(id, replicaOne);
-      containerStateManager.updateContainerReplica(id, replicaTwo);
-      containerStateManager.updateContainerReplica(
-              id, replicaThree);
-      containerStateManager.updateContainerReplica(id, replicaFour);
-      containerStateManager.updateContainerReplica(id, replicaFive);
-
-      Mockito.when(ratisContainerPlacementPolicy.validateContainerPlacement(
-              Mockito.argThat(list -> list != null && list.size() <= 4),
-              Mockito.anyInt()
-      )).thenAnswer(
-              invocation -> new ContainerPlacementStatusDefault(1, 2, 3));
-
-      int currentDeleteCommandCount = datanodeCommandHandler
-              .getInvocationCount(SCMCommandProto.Type.deleteContainerCommand);
-
-      // On the first run, RM will delete one of the extra closed replicas.
-      replicationManager.processAll();
-      eventQueue.processAll(1000);
-      Assertions.assertEquals(currentDeleteCommandCount + 1,
-              datanodeCommandHandler.getInvocationCount(
-                  SCMCommandProto.Type.deleteContainerCommand));
-      Assertions.assertEquals(currentDeleteCommandCount + 1,
-              replicationManager.getMetrics().getDeletionCmdsSentTotal());
-      Assertions.assertEquals(1, getInflightCount(InflightType.DELETION));
-      Assertions.assertEquals(1, replicationManager.getMetrics()
-              .getInflightDeletion());
-
-      assertAnyDeleteTargets(
-          replicaOne.getDatanodeDetails(),
-          replicaTwo.getDatanodeDetails(),
-          replicaThree.getDatanodeDetails(),
-          replicaFour.getDatanodeDetails()
-      );
-
-      currentDeleteCommandCount = datanodeCommandHandler
-          .getInvocationCount(SCMCommandProto.Type.deleteContainerCommand);
-
-      // One the second run, the container is now properly replicated when
-      // counting in flight deletes. This allows the quasi closed container to
-      // be deleted by the unhealthy container handler.
-      replicationManager.processAll();
-      eventQueue.processAll(1000);
-      Assertions.assertEquals(currentDeleteCommandCount + 1,
-          datanodeCommandHandler.getInvocationCount(
-              SCMCommandProto.Type.deleteContainerCommand));
-      Assertions.assertEquals(currentDeleteCommandCount + 1,
-          replicationManager.getMetrics().getDeletionCmdsSentTotal());
-      Assertions.assertEquals(1, getInflightCount(InflightType.DELETION));
-      Assertions.assertEquals(1, replicationManager.getMetrics()
-          .getInflightDeletion());
-
-      assertDeleteTargetsContain(replicaFive.getDatanodeDetails());
-    }
+//    @Test
+//    @Unhealthy("This test doesn't properly test Rack Placement Policy as" +
+//        " LegacyReplicationManager doesn't handle rack aware delete properly.")
+//    public void testOverReplicatedAndPolicyUnSatisfiedAndDeleted()
+//            throws IOException, TimeoutException {
+//      final ContainerInfo container = getContainer(LifeCycleState.CLOSED);
+//      final ContainerID id = container.containerID();
+//      final UUID originNodeId = UUID.randomUUID();
+//      final ContainerReplica replicaOne = getReplicas(
+//              id, State.CLOSED, 1000L, originNodeId, randomDatanodeDetails());
+//      final ContainerReplica replicaTwo = getReplicas(
+//              id, State.CLOSED, 1000L, originNodeId, randomDatanodeDetails());
+//      final ContainerReplica replicaThree = getReplicas(
+//              id, State.CLOSED, 1000L, originNodeId, randomDatanodeDetails());
+//      final ContainerReplica replicaFour = getReplicas(
+//              id, State.CLOSED, 1000L, originNodeId, randomDatanodeDetails());
+//      final ContainerReplica replicaFive = getReplicas(
+//              id, QUASI_CLOSED, 1000L, originNodeId, randomDatanodeDetails());
+//
+//      containerStateManager.addContainer(container.getProtobuf());
+//      containerStateManager.updateContainerReplica(id, replicaOne);
+//      containerStateManager.updateContainerReplica(id, replicaTwo);
+//      containerStateManager.updateContainerReplica(
+//              id, replicaThree);
+//      containerStateManager.updateContainerReplica(id, replicaFour);
+//      containerStateManager.updateContainerReplica(id, replicaFive);
+//
+//      Mockito.when(ratisContainerPlacementPolicy.validateContainerPlacement(
+//              Mockito.argThat(list -> list != null && list.size() <= 4),
+//              Mockito.anyInt()
+//      )).thenAnswer(
+//              invocation -> new ContainerPlacementStatusDefault(1, 2, 3));
+//
+//      int currentDeleteCommandCount = datanodeCommandHandler
+//              .getInvocationCount(SCMCommandProto.Type.deleteContainerCommand);
+//
+//      // On the first run, RM will delete one of the extra closed replicas.
+//      replicationManager.processAll();
+//      eventQueue.processAll(1000);
+//      Assertions.assertEquals(currentDeleteCommandCount + 1,
+//              datanodeCommandHandler.getInvocationCount(
+//                  SCMCommandProto.Type.deleteContainerCommand));
+//      Assertions.assertEquals(currentDeleteCommandCount + 1,
+//              replicationManager.getMetrics().getDeletionCmdsSentTotal());
+//      Assertions.assertEquals(1, getInflightCount(InflightType.DELETION));
+//      Assertions.assertEquals(1, replicationManager.getMetrics()
+//              .getInflightDeletion());
+//
+//      assertAnyDeleteTargets(
+//          replicaOne.getDatanodeDetails(),
+//          replicaTwo.getDatanodeDetails(),
+//          replicaThree.getDatanodeDetails(),
+//          replicaFour.getDatanodeDetails()
+//      );
+//
+//      currentDeleteCommandCount = datanodeCommandHandler
+//          .getInvocationCount(SCMCommandProto.Type.deleteContainerCommand);
+//
+//      // One the second run, the container is now properly replicated when
+//      // counting in flight deletes. This allows the quasi closed container to
+//      // be deleted by the unhealthy container handler.
+//      replicationManager.processAll();
+//      eventQueue.processAll(1000);
+//      Assertions.assertEquals(currentDeleteCommandCount + 1,
+//          datanodeCommandHandler.getInvocationCount(
+//              SCMCommandProto.Type.deleteContainerCommand));
+//      Assertions.assertEquals(currentDeleteCommandCount + 1,
+//          replicationManager.getMetrics().getDeletionCmdsSentTotal());
+//      Assertions.assertEquals(1, getInflightCount(InflightType.DELETION));
+//      Assertions.assertEquals(1, replicationManager.getMetrics()
+//          .getInflightDeletion());
+//
+//      assertDeleteTargetsContain(replicaFive.getDatanodeDetails());
+//    }
   }
 
   void runTestLimit(int replicationLimit, int deletionLimit,

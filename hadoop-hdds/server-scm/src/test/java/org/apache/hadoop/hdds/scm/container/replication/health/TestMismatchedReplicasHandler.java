@@ -56,8 +56,7 @@ public class TestMismatchedReplicasHandler {
   @BeforeEach
   public void setup() {
     ecReplicationConfig = new ECReplicationConfig(3, 2);
-    ratisReplicationConfig = RatisReplicationConfig.getInstance(
-        HddsProtos.ReplicationFactor.THREE);
+    ratisReplicationConfig = RatisReplicationConfig.getInstance(3);
     replicationManager = Mockito.mock(ReplicationManager.class);
     handler = new MismatchedReplicasHandler(replicationManager);
   }

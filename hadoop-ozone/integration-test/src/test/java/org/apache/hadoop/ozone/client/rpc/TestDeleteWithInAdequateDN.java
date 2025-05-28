@@ -200,7 +200,7 @@ public class TestDeleteWithInAdequateDN {
     OzoneOutputStream key =
         objectStore.getVolume(volumeName).getBucket(bucketName)
             .createKey(keyName, 0, ReplicationType.RATIS,
-                ReplicationFactor.THREE, new HashMap<>());
+                3, new HashMap<>());
     byte[] testData = "ratis".getBytes(UTF_8);
     // First write and flush creates a container in the datanode
     key.write(testData);
@@ -220,7 +220,7 @@ public class TestDeleteWithInAdequateDN {
 
     List<Pipeline> pipelineList =
         cluster.getStorageContainerManager().getPipelineManager()
-            .getPipelines(RatisReplicationConfig.getInstance(THREE));
+            .getPipelines(RatisReplicationConfig.getInstance(3));
     Assume.assumeTrue(pipelineList.size() >= FACTOR_THREE_PIPELINE_COUNT);
     Pipeline pipeline = pipelineList.get(0);
     for (HddsDatanodeService dn : cluster.getHddsDatanodes()) {
@@ -259,7 +259,7 @@ public class TestDeleteWithInAdequateDN {
             .getStateMachine(leader, pipeline);
     OmKeyArgs keyArgs = new OmKeyArgs.Builder()
         .setVolumeName(volumeName).setBucketName(bucketName)
-        .setReplicationConfig(RatisReplicationConfig.getInstance(THREE))
+        .setReplicationConfig(RatisReplicationConfig.getInstance(3))
         .setKeyName(keyName).build();
     OmKeyInfo info = cluster.getOzoneManager().lookupKey(keyArgs);
     BlockID blockID = info.getKeyLocationVersions().get(0)

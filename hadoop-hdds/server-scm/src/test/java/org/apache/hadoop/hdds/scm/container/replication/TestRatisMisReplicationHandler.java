@@ -58,7 +58,7 @@ public class TestRatisMisReplicationHandler extends TestMisReplicationHandler {
   public void setup() throws NodeNotFoundException,
       CommandTargetOverloadedException, NotLeaderException {
     RatisReplicationConfig repConfig = RatisReplicationConfig
-            .getInstance(ReplicationFactor.THREE);
+            .getInstance(3);
     setup(repConfig);
   }
 

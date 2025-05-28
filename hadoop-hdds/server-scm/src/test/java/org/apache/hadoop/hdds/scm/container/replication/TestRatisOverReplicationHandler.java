@@ -92,7 +92,7 @@ import static org.mockito.Mockito.when;
 public class TestRatisOverReplicationHandler {
   private ContainerInfo container;
   private static final RatisReplicationConfig RATIS_REPLICATION_CONFIG =
-      RatisReplicationConfig.getInstance(HddsProtos.ReplicationFactor.THREE);
+      RatisReplicationConfig.getInstance(3);
   private PlacementPolicy policy;
   private OzoneConfiguration conf;
   private ReplicationManager replicationManager;
@@ -185,7 +185,7 @@ public class TestRatisOverReplicationHandler {
 
     container = ReplicationTestUtil.createContainer(
         HddsProtos.LifeCycleState.CLOSED,
-        RatisReplicationConfig.getInstance(replicationFactor.toProto()),
+        RatisReplicationConfig.getInstance(replicationFactor.getValue()),
         RandomMappingGenerator.AVAILABLE_DCS
     );
 

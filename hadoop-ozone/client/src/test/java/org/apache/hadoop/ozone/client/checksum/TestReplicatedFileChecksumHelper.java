@@ -137,8 +137,7 @@ public class TestReplicatedFileChecksumHelper {
         .setCreationTime(Time.now())
         .setModificationTime(Time.now())
         .setDataSize(0)
-        .setReplicationConfig(RatisReplicationConfig.getInstance(
-            HddsProtos.ReplicationFactor.ONE))
+        .setReplicationConfig(RatisReplicationConfig.getInstance(1))
         .setFileEncryptionInfo(null)
         .setAcls(null)
         .build();
@@ -182,7 +181,7 @@ public class TestReplicatedFileChecksumHelper {
         .setId(PipelineID.randomId())
         .setReplicationConfig(
             RatisReplicationConfig
-                .getInstance(HddsProtos.ReplicationFactor.THREE))
+                .getInstance(3))
         .setState(Pipeline.PipelineState.CLOSED)
         .setNodes(dns)
         .build();
@@ -223,8 +222,7 @@ public class TestReplicatedFileChecksumHelper {
         .setCreationTime(Time.now())
         .setModificationTime(Time.now())
         .setDataSize(0)
-        .setReplicationConfig(RatisReplicationConfig.getInstance(
-            HddsProtos.ReplicationFactor.ONE))
+        .setReplicationConfig(RatisReplicationConfig.getInstance(1))
         .setFileEncryptionInfo(null)
         .setAcls(null)
         .build();
@@ -259,8 +257,7 @@ public class TestReplicatedFileChecksumHelper {
         .setModificationTime(Time.now())
         .setDataSize(0)
         .setReplicationConfig(
-            RatisReplicationConfig.getInstance(
-                HddsProtos.ReplicationFactor.ONE))
+            RatisReplicationConfig.getInstance(1))
         .setFileEncryptionInfo(null)
         .setAcls(null)
         .setFileChecksum(cachedChecksum)
@@ -349,7 +346,7 @@ public class TestReplicatedFileChecksumHelper {
 
       try (OzoneOutputStream out = bucket
           .createKey(keyName, value.getBytes(UTF_8).length,
-              ReplicationType.RATIS, ONE, new HashMap<>())) {
+              ReplicationType.RATIS, 1, new HashMap<>())) {
         out.write(value.getBytes(UTF_8));
         out.write(value.getBytes(UTF_8));
       }

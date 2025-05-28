@@ -24,7 +24,6 @@ import org.apache.hadoop.hdds.client.ReplicationConfig;
 import org.apache.hadoop.hdds.conf.OzoneConfiguration;
 import org.apache.hadoop.hdds.protocol.DatanodeDetails;
 import org.apache.hadoop.hdds.protocol.MockDatanodeDetails;
-import org.apache.hadoop.hdds.protocol.proto.HddsProtos;
 import org.apache.hadoop.hdds.scm.OzoneClientConfig;
 import org.apache.hadoop.hdds.scm.pipeline.Pipeline;
 import org.apache.hadoop.hdds.scm.pipeline.PipelineID;
@@ -53,7 +52,7 @@ public class TestBlockInputStreamFactoryImpl {
   public void testNonECGivesBlockInputStream() throws IOException {
     BlockInputStreamFactory factory = new BlockInputStreamFactoryImpl();
     ReplicationConfig repConfig =
-        RatisReplicationConfig.getInstance(HddsProtos.ReplicationFactor.THREE);
+        RatisReplicationConfig.getInstance(3);
 
     BlockLocationInfo blockInfo = createKeyLocationInfo(repConfig, 3,
         1024 * 1024 * 10);

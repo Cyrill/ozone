@@ -56,7 +56,7 @@ public class TestContainerHealthStatus {
     reconContainerMetadataManager = mock(ReconContainerMetadataManager.class);
     when(container.getReplicationConfig())
         .thenReturn(RatisReplicationConfig
-            .getInstance(HddsProtos.ReplicationFactor.THREE));
+            .getInstance(3));
     when(container.containerID()).thenReturn(ContainerID.valueOf(123456));
     when(container.getContainerID()).thenReturn((long)123456);
     when(placementPolicy.validateContainerPlacement(

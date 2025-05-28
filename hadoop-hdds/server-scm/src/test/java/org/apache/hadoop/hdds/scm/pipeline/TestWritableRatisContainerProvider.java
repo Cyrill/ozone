@@ -59,7 +59,7 @@ import static org.mockito.Mockito.when;
 class TestWritableRatisContainerProvider {
 
   private static final ReplicationConfig REPLICATION_CONFIG =
-      RatisReplicationConfig.getInstance(HddsProtos.ReplicationFactor.THREE);
+      RatisReplicationConfig.getInstance(3);
   private static final String OWNER = "owner";
   private static final int CONTAINER_SIZE = 1234;
   private static final ExcludeList NO_EXCLUSION = new ExcludeList();

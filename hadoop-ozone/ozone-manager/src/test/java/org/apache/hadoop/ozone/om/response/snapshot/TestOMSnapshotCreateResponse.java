@@ -209,7 +209,7 @@ public class TestOMSnapshotCreateResponse {
         .setBucketName(bucketName)
         .setVolumeName(volumeName)
         .setKeyName("dummyKey")
-        .setReplicationConfig(StandaloneReplicationConfig.getInstance(ONE))
+        .setReplicationConfig(StandaloneReplicationConfig.getInstance(1))
         .build();
     // Add deletedDirectoryTable key entries that "surround" the snapshot scope
     Set<String> sentinelKeys = new HashSet<>();

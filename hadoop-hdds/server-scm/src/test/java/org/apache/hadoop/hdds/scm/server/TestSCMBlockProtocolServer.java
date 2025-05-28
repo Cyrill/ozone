@@ -106,7 +106,7 @@ public class TestSCMBlockProtocolServer {
       Pipeline pipeline;
 
       if (replicationConfig !=
-          RatisReplicationConfig.getInstance(ReplicationFactor.THREE)) {
+          RatisReplicationConfig.getInstance(3)) {
         // Other replication config can be supported in the future
         return null;
       }
@@ -305,7 +305,7 @@ public class TestSCMBlockProtocolServer {
     final DatanodeDetails clientDatanode = nodeManager.getAllNodes().get(0);
     final String clientAddress = clientDatanode.getIpAddress();
     final ReplicationConfig replicationConfig = RatisReplicationConfig
-        .getInstance(ReplicationFactor.THREE);
+        .getInstance(3);
     final long blockSize = 128 * MB;
     final int numOfBlocks = 5;
 

@@ -160,7 +160,7 @@ public final class OMMetadataManagerTestUtils {
             .setBucketName("bucketOne")
             .setVolumeName("sampleVol")
             .setKeyName(key)
-            .setReplicationConfig(StandaloneReplicationConfig.getInstance(ONE))
+            .setReplicationConfig(StandaloneReplicationConfig.getInstance(1))
             .build());
   }
 
@@ -184,7 +184,7 @@ public final class OMMetadataManagerTestUtils {
             .setBucketName(bucket)
             .setVolumeName(volume)
             .setKeyName(key)
-            .setReplicationConfig(StandaloneReplicationConfig.getInstance(ONE))
+            .setReplicationConfig(StandaloneReplicationConfig.getInstance(1))
             .setOmKeyLocationInfos(omKeyLocationInfoGroupList)
             .build());
   }
@@ -221,7 +221,7 @@ public final class OMMetadataManagerTestUtils {
                     .setVolumeName(volume)
                     .setKeyName(key)
                     .setReplicationConfig(
-                        StandaloneReplicationConfig.getInstance(ONE))
+                        StandaloneReplicationConfig.getInstance(1))
                     .setObjectID(objectID)
                     .setParentObjectID(parentObjectId)
                     .setDataSize(dataSize)
@@ -258,7 +258,7 @@ public final class OMMetadataManagerTestUtils {
                     .setDataSize(dataSize)
                     .setOmKeyLocationInfos(locationVersions)
                     .setReplicationConfig(
-                        StandaloneReplicationConfig.getInstance(ONE))
+                        StandaloneReplicationConfig.getInstance(1))
                     .setObjectID(objectId)
                     .setParentObjectID(parentObjectId)
                     .build());
@@ -292,7 +292,7 @@ public final class OMMetadataManagerTestUtils {
         .setKeyName(keyName)
         .setDataSize(dataSize)
         .setOmKeyLocationInfos(locationVersions)
-        .setReplicationConfig(RatisReplicationConfig.getInstance(THREE))
+        .setReplicationConfig(RatisReplicationConfig.getInstance(3))
         .setObjectID(objectId)
         .setParentObjectID(parentObjectId)
         .build();
@@ -322,7 +322,7 @@ public final class OMMetadataManagerTestUtils {
         .setKeyName(keyName)
         .setDataSize(dataSize)
         .setOmKeyLocationInfos(locationVersions)
-        .setReplicationConfig(RatisReplicationConfig.getInstance(THREE))
+        .setReplicationConfig(RatisReplicationConfig.getInstance(3))
         .build();
 
     omMetadataManager.getOpenKeyTable(BucketLayout.LEGACY)
@@ -349,7 +349,7 @@ public final class OMMetadataManagerTestUtils {
           .setVolumeName(volName)
           .setKeyName(keyNames.get(i))
           .setDataSize(100L)
-          .setReplicationConfig(StandaloneReplicationConfig.getInstance(ONE))
+          .setReplicationConfig(StandaloneReplicationConfig.getInstance(1))
           .build());
     }
     // Get the Ozone key for the first deleted key
@@ -416,7 +416,7 @@ public final class OMMetadataManagerTestUtils {
             .setBucketName(bucketName)
             .setVolumeName(volumeName)
             .setKeyName(dirName)
-            .setReplicationConfig(StandaloneReplicationConfig.getInstance(ONE))
+            .setReplicationConfig(StandaloneReplicationConfig.getInstance(1))
             .build());
   }
 
@@ -471,7 +471,7 @@ public final class OMMetadataManagerTestUtils {
    */
   public static Pipeline getRandomPipeline(DatanodeDetails datanodeDetails) {
     return Pipeline.newBuilder()
-       .setReplicationConfig(StandaloneReplicationConfig.getInstance(ONE))
+       .setReplicationConfig(StandaloneReplicationConfig.getInstance(1))
         .setId(PipelineID.randomId())
         .setNodes(Collections.singletonList(datanodeDetails))
         .setState(Pipeline.PipelineState.OPEN)

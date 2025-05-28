@@ -110,7 +110,7 @@ public class TestCloseContainerByPipeline {
   public void testIfCloseContainerCommandHandlerIsInvoked() throws Exception {
     String keyName = "testIfCloseContainerCommandHandlerIsInvoked";
     OzoneOutputStream key = objectStore.getVolume("test").getBucket("test")
-        .createKey(keyName, 1024, ReplicationType.RATIS, ReplicationFactor.ONE,
+        .createKey(keyName, 1024, ReplicationType.RATIS, 1,
             new HashMap<>());
     key.write(keyName.getBytes(UTF_8));
     key.close();
@@ -118,7 +118,7 @@ public class TestCloseContainerByPipeline {
     //get the name of a valid container
     OmKeyArgs keyArgs =
         new OmKeyArgs.Builder().setVolumeName("test").setBucketName("test")
-            .setReplicationConfig(RatisReplicationConfig.getInstance(ONE))
+            .setReplicationConfig(RatisReplicationConfig.getInstance(1))
             .setDataSize(1024)
             .setKeyName(keyName).build();
     OmKeyLocationInfo omKeyLocationInfo =
@@ -168,14 +168,14 @@ public class TestCloseContainerByPipeline {
 
     OzoneOutputStream key = objectStore.getVolume("test").getBucket("test")
         .createKey("standalone", 1024, ReplicationType.RATIS,
-            ReplicationFactor.ONE, new HashMap<>());
+            1, new HashMap<>());
     key.write("standalone".getBytes(UTF_8));
     key.close();
 
     //get the name of a valid container
     OmKeyArgs keyArgs =
         new OmKeyArgs.Builder().setVolumeName("test").setBucketName("test")
-            .setReplicationConfig(RatisReplicationConfig.getInstance(ONE))
+            .setReplicationConfig(RatisReplicationConfig.getInstance(1))
             .setDataSize(1024)
             .setKeyName("standalone")
             .build();
@@ -226,14 +226,14 @@ public class TestCloseContainerByPipeline {
 
     OzoneOutputStream key = objectStore.getVolume("test").getBucket("test")
         .createKey("ratis", 1024, ReplicationType.RATIS,
-            ReplicationFactor.THREE, new HashMap<>());
+            3, new HashMap<>());
     key.write("ratis".getBytes(UTF_8));
     key.close();
 
     //get the name of a valid container
     OmKeyArgs keyArgs = new OmKeyArgs.Builder().setVolumeName("test").
         setBucketName("test")
-        .setReplicationConfig(RatisReplicationConfig.getInstance(THREE))
+        .setReplicationConfig(RatisReplicationConfig.getInstance(3))
         .setDataSize(1024)
         .setKeyName("ratis").build();
 
@@ -292,13 +292,13 @@ public class TestCloseContainerByPipeline {
     String keyName = "testQuasiCloseTransitionViaRatis";
     OzoneOutputStream key = objectStore.getVolume("test").getBucket("test")
         .createKey(keyName, 1024, ReplicationType.RATIS,
-            ReplicationFactor.ONE, new HashMap<>());
+            1, new HashMap<>());
     key.write(keyName.getBytes(UTF_8));
     key.close();
 
     OmKeyArgs keyArgs =
         new OmKeyArgs.Builder().setVolumeName("test").setBucketName("test")
-            .setReplicationConfig(RatisReplicationConfig.getInstance(ONE))
+            .setReplicationConfig(RatisReplicationConfig.getInstance(1))
             .setDataSize(1024)
             .setKeyName(keyName)
             .build();

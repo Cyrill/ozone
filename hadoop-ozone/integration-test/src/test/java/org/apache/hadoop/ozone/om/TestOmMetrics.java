@@ -283,7 +283,7 @@ public class TestOmMetrics {
     KeyManager mockKm = Mockito.spy(keyManager);
     TestDataUtil.createVolumeAndBucket(client, volumeName, bucketName);
     OmKeyArgs keyArgs = createKeyArgs(volumeName, bucketName,
-        RatisReplicationConfig.getInstance(HddsProtos.ReplicationFactor.THREE));
+        RatisReplicationConfig.getInstance(3));
     doKeyOps(keyArgs);
 
     MetricsRecordBuilder omMetrics = getMetrics("OMMetrics");
@@ -304,15 +304,15 @@ public class TestOmMetrics {
     assertCounter("EcKeyCreateTotal", 1L, omMetrics);
 
     keyArgs = createKeyArgs(volumeName, bucketName,
-        RatisReplicationConfig.getInstance(HddsProtos.ReplicationFactor.THREE));
+        RatisReplicationConfig.getInstance(3));
     OpenKeySession keySession = writeClient.openKey(keyArgs);
     writeClient.commitKey(keyArgs, keySession.getId());
     keyArgs = createKeyArgs(volumeName, bucketName,
-        RatisReplicationConfig.getInstance(HddsProtos.ReplicationFactor.THREE));
+        RatisReplicationConfig.getInstance(3));
     keySession = writeClient.openKey(keyArgs);
     writeClient.commitKey(keyArgs, keySession.getId());
     keyArgs = createKeyArgs(volumeName, bucketName,
-        RatisReplicationConfig.getInstance(HddsProtos.ReplicationFactor.THREE));
+        RatisReplicationConfig.getInstance(3));
     keySession = writeClient.openKey(keyArgs);
     writeClient.commitKey(keyArgs, keySession.getId());
     writeClient.deleteKey(keyArgs);
@@ -349,7 +349,7 @@ public class TestOmMetrics {
     // inject exception to test for Failure Metrics on the write path
     mockWritePathExceptions(OmBucketInfo.class);
     keyArgs = createKeyArgs(volumeName, bucketName,
-        RatisReplicationConfig.getInstance(HddsProtos.ReplicationFactor.THREE));
+        RatisReplicationConfig.getInstance(3));
     doKeyOps(keyArgs);
 
     omMetrics = getMetrics("OMMetrics");
@@ -402,7 +402,7 @@ public class TestOmMetrics {
 
     // Create first key
     OmKeyArgs keyArgs1 = createKeyArgs(volumeName, bucketName,
-        RatisReplicationConfig.getInstance(HddsProtos.ReplicationFactor.THREE));
+        RatisReplicationConfig.getInstance(3));
     OpenKeySession keySession = writeClient.openKey(keyArgs1);
     writeClient.commitKey(keyArgs1, keySession.getId());
 
@@ -422,7 +422,7 @@ public class TestOmMetrics {
 
     // Create second key
     OmKeyArgs keyArgs2 = createKeyArgs(volumeName, bucketName,
-        RatisReplicationConfig.getInstance(HddsProtos.ReplicationFactor.THREE));
+        RatisReplicationConfig.getInstance(3));
     OpenKeySession keySession2 = writeClient.openKey(keyArgs2);
     writeClient.commitKey(keyArgs2, keySession2.getId());
 

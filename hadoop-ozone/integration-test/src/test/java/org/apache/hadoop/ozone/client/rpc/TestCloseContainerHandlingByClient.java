@@ -145,7 +145,7 @@ public class TestCloseContainerHandlingByClient {
     //get the name of a valid container
     OmKeyArgs keyArgs = new OmKeyArgs.Builder().setVolumeName(volumeName)
         .setBucketName(bucketName)
-        .setReplicationConfig(RatisReplicationConfig.getInstance(ONE))
+        .setReplicationConfig(RatisReplicationConfig.getInstance(1))
         .setKeyName(keyName)
         .build();
 
@@ -178,7 +178,7 @@ public class TestCloseContainerHandlingByClient {
     //get the name of a valid container
     OmKeyArgs keyArgs = new OmKeyArgs.Builder().setVolumeName(volumeName)
         .setBucketName(bucketName)
-        .setReplicationConfig(StandaloneReplicationConfig.getInstance(ONE))
+        .setReplicationConfig(StandaloneReplicationConfig.getInstance(1))
         .setKeyName(keyName)
         .build();
 
@@ -212,7 +212,7 @@ public class TestCloseContainerHandlingByClient {
     //get the name of a valid container
     OmKeyArgs keyArgs = new OmKeyArgs.Builder().setVolumeName(volumeName)
         .setBucketName(bucketName)
-        .setReplicationConfig(RatisReplicationConfig.getInstance(ONE))
+        .setReplicationConfig(RatisReplicationConfig.getInstance(1))
         .setKeyName(keyName)
         .build();
 
@@ -272,7 +272,7 @@ public class TestCloseContainerHandlingByClient {
     //get the name of a valid container
     OmKeyArgs keyArgs = new OmKeyArgs.Builder().setVolumeName(volumeName)
         .setBucketName(bucketName)
-        .setReplicationConfig(RatisReplicationConfig.getInstance(THREE))
+        .setReplicationConfig(RatisReplicationConfig.getInstance(3))
         .setKeyName(keyName)
         .build();
 
@@ -316,7 +316,7 @@ public class TestCloseContainerHandlingByClient {
     //get the name of a valid container
     OmKeyArgs keyArgs = new OmKeyArgs.Builder().setVolumeName(volumeName)
         .setBucketName(bucketName)
-        .setReplicationConfig(RatisReplicationConfig.getInstance(THREE))
+        .setReplicationConfig(RatisReplicationConfig.getInstance(3))
         .setKeyName(keyName)
         .build();
 
@@ -379,7 +379,7 @@ public class TestCloseContainerHandlingByClient {
     //get the name of a valid container
     OmKeyArgs keyArgs = new OmKeyArgs.Builder().setVolumeName(volumeName).
         setBucketName(bucketName)
-        .setReplicationConfig(RatisReplicationConfig.getInstance(THREE))
+        .setReplicationConfig(RatisReplicationConfig.getInstance(3))
         .setKeyName(keyName)
         .build();
 
@@ -413,7 +413,7 @@ public class TestCloseContainerHandlingByClient {
     //get the name of a valid container
     OmKeyArgs keyArgs = new OmKeyArgs.Builder().setVolumeName(volumeName)
         .setBucketName(bucketName)
-        .setReplicationConfig(RatisReplicationConfig.getInstance(ONE))
+        .setReplicationConfig(RatisReplicationConfig.getInstance(1))
         .setKeyName(keyName)
         .build();
 

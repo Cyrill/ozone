@@ -97,11 +97,9 @@ public class TestReconTasks {
     ContainerManager scmContainerManager = scm.getContainerManager();
     ContainerManager reconContainerManager = reconScm.getContainerManager();
     final ContainerInfo container1 = scmContainerManager.allocateContainer(
-        RatisReplicationConfig.getInstance(
-            HddsProtos.ReplicationFactor.ONE), "admin");
+        RatisReplicationConfig.getInstance(1), "admin");
     final ContainerInfo container2 = scmContainerManager.allocateContainer(
-        RatisReplicationConfig.getInstance(
-            HddsProtos.ReplicationFactor.ONE), "admin");
+        RatisReplicationConfig.getInstance(1), "admin");
     scmContainerManager.updateContainerState(container1.containerID(),
         HddsProtos.LifeCycleEvent.FINALIZE);
     scmContainerManager.updateContainerState(container2.containerID(),
@@ -141,7 +139,7 @@ public class TestReconTasks {
         (ReconContainerManager) reconScm.getContainerManager();
     ContainerInfo containerInfo =
         scmContainerManager
-            .allocateContainer(RatisReplicationConfig.getInstance(ONE), "test");
+            .allocateContainer(RatisReplicationConfig.getInstance(1), "test");
     long containerID = containerInfo.getContainerID();
 
     try (RDBBatchOperation rdbBatchOperation = new RDBBatchOperation()) {
@@ -221,7 +219,7 @@ public class TestReconTasks {
         (ReconContainerManager) reconScm.getContainerManager();
     ContainerInfo containerInfo =
         scmContainerManager
-            .allocateContainer(RatisReplicationConfig.getInstance(ONE), "test");
+            .allocateContainer(RatisReplicationConfig.getInstance(1), "test");
     long containerID = containerInfo.getContainerID();
 
     Pipeline pipeline =

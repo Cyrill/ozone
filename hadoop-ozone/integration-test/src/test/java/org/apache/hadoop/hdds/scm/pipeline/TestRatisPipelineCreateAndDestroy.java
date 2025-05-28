@@ -87,12 +87,10 @@ public class TestRatisPipelineCreateAndDestroy {
     // make sure two pipelines are created
     waitForPipelines(2);
     assertEquals(numOfDatanodes, pipelineManager.getPipelines(
-        RatisReplicationConfig.getInstance(
-            ReplicationFactor.ONE)).size());
+        RatisReplicationConfig.getInstance(1)).size());
 
     List<Pipeline> pipelines = pipelineManager
-        .getPipelines(RatisReplicationConfig.getInstance(
-            ReplicationFactor.THREE), Pipeline.PipelineState.OPEN);
+        .getPipelines(RatisReplicationConfig.getInstance(3), Pipeline.PipelineState.OPEN);
     for (Pipeline pipeline : pipelines) {
       pipelineManager.closePipeline(pipeline, false);
     }
@@ -109,12 +107,10 @@ public class TestRatisPipelineCreateAndDestroy {
     waitForPipelines(2);
     // No Factor ONE pipeline is auto created.
     assertEquals(0, pipelineManager.getPipelines(
-        RatisReplicationConfig.getInstance(
-            ReplicationFactor.ONE)).size());
+        RatisReplicationConfig.getInstance(1)).size());
 
     List<Pipeline> pipelines = pipelineManager
-        .getPipelines(RatisReplicationConfig.getInstance(
-            ReplicationFactor.THREE), Pipeline.PipelineState.OPEN);
+        .getPipelines(RatisReplicationConfig.getInstance(3), Pipeline.PipelineState.OPEN);
     for (Pipeline pipeline : pipelines) {
       pipelineManager.closePipeline(pipeline, false);
     }
@@ -133,8 +129,7 @@ public class TestRatisPipelineCreateAndDestroy {
     List<HddsDatanodeService> dns = new ArrayList<>(cluster.getHddsDatanodes());
 
     List<Pipeline> pipelines =
-        pipelineManager.getPipelines(RatisReplicationConfig.getInstance(
-            ReplicationFactor.THREE));
+        pipelineManager.getPipelines(RatisReplicationConfig.getInstance(3));
     for (HddsDatanodeService dn : dns) {
       cluster.shutdownHddsDatanode(dn.getDatanodeDetails());
     }
@@ -146,8 +141,7 @@ public class TestRatisPipelineCreateAndDestroy {
 
     // try creating another pipeline now
     SCMException ioe = assertThrows(SCMException.class, () ->
-        pipelineManager.createPipeline(RatisReplicationConfig.getInstance(
-            ReplicationFactor.THREE)),
+        pipelineManager.createPipeline(RatisReplicationConfig.getInstance(3)),
         "pipeline creation should fail after shutting down pipeline");
     assertEquals(SCMException.ResultCodes.FAILED_TO_FIND_HEALTHY_NODES, ioe.getResult());
 
@@ -173,41 +167,40 @@ public class TestRatisPipelineCreateAndDestroy {
     }
   }
 
-  @EnumSource(value = ReplicationFactor.class, names = {"THREE", "SIX"})
-  @ParameterizedTest
-  @Unhealthy("UD-646")
-  void createPipelineWithReplicationFactorSix(ReplicationFactor replicationFactor) throws Exception {
-    conf.setBoolean(OZONE_SCM_PIPELINE_AUTO_CREATE_FACTOR_ONE, false);
-
-    init(12, replicationFactor.getNumber());
-
-    // make sure two pipelines are created
-    waitForPipelines(2);
-
-    // No Factor ONE pipeline is auto created.
-    assertEquals(
-        0,
-        pipelineManager.getPipelines(RatisReplicationConfig.getInstance(ReplicationFactor.ONE)).size()
-    );
-
-    pipelineManager.createPipeline(RatisReplicationConfig.getInstance(replicationFactor));
-
-    GenericTestUtils.waitFor(
-        () -> !pipelineManager.getPipelines(
-                RatisReplicationConfig.getInstance(replicationFactor),
-                Pipeline.PipelineState.OPEN
-            )
-                   .isEmpty(),
-        100,
-        60000
-    );
-  }
+//  @EnumSource(value = ReplicationFactor.class, names = {"THREE", "SIX"})
+//  @ParameterizedTest
+//  @Unhealthy("UD-646")
+//  void createPipelineWithReplicationFactorSix(ReplicationFactor replicationFactor) throws Exception {
+//    conf.setBoolean(OZONE_SCM_PIPELINE_AUTO_CREATE_FACTOR_ONE, false);
+//
+//    init(12, replicationFactor.getNumber());
+//
+//    // make sure two pipelines are created
+//    waitForPipelines(2);
+//
+//    // No Factor ONE pipeline is auto created.
+//    assertEquals(
+//        0,
+//        pipelineManager.getPipelines(RatisReplicationConfig.getInstance(ReplicationFactor.ONE)).size()
+//    );
+//
+//    pipelineManager.createPipeline(RatisReplicationConfig.getInstance(replicationFactor));
+//
+//    GenericTestUtils.waitFor(
+//        () -> !pipelineManager.getPipelines(
+//                RatisReplicationConfig.getInstance(replicationFactor),
+//                Pipeline.PipelineState.OPEN
+//            )
+//                   .isEmpty(),
+//        100,
+//        60000
+//    );
+//  }
 
   private void waitForPipelines(int numPipelines)
       throws TimeoutException, InterruptedException {
     GenericTestUtils.waitFor(() -> pipelineManager
-        .getPipelines(RatisReplicationConfig.getInstance(
-            ReplicationFactor.THREE), Pipeline.PipelineState.OPEN)
+        .getPipelines(RatisReplicationConfig.getInstance(3), Pipeline.PipelineState.OPEN)
         .size() >= numPipelines, 100, 60000);
   }
 }

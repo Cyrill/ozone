@@ -110,7 +110,7 @@ public class TestContainerMapper {
       String key = UUID.randomUUID().toString();
       keyList.add(key);
       OzoneOutputStream out = bucket.createKey(key, data.length,
-          ReplicationType.STAND_ALONE, ReplicationFactor.ONE,
+          ReplicationType.STAND_ALONE, 1,
           new HashMap<String, String>());
       out.write(data, 0, data.length);
       out.close();

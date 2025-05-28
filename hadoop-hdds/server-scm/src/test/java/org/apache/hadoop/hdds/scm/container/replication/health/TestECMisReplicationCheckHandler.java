@@ -107,8 +107,7 @@ public class TestECMisReplicationCheckHandler {
   @Test
   public void shouldReturnFalseForNonECContainer() {
     ContainerInfo container =
-        createContainerInfo(RatisReplicationConfig.getInstance(
-            HddsProtos.ReplicationFactor.THREE));
+        createContainerInfo(RatisReplicationConfig.getInstance(3));
     Set<ContainerReplica> replicas
         = createReplicas(container.containerID(), 1, 2, 3, 4, 5);
     ContainerCheckRequest request = requestBuilder

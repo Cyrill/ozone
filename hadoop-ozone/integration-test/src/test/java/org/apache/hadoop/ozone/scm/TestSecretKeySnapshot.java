@@ -281,7 +281,7 @@ public final class TestSecretKeySnapshot {
     while (logIndex <= targetLogIndex) {
       containers.add(scm.getContainerManager()
           .allocateContainer(
-              RatisReplicationConfig.getInstance(ReplicationFactor.ONE),
+              RatisReplicationConfig.getInstance(1),
               this.getClass().getName()));
       Thread.sleep(100);
       logIndex = stateMachine.getLastAppliedTermIndex().getIndex();

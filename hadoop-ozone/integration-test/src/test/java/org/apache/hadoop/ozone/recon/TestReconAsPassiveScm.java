@@ -106,7 +106,7 @@ public class TestReconAsPassiveScm {
     UnsupportedOperationException exception = assertThrows(
         UnsupportedOperationException.class,
         () -> reconPipelineManager
-            .createPipeline(RatisReplicationConfig.getInstance(ONE)));
+            .createPipeline(RatisReplicationConfig.getInstance(1)));
     assertTrue(exception.getMessage()
         .contains("Trying to create pipeline in Recon, which is prohibited!"));
 
@@ -123,7 +123,7 @@ public class TestReconAsPassiveScm {
     ContainerManager reconContainerManager = reconScm.getContainerManager();
     ContainerInfo containerInfo =
         scmContainerManager
-            .allocateContainer(RatisReplicationConfig.getInstance(ONE), "test");
+            .allocateContainer(RatisReplicationConfig.getInstance(1), "test");
     long containerID = containerInfo.getContainerID();
     Pipeline pipeline =
         scmPipelineManager.getPipeline(containerInfo.getPipelineID());
@@ -164,7 +164,7 @@ public class TestReconAsPassiveScm {
     // Create container in SCM.
     ContainerInfo containerInfo =
         scmContainerManager
-            .allocateContainer(RatisReplicationConfig.getInstance(ONE), "test");
+            .allocateContainer(RatisReplicationConfig.getInstance(1), "test");
     long containerID = containerInfo.getContainerID();
     PipelineManager scmPipelineManager = scm.getPipelineManager();
     Pipeline pipeline =
@@ -175,7 +175,7 @@ public class TestReconAsPassiveScm {
 
     // Close a pipeline
     Optional<Pipeline> pipelineToClose = scmPipelineManager
-        .getPipelines(RatisReplicationConfig.getInstance(ONE))
+        .getPipelines(RatisReplicationConfig.getInstance(1))
         .stream()
         .filter(p -> !p.getId().equals(containerInfo.getPipelineID()))
         .findFirst();

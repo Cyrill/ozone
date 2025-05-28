@@ -21,7 +21,6 @@ import static org.apache.hadoop.hdds.HddsConfigKeys.HDDS_SCM_WAIT_TIME_AFTER_SAF
 import static org.apache.hadoop.hdds.protocol.proto.HddsProtos.NodeOperationalState.DECOMMISSIONING;
 import static org.apache.hadoop.hdds.protocol.proto.HddsProtos.NodeOperationalState.ENTERING_MAINTENANCE;
 import static org.apache.hadoop.hdds.protocol.proto.HddsProtos.NodeOperationalState.IN_SERVICE;
-import static org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationFactor.THREE;
 import static org.apache.hadoop.hdds.protocol.proto.StorageContainerDatanodeProtocolProtos.ReplicationCommandPriority.LOW;
 import static org.apache.hadoop.hdds.scm.container.replication.ContainerReplicaOp.PendingOpType.ADD;
 import static org.apache.hadoop.hdds.scm.container.replication.ReplicationTestUtil.createContainerInfo;
@@ -278,7 +277,7 @@ public class TestReplicationManager {
   public void misMatchedReplicasOfRatisContainerShouldBeClosed()
       throws ContainerNotFoundException {
     RatisReplicationConfig ratisRepConfig =
-        RatisReplicationConfig.getInstance(THREE);
+        RatisReplicationConfig.getInstance(3);
     ContainerInfo container = createContainerInfo(ratisRepConfig, 1,
         HddsProtos.LifeCycleState.CLOSED);
     // Container is closed but replicas are open
@@ -307,7 +306,7 @@ public class TestReplicationManager {
   public void testUnderReplicatedQuasiClosedContainerWithUnhealthyReplica()
       throws ContainerNotFoundException {
     RatisReplicationConfig ratisRepConfig =
-        RatisReplicationConfig.getInstance(THREE);
+        RatisReplicationConfig.getInstance(3);
     ContainerInfo container = createContainerInfo(ratisRepConfig, 1,
         HddsProtos.LifeCycleState.QUASI_CLOSED);
     // Container is closed but replicas are open
@@ -339,7 +338,7 @@ public class TestReplicationManager {
       HddsProtos.LifeCycleState state)
       throws ContainerNotFoundException {
     RatisReplicationConfig ratisRepConfig =
-        RatisReplicationConfig.getInstance(THREE);
+        RatisReplicationConfig.getInstance(3);
     ContainerInfo container = createContainerInfo(ratisRepConfig, 1,
         state);
     // Container is closed but replicas are UNHEALTHY
@@ -370,7 +369,7 @@ public class TestReplicationManager {
     when(nodeManager.getNodeStatus(any(DatanodeDetails.class)))
         .thenReturn(NodeStatus.inServiceHealthy());
     RatisReplicationConfig ratisRepConfig =
-        RatisReplicationConfig.getInstance(THREE);
+        RatisReplicationConfig.getInstance(3);
     ContainerInfo container = createContainerInfo(ratisRepConfig, 1,
         HddsProtos.LifeCycleState.QUASI_CLOSED);
     Set<ContainerReplica> replicas =
@@ -412,7 +411,7 @@ public class TestReplicationManager {
   public void testClosedContainerWithOverReplicatedAllUnhealthy()
       throws ContainerNotFoundException {
     RatisReplicationConfig ratisRepConfig =
-        RatisReplicationConfig.getInstance(THREE);
+        RatisReplicationConfig.getInstance(3);
     ContainerInfo container = createContainerInfo(ratisRepConfig, 1,
         HddsProtos.LifeCycleState.CLOSED);
     Set<ContainerReplica> replicas =
@@ -433,7 +432,7 @@ public class TestReplicationManager {
   public void testClosedContainerWithExcessUnhealthy()
       throws ContainerNotFoundException {
     RatisReplicationConfig ratisRepConfig =
-        RatisReplicationConfig.getInstance(THREE);
+        RatisReplicationConfig.getInstance(3);
     ContainerInfo container = createContainerInfo(ratisRepConfig, 1,
         HddsProtos.LifeCycleState.CLOSED);
     Set<ContainerReplica> replicas =
@@ -458,7 +457,7 @@ public class TestReplicationManager {
   public void testQuasiClosedContainerWithUnhealthyReplicaOnUniqueOrigin()
       throws IOException {
     RatisReplicationConfig ratisRepConfig =
-        RatisReplicationConfig.getInstance(THREE);
+        RatisReplicationConfig.getInstance(3);
     ContainerInfo container = createContainerInfo(ratisRepConfig, 1,
         HddsProtos.LifeCycleState.QUASI_CLOSED);
     Set<ContainerReplica> replicas =
@@ -483,7 +482,7 @@ public class TestReplicationManager {
   public void testQuasiClosedContainerWithVulnerableUnhealthyReplica()
       throws IOException, NodeNotFoundException {
     RatisReplicationConfig ratisRepConfig =
-        RatisReplicationConfig.getInstance(THREE);
+        RatisReplicationConfig.getInstance(3);
     long sequenceID = 10;
     ContainerInfo container = createContainerInfo(ratisRepConfig, 1,
         HddsProtos.LifeCycleState.QUASI_CLOSED, sequenceID);
@@ -549,7 +548,7 @@ public class TestReplicationManager {
   public void testQuasiClosedContainerWithUnhealthyReplicaOnDecommissioningNodeWithUniqueOrigin()
       throws IOException, NodeNotFoundException {
     RatisReplicationConfig ratisRepConfig =
-        RatisReplicationConfig.getInstance(THREE);
+        RatisReplicationConfig.getInstance(3);
     // create a QUASI_CLOSED container with 3 QUASI_CLOSED replicas on same origin, and 1 UNHEALTHY on unique origin
     ContainerInfo container = createContainerInfo(ratisRepConfig, 1,
         HddsProtos.LifeCycleState.QUASI_CLOSED);
@@ -615,7 +614,7 @@ public class TestReplicationManager {
   public void testClosedContainerWithQuasiClosedReplicaWithWrongSequence()
       throws IOException {
     final RatisReplicationConfig ratisRepConfig =
-        RatisReplicationConfig.getInstance(THREE);
+        RatisReplicationConfig.getInstance(3);
     final long sequenceId = 101;
 
     final ContainerInfo container = createContainerInfo(ratisRepConfig, 1,
@@ -730,7 +729,7 @@ public class TestReplicationManager {
 
     // Test the same for a RATIS container
     RatisReplicationConfig ratisRepConfig =
-        RatisReplicationConfig.getInstance(THREE);
+        RatisReplicationConfig.getInstance(3);
     container = createContainerInfo(ratisRepConfig, 1L,
         HddsProtos.LifeCycleState.CLOSED);
     replicas = addReplicas(container, ContainerReplicaProto.State.CLOSED, 0,
@@ -1252,7 +1251,7 @@ public class TestReplicationManager {
     // Repeat with Ratis container, as different metrics should be incremented
     Mockito.clearInvocations(nodeManager);
     RatisReplicationConfig ratisRepConfig =
-        RatisReplicationConfig.getInstance(THREE);
+        RatisReplicationConfig.getInstance(3);
     containerInfo = ReplicationTestUtil.createContainerInfo(ratisRepConfig, 2,
             HddsProtos.LifeCycleState.CLOSED, 10, 20);
 
@@ -1370,7 +1369,7 @@ public class TestReplicationManager {
     // Repeat with Ratis container, as different metrics should be incremented
     Mockito.clearInvocations(nodeManager);
     RatisReplicationConfig ratisRepConfig =
-        RatisReplicationConfig.getInstance(THREE);
+        RatisReplicationConfig.getInstance(3);
     containerInfo = ReplicationTestUtil.createContainerInfo(ratisRepConfig, 2,
         HddsProtos.LifeCycleState.CLOSED, 10, 20);
 

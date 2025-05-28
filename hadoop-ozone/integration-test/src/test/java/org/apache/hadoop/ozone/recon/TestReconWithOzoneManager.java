@@ -336,8 +336,7 @@ public class TestReconWithOzoneManager {
             .setBucketName(bucket)
             .setVolumeName(volume)
             .setKeyName(key)
-            .setReplicationConfig(StandaloneReplicationConfig.getInstance(
-                HddsProtos.ReplicationFactor.ONE))
+            .setReplicationConfig(StandaloneReplicationConfig.getInstance(1))
             .setOmKeyLocationInfos(
                 Collections.singletonList(getOmKeyLocationInfoGroup()))
             .build());
@@ -464,8 +463,7 @@ public class TestReconWithOzoneManager {
             .setBucketName(bucket)
             .setVolumeName(volume)
             .setKeyName(key)
-            .setReplicationConfig(StandaloneReplicationConfig.getInstance(
-                HddsProtos.ReplicationFactor.ONE))
+            .setReplicationConfig(StandaloneReplicationConfig.getInstance(1))
             .setOmKeyLocationInfos(omKeyLocationInfoGroupList)
             .build());
   }

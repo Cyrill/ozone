@@ -173,7 +173,7 @@ public class TestOzoneManagerHAWithStoppedNodes extends TestOzoneManagerHA {
     OmMultipartInfo omMultipartInfo =
         ozoneBucket.initiateMultipartUpload(keyName,
             ReplicationType.RATIS,
-            ReplicationFactor.ONE);
+            1);
 
     String uploadID = omMultipartInfo.getUploadID();
     Assertions.assertNotNull(uploadID);

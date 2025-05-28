@@ -682,7 +682,7 @@ public class TestOMKeyCommitRequest extends TestOMKeyRequest {
     KeyArgs keyArgs =
         KeyArgs.newBuilder().setDataSize(dataSize).setVolumeName(volumeName)
             .setKeyName(keyName).setBucketName(bucketName)
-            .setType(replicationType).setFactor(replicationFactor)
+            .setType(replicationType).setFactor(replicationFactor.getNumber())
             .addAllKeyLocations(keyLocations).build();
 
     CommitKeyRequest commitKeyRequest =

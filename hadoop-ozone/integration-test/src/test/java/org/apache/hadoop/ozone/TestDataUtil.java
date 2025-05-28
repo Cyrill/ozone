@@ -106,7 +106,7 @@ public final class TestDataUtil {
       ReplicationFactor repFactor, ReplicationType repType, String content)
       throws IOException {
     ReplicationConfig repConfig = ReplicationConfig
-        .fromTypeAndFactor(repType, repFactor);
+        .fromTypeAndFactor(repType, repFactor.getValue());
     createKey(bucket, keyName, repConfig, content);
   }
 
@@ -124,7 +124,7 @@ public final class TestDataUtil {
       ReplicationFactor repFactor, ReplicationType repType,
       ByteBuffer data) throws IOException {
     ReplicationConfig repConfig = ReplicationConfig
-        .fromTypeAndFactor(repType, repFactor);
+        .fromTypeAndFactor(repType, repFactor.getValue());
     try (OutputStream stream = bucket
         .createKey(keyName, data.capacity(), repConfig,
             new HashMap<>())) {

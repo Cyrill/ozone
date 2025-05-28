@@ -133,7 +133,7 @@ public class TestOzoneRpcClientWithRatis extends TestOzoneRpcClientAbstract {
     // Write data into a key
     try (OzoneOutputStream out = bucket.createKey(keyName,
         value.getBytes(UTF_8).length, ReplicationType.RATIS,
-        THREE, new HashMap<>())) {
+        3, new HashMap<>())) {
       out.write(value.getBytes(UTF_8));
     }
 
@@ -260,7 +260,7 @@ public class TestOzoneRpcClientWithRatis extends TestOzoneRpcClientAbstract {
     final BucketArgs bucketArgs = BucketArgs.newBuilder()
         .setDefaultReplicationConfig(
             new DefaultReplicationConfig(ReplicationConfig.fromTypeAndFactor(
-                ReplicationType.RATIS, THREE)))
+                ReplicationType.RATIS, 3)))
         .build();
     volume.createBucket(bucketName, bucketArgs);
     final OzoneBucket bucket = volume.getBucket(bucketName);
@@ -330,7 +330,7 @@ public class TestOzoneRpcClientWithRatis extends TestOzoneRpcClientAbstract {
     Thread thread2 = new Thread(() -> {
       try {
         getClient().getProxy().createKey(volumeName, bucketName, keyName,
-            0, ReplicationType.RATIS, ONE, new HashMap<>());
+            0, ReplicationType.RATIS, 1, new HashMap<>());
       } catch (IOException e) {
         throw new RuntimeException(e);
       }
@@ -362,7 +362,7 @@ public class TestOzoneRpcClientWithRatis extends TestOzoneRpcClientAbstract {
     OzoneBucket bucket = volume.getBucket(newBucketName);
     for (int i = 0; i < 10; i++) {
       bucket.createKey("key-" + i, value.getBytes(UTF_8).length,
-          ReplicationType.RATIS, ONE, new HashMap<>());
+          ReplicationType.RATIS, 1, new HashMap<>());
     }
 
     Assert.assertTrue(

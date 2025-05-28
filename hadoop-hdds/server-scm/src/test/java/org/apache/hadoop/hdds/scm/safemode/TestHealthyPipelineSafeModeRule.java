@@ -153,16 +153,13 @@ public class TestHealthyPipelineSafeModeRule {
 
       // Create 3 pipelines
       Pipeline pipeline1 =
-          pipelineManager.createPipeline(RatisReplicationConfig.getInstance(
-              ReplicationFactor.THREE));
+          pipelineManager.createPipeline(RatisReplicationConfig.getInstance(3));
       pipelineManager.openPipeline(pipeline1.getId());
       Pipeline pipeline2 =
-          pipelineManager.createPipeline(RatisReplicationConfig.getInstance(
-              ReplicationFactor.THREE));
+          pipelineManager.createPipeline(RatisReplicationConfig.getInstance(3));
       pipelineManager.openPipeline(pipeline2.getId());
       Pipeline pipeline3 =
-          pipelineManager.createPipeline(RatisReplicationConfig.getInstance(
-              ReplicationFactor.THREE));
+          pipelineManager.createPipeline(RatisReplicationConfig.getInstance(3));
       pipelineManager.openPipeline(pipeline3.getId());
 
       // Mark pipeline healthy
@@ -252,16 +249,13 @@ public class TestHealthyPipelineSafeModeRule {
 
       // Create 3 pipelines
       Pipeline pipeline1 =
-          pipelineManager.createPipeline(RatisReplicationConfig.getInstance(
-              ReplicationFactor.ONE));
+          pipelineManager.createPipeline(RatisReplicationConfig.getInstance(1));
       pipelineManager.openPipeline(pipeline1.getId());
       Pipeline pipeline2 =
-          pipelineManager.createPipeline(RatisReplicationConfig.getInstance(
-              ReplicationFactor.THREE));
+          pipelineManager.createPipeline(RatisReplicationConfig.getInstance(3));
       pipelineManager.openPipeline(pipeline2.getId());
       Pipeline pipeline3 =
-          pipelineManager.createPipeline(RatisReplicationConfig.getInstance(
-              ReplicationFactor.THREE));
+          pipelineManager.createPipeline(RatisReplicationConfig.getInstance(3));
       pipelineManager.openPipeline(pipeline3.getId());
 
       // Mark pipeline healthy

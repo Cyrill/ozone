@@ -124,7 +124,7 @@ public class TestTrashService {
         .setAcls(Collections.emptyList())
         .setLocationInfoList(new ArrayList<>())
         .setReplicationConfig(StandaloneReplicationConfig
-            .getInstance(HddsProtos.ReplicationFactor.ONE))
+            .getInstance(1))
         .build();
 
     /* Create and delete key in the Key Manager. */

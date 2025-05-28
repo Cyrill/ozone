@@ -373,8 +373,7 @@ public class TestSstFilteringService {
             .setBucketName(bucketName)
             .setKeyName(keyName)
             .setAcls(Collections.emptyList())
-            .setReplicationConfig(StandaloneReplicationConfig.getInstance(
-                HddsProtos.ReplicationFactor.ONE))
+            .setReplicationConfig(StandaloneReplicationConfig.getInstance(1))
             .setLocationInfoList(new ArrayList<>())
             .build();
     //Open and Commit the Key in the Key Manager.

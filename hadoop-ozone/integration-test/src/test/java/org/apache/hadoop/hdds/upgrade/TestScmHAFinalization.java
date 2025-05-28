@@ -276,7 +276,7 @@ public class TestScmHAFinalization {
     for (int i = 0; i < 10; i++) {
       ContainerWithPipeline container =
           scmClient.allocateContainer(HddsProtos.ReplicationType.RATIS,
-          HddsProtos.ReplicationFactor.ONE, "owner");
+          1, "owner");
       scmClient.closeContainer(
           container.getContainerInfo().getContainerID());
     }

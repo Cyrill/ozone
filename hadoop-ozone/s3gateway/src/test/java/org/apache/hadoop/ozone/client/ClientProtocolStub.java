@@ -213,7 +213,7 @@ public class ClientProtocolStub implements ClientProtocol {
   public OzoneOutputStream createKey(String volumeName, String bucketName,
                                      String keyName, long size,
                                      ReplicationType type,
-                                     ReplicationFactor factor,
+                                     int factor,
                                      Map<String, String> metadata)
       throws IOException {
     return getBucket(volumeName, bucketName).createKey(keyName, size);
@@ -310,7 +310,7 @@ public class ClientProtocolStub implements ClientProtocol {
                                                  String bucketName,
                                                  String keyName,
                                                  ReplicationType type,
-                                                 ReplicationFactor factor)
+                                                 int factor)
       throws IOException {
     return null;
   }
@@ -513,7 +513,7 @@ public class ClientProtocolStub implements ClientProtocol {
   public OzoneOutputStream createFile(String volumeName, String bucketName,
                                       String keyName, long size,
                                       ReplicationType type,
-                                      ReplicationFactor factor,
+                                      int factor,
                                       boolean overWrite, boolean recursive)
       throws IOException {
     return null;

@@ -90,7 +90,7 @@ public class TestClosedWithUnhealthyReplicasHandler {
   @Test
   public void testRatisContainerReturnsFalse() {
     ContainerInfo containerInfo = ReplicationTestUtil.createContainerInfo(
-        RatisReplicationConfig.getInstance(ReplicationFactor.THREE), 1,
+        RatisReplicationConfig.getInstance(3), 1,
         CLOSED);
     Set<ContainerReplica> containerReplicas =
         ReplicationTestUtil.createReplicas(containerInfo.containerID(),

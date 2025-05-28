@@ -524,8 +524,7 @@ public final class TestNSSummaryTaskWithOBS implements Serializable {
         .setKeyName(key)
         .setFileName(fileName)
         .setReplicationConfig(
-            StandaloneReplicationConfig.getInstance(
-                HddsProtos.ReplicationFactor.ONE))
+            StandaloneReplicationConfig.getInstance(1))
         .setObjectID(objectID)
         .setParentObjectID(parentObjectId)
         .setDataSize(dataSize)

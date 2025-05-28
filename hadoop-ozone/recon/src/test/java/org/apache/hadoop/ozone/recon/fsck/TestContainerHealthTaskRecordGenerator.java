@@ -73,7 +73,7 @@ public class TestContainerHealthTaskRecordGenerator {
     when(container.getReplicationConfig())
         .thenReturn(
             RatisReplicationConfig
-                .getInstance(HddsProtos.ReplicationFactor.THREE));
+                .getInstance(3));
     when(container.containerID()).thenReturn(ContainerID.valueOf(123456));
     when(container.getContainerID()).thenReturn((long)123456);
     when(reconContainerMetadataManager.getKeyCountForContainer(
@@ -81,7 +81,7 @@ public class TestContainerHealthTaskRecordGenerator {
     when(emptyContainer.getReplicationConfig())
         .thenReturn(
             RatisReplicationConfig
-                .getInstance(HddsProtos.ReplicationFactor.THREE));
+                .getInstance(3));
     when(emptyContainer.containerID()).thenReturn(ContainerID.valueOf(345678));
     when(emptyContainer.getContainerID()).thenReturn((long) 345678);
     when(placementPolicy.validateContainerPlacement(

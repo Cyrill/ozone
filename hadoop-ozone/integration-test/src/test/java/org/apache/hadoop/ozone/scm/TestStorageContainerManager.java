@@ -245,7 +245,7 @@ public class TestStorageContainerManager {
     try {
       ContainerWithPipeline container2 = mockClientServer.allocateContainer(
           HddsProtos.ReplicationType.RATIS,
-          HddsProtos.ReplicationFactor.ONE, OzoneConsts.OZONE);
+          1, OzoneConsts.OZONE);
       if (expectPermissionDenied) {
         fail("Operation should fail, expecting an IOException here.");
       } else {

@@ -96,8 +96,7 @@ public class TestS3MultipartResponse {
     OmMultipartKeyInfo multipartKeyInfo = new OmMultipartKeyInfo.Builder()
         .setUploadID(multipartUploadID)
         .setCreationTime(Time.now())
-        .setReplicationConfig(RatisReplicationConfig.getInstance(
-            HddsProtos.ReplicationFactor.ONE))
+        .setReplicationConfig(RatisReplicationConfig.getInstance(1))
         .build();
 
     OmKeyInfo omKeyInfo = new OmKeyInfo.Builder()
@@ -106,8 +105,7 @@ public class TestS3MultipartResponse {
         .setKeyName(keyName)
         .setCreationTime(Time.now())
         .setModificationTime(Time.now())
-        .setReplicationConfig(RatisReplicationConfig.getInstance(
-            HddsProtos.ReplicationFactor.ONE))
+        .setReplicationConfig(RatisReplicationConfig.getInstance(1))
         .setOmKeyLocationInfos(Collections.singletonList(
             new OmKeyLocationInfoGroup(0, new ArrayList<>(), true)))
         .build();
@@ -162,7 +160,7 @@ public class TestS3MultipartResponse {
             .setModificationTime(Time.now())
             .setObjectID(UUID.randomUUID().hashCode())
             .setType(HddsProtos.ReplicationType.RATIS)
-            .setFactor(HddsProtos.ReplicationFactor.ONE).build()).build();
+            .setFactor(1).build()).build();
   }
 
   public PartKeyInfo createPartKeyInfoFSO(
@@ -186,7 +184,7 @@ public class TestS3MultipartResponse {
             .setObjectID(UUID.randomUUID().hashCode())
             .setParentID(parentID)
             .setType(HddsProtos.ReplicationType.RATIS)
-            .setFactor(HddsProtos.ReplicationFactor.ONE).build()).build();
+            .setFactor(1).build()).build();
   }
 
   @SuppressWarnings("parameternumber")
@@ -197,8 +195,7 @@ public class TestS3MultipartResponse {
     OmMultipartKeyInfo multipartKeyInfo = new OmMultipartKeyInfo.Builder()
             .setUploadID(multipartUploadID)
             .setCreationTime(Time.now())
-            .setReplicationConfig(RatisReplicationConfig.getInstance(
-                    HddsProtos.ReplicationFactor.ONE))
+            .setReplicationConfig(RatisReplicationConfig.getInstance(1))
             .setParentID(parentID)
             .build();
 
@@ -211,8 +208,7 @@ public class TestS3MultipartResponse {
             .setFileName(fileName)
             .setCreationTime(Time.now())
             .setModificationTime(Time.now())
-            .setReplicationConfig(RatisReplicationConfig.getInstance(
-                    HddsProtos.ReplicationFactor.ONE))
+            .setReplicationConfig(RatisReplicationConfig.getInstance(1))
             .setOmKeyLocationInfos(Collections.singletonList(
                     new OmKeyLocationInfoGroup(0, new ArrayList<>(), true)))
             .setParentObjectID(parentID)
@@ -253,8 +249,7 @@ public class TestS3MultipartResponse {
       multipartKeyInfo = new OmMultipartKeyInfo.Builder()
               .setUploadID(multipartUploadID)
               .setCreationTime(Time.now())
-              .setReplicationConfig(RatisReplicationConfig.getInstance(
-                      HddsProtos.ReplicationFactor.ONE))
+              .setReplicationConfig(RatisReplicationConfig.getInstance(1))
               .setParentID(parentID)
               .build();
     }
@@ -276,8 +271,7 @@ public class TestS3MultipartResponse {
             .setFileName(fileName)
             .setCreationTime(Time.now())
             .setModificationTime(Time.now())
-            .setReplicationConfig(RatisReplicationConfig.getInstance(
-                    HddsProtos.ReplicationFactor.ONE))
+            .setReplicationConfig(RatisReplicationConfig.getInstance(1))
             .setOmKeyLocationInfos(Collections.singletonList(
                     new OmKeyLocationInfoGroup(0, new ArrayList<>(), true)))
             .build();

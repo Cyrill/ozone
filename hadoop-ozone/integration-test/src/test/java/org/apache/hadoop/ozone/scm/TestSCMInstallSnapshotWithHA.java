@@ -297,7 +297,7 @@ public class TestSCMInstallSnapshotWithHA {
     while (logIndex <= targetLogIndex) {
       containers.add(scm.getContainerManager()
           .allocateContainer(
-              RatisReplicationConfig.getInstance(ReplicationFactor.THREE),
+              RatisReplicationConfig.getInstance(3),
               TestSCMInstallSnapshotWithHA.class.getName()));
       Thread.sleep(100);
       logIndex = stateMachine.getLastAppliedTermIndex().getIndex();

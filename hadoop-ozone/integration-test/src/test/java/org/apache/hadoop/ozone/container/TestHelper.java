@@ -140,7 +140,7 @@ public final class TestHelper {
     org.apache.hadoop.hdds.client.ReplicationFactor factor =
             org.apache.hadoop.hdds.client.ReplicationFactor.THREE;
     ReplicationConfig config =
-            ReplicationConfig.fromTypeAndFactor(type, factor);
+            ReplicationConfig.fromTypeAndFactor(type, factor.getValue());
     return objectStore.getVolume(volumeName).getBucket(bucketName)
         .createKey(keyName, size, config, new HashMap<>());
   }
@@ -153,7 +153,7 @@ public final class TestHelper {
             org.apache.hadoop.hdds.client.ReplicationFactor.ONE :
             org.apache.hadoop.hdds.client.ReplicationFactor.THREE;
     ReplicationConfig config =
-        ReplicationConfig.fromTypeAndFactor(type, factor);
+        ReplicationConfig.fromTypeAndFactor(type, factor.getValue());
     return objectStore.getVolume(volumeName).getBucket(bucketName)
         .createStreamKey(keyName, size, config, new HashMap<>());
   }
@@ -164,7 +164,7 @@ public final class TestHelper {
       ObjectStore objectStore, String volumeName, String bucketName)
       throws Exception {
     ReplicationConfig config =
-            ReplicationConfig.fromTypeAndFactor(type, factor);
+            ReplicationConfig.fromTypeAndFactor(type, factor.getValue());
     return objectStore.getVolume(volumeName).getBucket(bucketName)
         .createKey(keyName, size, config, new HashMap<>());
   }

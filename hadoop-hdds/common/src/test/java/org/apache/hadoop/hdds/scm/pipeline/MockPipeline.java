@@ -32,7 +32,6 @@ import org.apache.hadoop.hdds.client.RatisReplicationConfig;
 import org.apache.hadoop.hdds.client.StandaloneReplicationConfig;
 import org.apache.hadoop.hdds.protocol.DatanodeDetails;
 import org.apache.hadoop.hdds.protocol.MockDatanodeDetails;
-import org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationFactor;
 
 import com.google.common.base.Preconditions;
 
@@ -72,7 +71,7 @@ public final class MockPipeline {
         .setState(Pipeline.PipelineState.OPEN)
         .setId(PipelineID.randomId())
         .setReplicationConfig(
-            StandaloneReplicationConfig.getInstance(ReplicationFactor.ONE))
+            StandaloneReplicationConfig.getInstance(1))
         .setNodes(dns)
         .setDatacenters(Collections.emptySet())
         .build();
@@ -88,7 +87,7 @@ public final class MockPipeline {
         .setState(Pipeline.PipelineState.OPEN)
         .setId(PipelineID.randomId())
         .setReplicationConfig(
-            RatisReplicationConfig.getInstance(ReplicationFactor.THREE))
+            RatisReplicationConfig.getInstance(3))
         .setNodes(nodes)
         .setDatacenters(datacenters)
         .setLeaderId(UUID.randomUUID())
@@ -106,7 +105,7 @@ public final class MockPipeline {
         .setState(Pipeline.PipelineState.OPEN)
         .setId(PipelineID.randomId())
         .setReplicationConfig(
-            RatisReplicationConfig.getInstance(ReplicationFactor.THREE))
+            RatisReplicationConfig.getInstance(3))
         .setNodes(nodes)
         .setLeaderId(UUID.randomUUID())
         .build();

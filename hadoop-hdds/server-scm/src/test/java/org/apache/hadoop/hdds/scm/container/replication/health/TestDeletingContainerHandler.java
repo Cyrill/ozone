@@ -62,8 +62,7 @@ public class TestDeletingContainerHandler {
   public void setup() throws IOException {
 
     ecReplicationConfig = new ECReplicationConfig(3, 2);
-    ratisReplicationConfig = RatisReplicationConfig.getInstance(
-        HddsProtos.ReplicationFactor.THREE);
+    ratisReplicationConfig = RatisReplicationConfig.getInstance(3);
     replicationManager = Mockito.mock(ReplicationManager.class);
 
     Mockito.doNothing().when(replicationManager)
@@ -122,8 +121,7 @@ public class TestDeletingContainerHandler {
   @Test
   public void testCleanupIfNoReplicaExist() {
     //ratis container
-    cleanupIfNoReplicaExist(RatisReplicationConfig.getInstance(
-        HddsProtos.ReplicationFactor.THREE), 1);
+    cleanupIfNoReplicaExist(RatisReplicationConfig.getInstance(3), 1);
 
     //ec container
     cleanupIfNoReplicaExist(ecReplicationConfig, 1);

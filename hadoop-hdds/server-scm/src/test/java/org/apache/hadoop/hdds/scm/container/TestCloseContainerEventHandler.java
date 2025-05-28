@@ -69,7 +69,7 @@ import org.mockito.MockitoAnnotations;
 public class TestCloseContainerEventHandler {
 
   private static final ReplicationConfig RATIS_REP_CONFIG
-      = RatisReplicationConfig.getInstance(THREE);
+      = RatisReplicationConfig.getInstance(3);
   private static final ReplicationConfig EC_REP_CONFIG
       = new ECReplicationConfig(3, 2);
 

@@ -68,7 +68,7 @@ public class TestClosingContainerHandler {
   private static final ECReplicationConfig EC_REPLICATION_CONFIG =
       new ECReplicationConfig(3, 2);
   private static final RatisReplicationConfig RATIS_REPLICATION_CONFIG =
-      RatisReplicationConfig.getInstance(HddsProtos.ReplicationFactor.THREE);
+      RatisReplicationConfig.getInstance(3);
 
   private final TestClock clock = TestClock.newInstance();
 

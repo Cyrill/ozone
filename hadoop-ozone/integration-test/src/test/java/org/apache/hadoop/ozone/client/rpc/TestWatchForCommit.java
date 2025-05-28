@@ -254,7 +254,7 @@ public class TestWatchForCommit {
     try (XceiverClientManager clientManager = new XceiverClientManager(conf)) {
       ContainerWithPipeline container1 = storageContainerLocationClient
           .allocateContainer(HddsProtos.ReplicationType.RATIS,
-              HddsProtos.ReplicationFactor.THREE, OzoneConsts.OZONE);
+              3, OzoneConsts.OZONE);
       XceiverClientSpi xceiverClient = clientManager
           .acquireClient(container1.getPipeline());
       Assert.assertEquals(1, xceiverClient.getRefcount());
@@ -307,7 +307,7 @@ public class TestWatchForCommit {
 
       ContainerWithPipeline container1 = storageContainerLocationClient
           .allocateContainer(HddsProtos.ReplicationType.RATIS,
-              HddsProtos.ReplicationFactor.THREE, OzoneConsts.OZONE);
+              3, OzoneConsts.OZONE);
       XceiverClientSpi xceiverClient = clientManager
           .acquireClient(container1.getPipeline());
       Assert.assertEquals(1, xceiverClient.getRefcount());
@@ -353,7 +353,7 @@ public class TestWatchForCommit {
     try (XceiverClientManager clientManager = new XceiverClientManager(conf)) {
       ContainerWithPipeline container1 = storageContainerLocationClient
           .allocateContainer(HddsProtos.ReplicationType.RATIS,
-              HddsProtos.ReplicationFactor.THREE, OzoneConsts.OZONE);
+              3, OzoneConsts.OZONE);
       XceiverClientSpi xceiverClient = clientManager
           .acquireClient(container1.getPipeline());
       Assert.assertEquals(1, xceiverClient.getRefcount());

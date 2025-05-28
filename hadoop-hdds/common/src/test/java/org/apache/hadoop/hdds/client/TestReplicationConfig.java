@@ -21,7 +21,6 @@ import org.apache.hadoop.hdds.client.ECReplicationConfig.EcCodec;
 import org.apache.hadoop.hdds.conf.ConfigurationSource;
 import org.apache.hadoop.hdds.conf.OzoneConfiguration;
 import org.apache.hadoop.hdds.protocol.proto.HddsProtos;
-import org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationFactor;
 import org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -49,10 +48,10 @@ public class TestReplicationConfig {
   // please revisit the method createECDescriptor, to handle the new chunkSize.
   public static Stream<Arguments> replicaType() {
     return Stream.of(
-        arguments("RATIS", "ONE", RatisReplicationConfig.class),
-        arguments("RATIS", "THREE", RatisReplicationConfig.class),
-        arguments("STAND_ALONE", "ONE", StandaloneReplicationConfig.class),
-        arguments("STAND_ALONE", "THREE", StandaloneReplicationConfig.class)
+        arguments("RATIS", "1", RatisReplicationConfig.class),
+        arguments("RATIS", "3", RatisReplicationConfig.class),
+        arguments("STAND_ALONE", "1", StandaloneReplicationConfig.class),
+        arguments("STAND_ALONE", "3", StandaloneReplicationConfig.class)
     );
   }
 
@@ -74,7 +73,7 @@ public class TestReplicationConfig {
     ReplicationConfig replicationConfig = ReplicationConfig.getDefault(conf);
     validate(replicationConfig,
         org.apache.hadoop.hdds.client.ReplicationType.RATIS,
-        org.apache.hadoop.hdds.client.ReplicationFactor.THREE,
+        3,
         RatisReplicationConfig.class);
   }
 
@@ -90,7 +89,7 @@ public class TestReplicationConfig {
 
     validate(replicationConfig,
         org.apache.hadoop.hdds.client.ReplicationType.valueOf(type),
-        org.apache.hadoop.hdds.client.ReplicationFactor.valueOf(factor),
+        Integer.parseInt(factor),
         replicationConfigClass);
   }
 
@@ -115,11 +114,11 @@ public class TestReplicationConfig {
     final ReplicationConfig replicationConfig =
         ReplicationConfig.fromProtoTypeAndFactor(
             ReplicationType.valueOf(type),
-            ReplicationFactor.valueOf(factor));
+            Integer.parseInt(factor));
 
     validate(replicationConfig,
         org.apache.hadoop.hdds.client.ReplicationType.valueOf(type),
-        org.apache.hadoop.hdds.client.ReplicationFactor.valueOf(factor),
+        Integer.parseInt(factor),
         replicationConfigClass);
   }
 
@@ -135,7 +134,7 @@ public class TestReplicationConfig {
             .build();
 
     ReplicationConfig config = ReplicationConfig
-        .fromProto(ReplicationType.EC, null, proto);
+        .fromProto(ReplicationType.EC, 0, proto);
 
     validate(config, EcCodec.valueOf(codec), data, parity, chunkSize);
   }
@@ -149,7 +148,7 @@ public class TestReplicationConfig {
             .setData(data).setParity(parity).setEcChunkSize(chunkSize).build();
 
     ReplicationConfig config =
-        ReplicationConfig.fromProto(ReplicationType.EC, null, proto);
+        ReplicationConfig.fromProto(ReplicationType.EC, 0, proto);
 
     assertEquals(EcCodec.valueOf(
         codec) + ECReplicationConfig.EC_REPLICATION_PARAMS_DELIMITER
@@ -165,7 +164,7 @@ public class TestReplicationConfig {
     final ReplicationConfig replicationConfig = ReplicationConfig
         .fromTypeAndFactor(
             org.apache.hadoop.hdds.client.ReplicationType.valueOf(type),
-            org.apache.hadoop.hdds.client.ReplicationFactor.valueOf(factor));
+            Integer.parseInt(factor));
 
     assertEquals(factor, replicationConfig.getReplication());
   }
@@ -177,11 +176,11 @@ public class TestReplicationConfig {
     final ReplicationConfig replicationConfig =
         ReplicationConfig.fromTypeAndFactor(
             org.apache.hadoop.hdds.client.ReplicationType.valueOf(type),
-            org.apache.hadoop.hdds.client.ReplicationFactor.valueOf(factor));
+            Integer.parseInt(factor));
 
     validate(replicationConfig,
         org.apache.hadoop.hdds.client.ReplicationType.valueOf(type),
-        org.apache.hadoop.hdds.client.ReplicationFactor.valueOf(factor),
+        Integer.parseInt(factor),
         replicationConfigClass);
   }
 
@@ -196,7 +195,7 @@ public class TestReplicationConfig {
 
     validate(replicationConfig,
         org.apache.hadoop.hdds.client.ReplicationType.valueOf(type),
-        org.apache.hadoop.hdds.client.ReplicationFactor.valueOf(factor),
+        Integer.parseInt(factor),
         replicationConfigClass);
   }
 
@@ -205,18 +204,14 @@ public class TestReplicationConfig {
   void testParseFromTypeAndFactorAsStringifiedInteger(
       String type, String factor, Class<?> replicationConfigClass) {
     ConfigurationSource conf = new OzoneConfiguration();
-    String f =
-        factor.equals("ONE") ? "1"
-            : factor.equals("THREE") ? "3"
-            : "Test adjustment needed!";
 
     ReplicationConfig replicationConfig = ReplicationConfig.parse(
         org.apache.hadoop.hdds.client.ReplicationType.valueOf(type),
-        f, conf);
+        factor, conf);
 
     validate(replicationConfig,
         org.apache.hadoop.hdds.client.ReplicationType.valueOf(type),
-        org.apache.hadoop.hdds.client.ReplicationFactor.valueOf(factor),
+        Integer.parseInt(factor),
         replicationConfigClass);
   }
 
@@ -253,13 +248,13 @@ public class TestReplicationConfig {
     validate(
         ReplicationConfig.adjustReplication(replicationConfig, (short) 3, conf),
         org.apache.hadoop.hdds.client.ReplicationType.valueOf(type),
-        org.apache.hadoop.hdds.client.ReplicationFactor.THREE,
+        3,
         replicationConfigClass);
 
     validate(
         ReplicationConfig.adjustReplication(replicationConfig, (short) 1, conf),
         org.apache.hadoop.hdds.client.ReplicationType.valueOf(type),
-        org.apache.hadoop.hdds.client.ReplicationFactor.ONE,
+        1,
         replicationConfigClass);
   }
 
@@ -343,9 +338,9 @@ public class TestReplicationConfig {
     // keys, that were created earlier when the config was allowed.
     ReplicationConfig.fromTypeAndFactor(
         org.apache.hadoop.hdds.client.ReplicationType.valueOf(type),
-        org.apache.hadoop.hdds.client.ReplicationFactor.valueOf(factor));
+        Integer.parseInt(factor));
     ReplicationConfig.fromProtoTypeAndFactor(
-        ReplicationType.valueOf(type), ReplicationFactor.valueOf(factor));
+        ReplicationType.valueOf(type), Integer.parseInt(factor));
 
     // CHAINED replication type is not supported by ReplicationConfig.
     assertThrows(RuntimeException.class,
@@ -355,18 +350,18 @@ public class TestReplicationConfig {
 
   private void validate(ReplicationConfig replicationConfig,
       org.apache.hadoop.hdds.client.ReplicationType expectedType,
-      org.apache.hadoop.hdds.client.ReplicationFactor expectedFactor,
+      int expectedFactor,
       Class<?> expectedReplicationConfigClass) {
 
     assertSame(expectedReplicationConfigClass, replicationConfig.getClass());
 
     assertEquals(expectedType.name(),
         replicationConfig.getReplicationType().name());
-    assertEquals(expectedFactor.getValue(),
+    assertEquals(expectedFactor,
         replicationConfig.getRequiredNodes());
-    assertEquals(expectedFactor.name(),
+    assertEquals(expectedFactor,
         ((ReplicatedReplicationConfig) replicationConfig)
-            .getReplicationFactor().name());
+            .getReplicationFactor());
   }
 
   private void validate(ReplicationConfig replicationConfig,

@@ -57,8 +57,7 @@ public class TestEmptyContainerHandler {
   public void setup()
       throws IOException, InvalidStateTransitionException, TimeoutException {
     ecReplicationConfig = new ECReplicationConfig(3, 2);
-    ratisReplicationConfig = RatisReplicationConfig.getInstance(
-        HddsProtos.ReplicationFactor.THREE);
+    ratisReplicationConfig = RatisReplicationConfig.getInstance(3);
     replicationManager = Mockito.mock(ReplicationManager.class);
     emptyContainerHandler =
         new EmptyContainerHandler(replicationManager);

@@ -78,7 +78,6 @@ import org.apache.hadoop.ozone.om.helpers.BucketLayout;
 import org.apache.ozone.test.GenericTestUtils;
 
 import static org.apache.hadoop.hdds.HddsConfigKeys.OZONE_METADATA_DIRS;
-import static org.apache.hadoop.hdds.client.ReplicationFactor.ONE;
 import static org.apache.hadoop.hdds.client.ReplicationType.RATIS;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -243,7 +242,7 @@ class TestOzoneAtRestEncryption {
     String value = "sample value";
     try (OzoneDataStreamOutput out = bucket.createStreamKey(keyName,
         value.getBytes(StandardCharsets.UTF_8).length,
-        ReplicationConfig.fromTypeAndFactor(RATIS, ONE),
+        ReplicationConfig.fromTypeAndFactor(RATIS, 1),
         new HashMap<>())) {
       out.write(value.getBytes(StandardCharsets.UTF_8));
     }
@@ -256,7 +255,7 @@ class TestOzoneAtRestEncryption {
     String value = "sample value";
     try (OzoneOutputStream out = bucket.createKey(keyName,
         value.getBytes(StandardCharsets.UTF_8).length,
-        ReplicationConfig.fromTypeAndFactor(RATIS, ONE),
+        ReplicationConfig.fromTypeAndFactor(RATIS, 1),
         new HashMap<>())) {
       out.write(value.getBytes(StandardCharsets.UTF_8));
     }
@@ -266,7 +265,7 @@ class TestOzoneAtRestEncryption {
     // Overwrite the key
     try (OzoneOutputStream out = bucket.createKey(keyName,
         value.getBytes(StandardCharsets.UTF_8).length,
-        ReplicationConfig.fromTypeAndFactor(RATIS, ONE),
+        ReplicationConfig.fromTypeAndFactor(RATIS, 1),
         new HashMap<>())) {
       out.write(value.getBytes(StandardCharsets.UTF_8));
     }
@@ -295,7 +294,7 @@ class TestOzoneAtRestEncryption {
     assertEquals(len, value.length());
     assertTrue(verifyRatisReplication(bucket.getVolumeName(),
         bucket.getName(), keyName, RATIS,
-        ONE));
+        1));
     assertEquals(value, new String(fileContent, StandardCharsets.UTF_8));
     assertFalse(key.getCreationTime().isBefore(testStartTime));
     assertFalse(key.getModificationTime().isBefore(testStartTime));
@@ -359,7 +358,7 @@ class TestOzoneAtRestEncryption {
     keyMetadata.put(OzoneConsts.GDPR_FLAG, "true");
     try (OzoneOutputStream out = bucket.createKey(keyName,
         value.getBytes(StandardCharsets.UTF_8).length,
-        ReplicationConfig.fromTypeAndFactor(RATIS, ONE),
+        ReplicationConfig.fromTypeAndFactor(RATIS, 1),
         keyMetadata)) {
       out.write(value.getBytes(StandardCharsets.UTF_8));
     }
@@ -377,7 +376,7 @@ class TestOzoneAtRestEncryption {
     assertEquals(len, value.length());
     assertTrue(verifyRatisReplication(volumeName, bucketName,
         keyName, RATIS,
-        ONE));
+        1));
     assertEquals(value, new String(fileContent, StandardCharsets.UTF_8));
     assertFalse(key.getCreationTime().isBefore(testStartTime));
     assertFalse(key.getModificationTime().isBefore(testStartTime));
@@ -409,7 +408,7 @@ class TestOzoneAtRestEncryption {
   }
 
   static boolean verifyRatisReplication(String volumeName, String bucketName,
-      String keyName, ReplicationType type, ReplicationFactor factor)
+      String keyName, ReplicationType type, int factor)
       throws IOException {
     OmKeyArgs keyArgs = new OmKeyArgs.Builder()
         .setVolumeName(volumeName)
@@ -419,14 +418,14 @@ class TestOzoneAtRestEncryption {
     HddsProtos.ReplicationType replicationType =
         HddsProtos.ReplicationType.valueOf(type.toString());
     HddsProtos.ReplicationFactor replicationFactor =
-        HddsProtos.ReplicationFactor.valueOf(factor.getValue());
+        HddsProtos.ReplicationFactor.valueOf(factor);
     OmKeyInfo keyInfo = ozoneManager.lookupKey(keyArgs);
     for (OmKeyLocationInfo info:
         keyInfo.getLatestVersionLocations().getLocationList()) {
       ContainerInfo container =
           storageContainerLocationClient.getContainer(info.getContainerID());
-      if (!ReplicationConfig.getLegacyFactor(container.getReplicationConfig())
-          .equals(replicationFactor) || (
+      if (!(ReplicationConfig.getLegacyFactor(container.getReplicationConfig())
+          == replicationFactor.getNumber()) || (
           container.getReplicationType() != replicationType)) {
         return false;
       }
@@ -539,7 +538,7 @@ class TestOzoneAtRestEncryption {
 
     // Initiate multipart upload
     String uploadID = initiateMultipartUpload(bucket, keyName,
-        ReplicationConfig.fromTypeAndFactor(RATIS, ONE));
+        ReplicationConfig.fromTypeAndFactor(RATIS, 1));
 
     // Upload Parts
     Map<Integer, String> partsMap = new TreeMap<>();

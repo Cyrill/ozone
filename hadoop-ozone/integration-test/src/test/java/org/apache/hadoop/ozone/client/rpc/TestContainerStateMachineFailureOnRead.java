@@ -143,8 +143,7 @@ public class TestContainerStateMachineFailureOnRead {
     // Stop one follower datanode
     List<Pipeline> pipelines =
         cluster.getStorageContainerManager().getPipelineManager()
-            .getPipelines(RatisReplicationConfig.getInstance(
-                HddsProtos.ReplicationFactor.THREE));
+            .getPipelines(RatisReplicationConfig.getInstance(3));
     Assertions.assertEquals(1, pipelines.size());
     Pipeline ratisPipeline = pipelines.iterator().next();
 
@@ -172,7 +171,7 @@ public class TestContainerStateMachineFailureOnRead {
     OzoneOutputStream key = objectStore.getVolume(volumeName)
         .getBucket(bucketName)
         .createKey("ratis", 1024, ReplicationType.RATIS,
-            ReplicationFactor.THREE, new HashMap<>());
+            3, new HashMap<>());
     // First write and flush creates a container in the datanode
     key.write("ratis".getBytes(UTF_8));
     key.flush();

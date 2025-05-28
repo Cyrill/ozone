@@ -97,7 +97,7 @@ public class TestMoveManager {
       NodeNotFoundException {
     clock = TestClock.newInstance();
     containerInfo = ReplicationTestUtil.createContainerInfo(
-        RatisReplicationConfig.getInstance(THREE), 1,
+        RatisReplicationConfig.getInstance(3), 1,
         HddsProtos.LifeCycleState.CLOSED);
     replicas = new HashSet<>();
     nodes = new HashMap<>();
@@ -209,7 +209,7 @@ public class TestMoveManager {
   @Test
   public void testMoveContainerIsNotClosed() throws Exception {
     containerInfo = ReplicationTestUtil.createContainerInfo(
-        RatisReplicationConfig.getInstance(THREE), 1,
+        RatisReplicationConfig.getInstance(3), 1,
         HddsProtos.LifeCycleState.OPEN);
     setupMocks();
     replicas.addAll(ReplicationTestUtil

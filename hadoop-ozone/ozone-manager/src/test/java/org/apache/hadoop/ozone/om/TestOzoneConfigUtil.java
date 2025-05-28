@@ -38,7 +38,7 @@ import static org.mockito.Mockito.when;
  */
 public class TestOzoneConfigUtil {
   private ReplicationConfig ratis3ReplicationConfig =
-      RatisReplicationConfig.getInstance(HddsProtos.ReplicationFactor.THREE);
+      RatisReplicationConfig.getInstance(3);
   private HddsProtos.ReplicationType noneType = HddsProtos.ReplicationType.NONE;
   private HddsProtos.ReplicationFactor zeroFactor =
       HddsProtos.ReplicationFactor.ZERO;
@@ -63,7 +63,7 @@ public class TestOzoneConfigUtil {
   @Test
   public void testResolveClientSideRepConfigWhenBucketHasEC() throws Exception {
     ReplicationConfig replicationConfig = OzoneConfigUtil
-        .resolveReplicationConfigPreference(noneType, zeroFactor,
+        .resolveReplicationConfigPreference(noneType, zeroFactor.getNumber(),
             clientECReplicationConfig, bucketECConfig, ozoneManager);
     // Client has no preference, so we should bucket defaults as we passed.
     Assertions.assertEquals(bucketECConfig.getReplicationConfig(),
@@ -77,7 +77,7 @@ public class TestOzoneConfigUtil {
   public void testResolveClientSideRepConfigWithNoClientAndBucketDefaults()
       throws Exception {
     ReplicationConfig replicationConfig = OzoneConfigUtil
-        .resolveReplicationConfigPreference(noneType, zeroFactor,
+        .resolveReplicationConfigPreference(noneType, zeroFactor.getNumber(),
             clientECReplicationConfig, null, ozoneManager);
     // Client has no preference, no bucket defaults, so it should return server
     // defaults.
@@ -92,7 +92,7 @@ public class TestOzoneConfigUtil {
       throws Exception {
     ReplicationConfig replicationConfig = OzoneConfigUtil
         .resolveReplicationConfigPreference(HddsProtos.ReplicationType.EC,
-            zeroFactor, clientECReplicationConfig, null,
+            zeroFactor.getNumber(), clientECReplicationConfig, null,
             ozoneManager);
     // Client has preference of type EC, no bucket defaults, so it should return
     // client preference.
@@ -107,11 +107,11 @@ public class TestOzoneConfigUtil {
   public void testResolveClientSideRepConfigWhenBucketHasEC3()
       throws Exception {
     ReplicationConfig ratisReplicationConfig =
-        RatisReplicationConfig.getInstance(HddsProtos.ReplicationFactor.THREE);
+        RatisReplicationConfig.getInstance(3);
     DefaultReplicationConfig ratisBucketDefaults =
         new DefaultReplicationConfig(ratisReplicationConfig);
     ReplicationConfig replicationConfig = OzoneConfigUtil
-        .resolveReplicationConfigPreference(noneType, zeroFactor,
+        .resolveReplicationConfigPreference(noneType, zeroFactor.getNumber(),
             clientECReplicationConfig, ratisBucketDefaults,
             ozoneManager);
     // Client has no preference of type and bucket has ratis defaults, so it

@@ -423,7 +423,7 @@ public class TestOMDBUpdatesHandler {
         .setBucketName(bucketName)
         .setKeyName(keyName)
         .setReplicationConfig(StandaloneReplicationConfig
-            .getInstance(HddsProtos.ReplicationFactor.ONE))
+            .getInstance(1))
         .setDataSize(random.nextLong())
         .build();
   }

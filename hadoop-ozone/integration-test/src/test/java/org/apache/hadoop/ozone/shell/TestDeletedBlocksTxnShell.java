@@ -149,7 +149,7 @@ public class TestDeletedBlocksTxnShell {
     final ContainerInfo container =
         new ContainerInfo.Builder()
             .setContainerID(cid)
-            .setReplicationConfig(RatisReplicationConfig.getInstance(THREE))
+            .setReplicationConfig(RatisReplicationConfig.getInstance(3))
             .setState(HddsProtos.LifeCycleState.CLOSED)
             .setOwner("TestDeletedBlockLog")
             .setPipelineID(PipelineID.randomId())

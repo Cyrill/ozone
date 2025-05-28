@@ -108,13 +108,13 @@ public final class OzoneBucketStub extends OzoneBucket {
   public OzoneOutputStream createKey(String key, long size) throws IOException {
     return createKey(key, size,
         ReplicationConfig.fromTypeAndFactor(ReplicationType.RATIS,
-        ReplicationFactor.ONE), new HashMap<>());
+        1), new HashMap<>());
   }
 
   @Override
   public OzoneOutputStream createKey(String key, long size,
                                      ReplicationType type,
-                                     ReplicationFactor factor,
+                                     int factor,
                                      Map<String, String> metadata)
       throws IOException {
     ReplicationConfig replication = ReplicationConfig.fromTypeAndFactor(type, factor);
@@ -371,7 +371,7 @@ public final class OzoneBucketStub extends OzoneBucket {
   @Override
   public OmMultipartInfo initiateMultipartUpload(String keyName,
                                                  ReplicationType type,
-                                                 ReplicationFactor factor)
+                                                 int factor)
       throws IOException {
     return initiateMultipartUpload(keyName, ReplicationConfig.fromTypeAndFactor(type, factor), 
         Collections.emptyMap());
@@ -486,7 +486,7 @@ public final class OzoneBucketStub extends OzoneBucket {
 
     if (partList.get(key) == null) {
       return new OzoneMultipartUploadPartListParts(
-          RatisReplicationConfig.getInstance(HddsProtos.ReplicationFactor.ONE),
+          RatisReplicationConfig.getInstance(1),
           0, false);
     } else {
       Map<Integer, Part> partMap = partList.get(key);

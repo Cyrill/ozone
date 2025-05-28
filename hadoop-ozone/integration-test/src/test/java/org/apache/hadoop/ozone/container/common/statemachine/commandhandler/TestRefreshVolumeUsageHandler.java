@@ -101,7 +101,7 @@ public class TestRefreshVolumeUsageHandler {
       objectStore.getVolume("test").createBucket("test");
       OzoneOutputStream key = objectStore.getVolume("test").getBucket("test")
           .createKey("test", 4096, ReplicationType.RATIS,
-              ReplicationFactor.ONE, new HashMap<>());
+              1, new HashMap<>());
       key.write("test".getBytes(UTF_8));
       key.close();
 

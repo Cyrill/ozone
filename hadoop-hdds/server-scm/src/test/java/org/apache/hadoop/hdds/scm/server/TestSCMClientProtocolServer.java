@@ -139,7 +139,7 @@ public class TestSCMClientProtocolServer {
     DatanodeDetails sourceNode = nodeManager.getAllNodes().get(0);
     DatanodeDetails targetNode = nodeManager.getAllNodes().get(1);
     ContainerInfo mockContainer = ReplicationTestUtil.createContainerInfo(
-        RatisReplicationConfig.getInstance(THREE), 1, CLOSED);
+        RatisReplicationConfig.getInstance(3), 1, CLOSED);
 
     when(containerManager.getContainer(Mockito.any())).thenReturn(mockContainer);
 
@@ -182,7 +182,7 @@ public class TestSCMClientProtocolServer {
     DatanodeDetails sourceNode = nodeManager.getAllNodes().get(0);
     DatanodeDetails targetNode = nodeManager.getAllNodes().get(1);
     ContainerInfo mockContainer = ReplicationTestUtil.createContainer(CLOSED,
-        RatisReplicationConfig.getInstance(THREE), Collections.singleton("dc1"));
+        RatisReplicationConfig.getInstance(3), Collections.singleton("dc1"));
 
     when(containerManager.getContainer(Mockito.any())).thenReturn(mockContainer);
 

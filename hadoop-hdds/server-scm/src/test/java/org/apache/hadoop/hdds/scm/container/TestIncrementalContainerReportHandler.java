@@ -435,7 +435,7 @@ public class TestIncrementalContainerReportHandler {
             nodeManager, containerManager, scmContext);
 
     RatisReplicationConfig replicationConfig =
-        RatisReplicationConfig.getInstance(HddsProtos.ReplicationFactor.THREE);
+        RatisReplicationConfig.getInstance(3);
     Pipeline pipeline = pipelineManager.createPipeline(replicationConfig);
     List<DatanodeDetails> nodes = pipeline.getNodes();
 

@@ -51,6 +51,8 @@ import org.apache.hadoop.hdds.scm.ha.SCMContext;
 import org.apache.hadoop.hdds.scm.ha.SCMHAManager;
 import org.apache.hadoop.hdds.scm.ha.SequenceIdGenerator;
 import org.apache.hadoop.hdds.scm.metadata.SCMDBDefinition;
+import org.apache.hadoop.hdds.scm.net.NetworkTopology;
+import org.apache.hadoop.hdds.scm.net.NetworkTopologyImpl;
 import org.apache.hadoop.hdds.scm.pipeline.MockPipelineManager;
 import org.apache.hadoop.hdds.scm.pipeline.PipelineManager;
 import org.apache.hadoop.hdds.scm.server.SCMStorageConfig;
@@ -104,8 +106,7 @@ public class TestContainerPlacement {
     nodeManager = new MockNodeManager(true, 10);
     pipelineManager = new MockPipelineManager(dbStore,
         scmhaManager, nodeManager);
-    pipelineManager.createPipeline(RatisReplicationConfig.getInstance(
-        HddsProtos.ReplicationFactor.THREE));
+    pipelineManager.createPipeline(RatisReplicationConfig.getInstance(3));
   }
 
   @AfterEach
@@ -151,9 +152,9 @@ public class TestContainerPlacement {
         .thenReturn(maxLayoutVersion());
     Mockito.when(versionManager.getSoftwareLayoutVersion())
         .thenReturn(maxLayoutVersion());
-    SCMNodeManager scmNodeManager = new SCMNodeManager(config, storageConfig,
-        eventQueue, null, SCMContext.emptyContext(), versionManager);
-    return scmNodeManager;
+    NetworkTopology clusterMap = new NetworkTopologyImpl(conf);
+      return new SCMNodeManager(config, storageConfig,
+        eventQueue, clusterMap, SCMContext.emptyContext(), versionManager);
   }
 
   ContainerManager createContainerManager()
@@ -220,7 +221,7 @@ public class TestContainerPlacement {
                   SCMTestUtils.getReplicationType(conf),
                   SCMTestUtils.getReplicationFactor(conf)),
               OzoneConsts.OZONE);
-      assertEquals(SCMTestUtils.getReplicationFactor(conf).getNumber(),
+      assertEquals(SCMTestUtils.getReplicationFactor(conf),
           containerManager.getContainerReplicas(
               container.containerID()).size());
     } finally {

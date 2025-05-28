@@ -53,7 +53,7 @@ public class  TestMultiRaftSetup {
   private long pipelineDestroyTimeoutInMillis;
   private static final ReplicationConfig RATIS_THREE =
       ReplicationConfig.fromProtoTypeAndFactor(HddsProtos.ReplicationType.RATIS,
-          HddsProtos.ReplicationFactor.THREE);
+          3);
 
   public void init(int dnCount, OzoneConfiguration conf) throws Exception {
     cluster =
@@ -88,7 +88,7 @@ public class  TestMultiRaftSetup {
     waitForPipelineCreated(2);
     Assertions.assertEquals(2, pipelineManager.getPipelines(ReplicationConfig
         .fromProtoTypeAndFactor(HddsProtos.ReplicationType.RATIS,
-            ReplicationFactor.THREE)).size());
+            3)).size());
     assertNotSamePeers();
     shutdown();
   }

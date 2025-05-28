@@ -417,7 +417,7 @@ class TestKeyInputStream extends TestInputStreamBase {
         .setVolumeName(bucket.delegate().getVolumeName())
         .setBucketName(bucket.delegate().getName())
         .setKeyName(keyName)
-        .setReplicationConfig(RatisReplicationConfig.getInstance(THREE))
+        .setReplicationConfig(RatisReplicationConfig.getInstance(3))
         .build();
     OmKeyInfo keyInfo = cluster.getOzoneManager()
         .getKeyInfo(keyArgs, false)

@@ -135,7 +135,7 @@ public class TestReconWithOzoneManagerHA {
     OzoneOutputStream key = objectStore.getVolume(VOL_NAME)
         .getBucket(VOL_NAME)
         .createKey(keyPrefix, 1024, ReplicationType.RATIS,
-            ReplicationFactor.ONE, new HashMap<>());
+            1, new HashMap<>());
     key.write(keyPrefix.getBytes(UTF_8));
     key.flush();
     key.close();

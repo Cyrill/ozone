@@ -627,7 +627,7 @@ public abstract class TestOmSnapshotFileSystem {
     OmKeyArgs keyArgs = new OmKeyArgs.Builder().setVolumeName(VOLUME_NAME)
         .setBucketName(bucketName).setKeyName(keyName)
         .setAcls(Collections.emptyList())
-        .setReplicationConfig(StandaloneReplicationConfig.getInstance(ONE))
+        .setReplicationConfig(StandaloneReplicationConfig.getInstance(1))
         .setLocationInfoList(new ArrayList<>()).build();
 
     OpenKeySession session = writeClient.openKey(keyArgs);

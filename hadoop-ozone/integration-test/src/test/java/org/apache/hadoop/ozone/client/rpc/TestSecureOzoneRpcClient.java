@@ -182,7 +182,7 @@ public class TestSecureOzoneRpcClient extends TestOzoneRpcClient {
       long committedBytes = ozoneManager.getMetrics().getDataCommittedBytes();
       try (OzoneOutputStream out = bucket.createKey(keyName,
           value.getBytes(UTF_8).length, ReplicationType.RATIS,
-          ReplicationFactor.ONE, new HashMap<>())) {
+          1, new HashMap<>())) {
         out.write(value.getBytes(UTF_8));
       }
 
@@ -342,8 +342,8 @@ public class TestSecureOzoneRpcClient extends TestOzoneRpcClient {
         keyInfo.getLatestVersionLocations().getLocationList()) {
       ContainerInfo container =
           storageContainerLocationClient.getContainer(info.getContainerID());
-      if (!ReplicationConfig.getLegacyFactor(container.getReplicationConfig())
-          .equals(replicationFactor) || (
+        if (!(ReplicationConfig.getLegacyFactor(container.getReplicationConfig())
+         == replicationFactor.getNumber()) || (
           container.getReplicationType() != replicationType)) {
         return false;
       }

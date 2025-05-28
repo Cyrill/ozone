@@ -212,11 +212,11 @@ abstract class AbstractTestECKeyOutputStream {
 
     //Overwrite with RATIS/THREE
     createKeyAndCheckReplicationConfig(keyString, bucket,
-        RatisReplicationConfig.getInstance(HddsProtos.ReplicationFactor.THREE));
+        RatisReplicationConfig.getInstance(3));
 
     //Overwrite with RATIS/ONE
     createKeyAndCheckReplicationConfig(keyString, bucket,
-        RatisReplicationConfig.getInstance(HddsProtos.ReplicationFactor.ONE));
+        RatisReplicationConfig.getInstance(1));
   }
 
   @Test
@@ -228,7 +228,7 @@ abstract class AbstractTestECKeyOutputStream {
     OzoneBucket bucket = volume.getBucket(myBucket);
 
     createKeyAndCheckReplicationConfig(keyString, bucket,
-        RatisReplicationConfig.getInstance(HddsProtos.ReplicationFactor.THREE));
+        RatisReplicationConfig.getInstance(3));
     // Overwrite with EC key
     createKeyAndCheckReplicationConfig(keyString, bucket,
         new ECReplicationConfig(3, 2, ECReplicationConfig.EcCodec.RS,
@@ -253,7 +253,7 @@ abstract class AbstractTestECKeyOutputStream {
     OzoneBucket bucket = getOzoneBucket();
     try (OzoneOutputStream out = bucket.createKey(
         "testCreateRatisKeyAndWithECBucketDefaults", 2000,
-        RatisReplicationConfig.getInstance(HddsProtos.ReplicationFactor.THREE),
+        RatisReplicationConfig.getInstance(3),
         new HashMap<>())) {
       Assert.assertTrue(out.getOutputStream() instanceof KeyOutputStream);
       for (int i = 0; i < inputChunks.length; i++) {

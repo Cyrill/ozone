@@ -172,8 +172,7 @@ public class TestOneReplicaPipelineSafeModeRule {
             LoggerFactory.getLogger(SCMSafeModeManager.class));
 
     List<Pipeline> pipelines =
-        pipelineManager.getPipelines(RatisReplicationConfig.getInstance(
-            ReplicationFactor.ONE));
+        pipelineManager.getPipelines(RatisReplicationConfig.getInstance(1));
     firePipelineEvent(pipelines);
     GenericTestUtils.waitFor(() -> logCapturer.getOutput().contains(
         "reported count is 0"), 1000, 5000);
@@ -183,7 +182,7 @@ public class TestOneReplicaPipelineSafeModeRule {
 
     pipelines =
         pipelineManager.getPipelines(
-            RatisReplicationConfig.getInstance(ReplicationFactor.THREE));
+            RatisReplicationConfig.getInstance(3));
 
     firePipelineEvent(pipelines.subList(0, pipelineCountThree - 1));
 
@@ -201,7 +200,7 @@ public class TestOneReplicaPipelineSafeModeRule {
       HddsProtos.ReplicationFactor factor) throws Exception {
     for (int i = 0; i < count; i++) {
       Pipeline pipeline = pipelineManager.createPipeline(
-              RatisReplicationConfig.getInstance(factor));
+              RatisReplicationConfig.getInstance(factor.getNumber()));
       pipelineManager.openPipeline(pipeline.getId());
 
     }

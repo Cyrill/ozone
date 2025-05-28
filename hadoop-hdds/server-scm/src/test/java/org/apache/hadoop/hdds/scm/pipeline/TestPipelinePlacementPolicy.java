@@ -292,8 +292,7 @@ public class TestPipelinePlacementPolicy {
         Pipeline pipeline = Pipeline.newBuilder()
             .setId(PipelineID.randomId())
             .setState(Pipeline.PipelineState.ALLOCATED)
-            .setReplicationConfig(RatisReplicationConfig.getInstance(
-                ReplicationFactor.THREE))
+            .setReplicationConfig(RatisReplicationConfig.getInstance(3))
             .setNodes(nodes)
             .build();
         HddsProtos.Pipeline pipelineProto = pipeline.getProtobufMessage(
@@ -318,7 +317,7 @@ public class TestPipelinePlacementPolicy {
     Assertions.assertEquals(maxPipelineCount,
         stateManager
             .getPipelines(RatisReplicationConfig
-                .getInstance(ReplicationFactor.THREE))
+                .getInstance(3))
             .size());
   }
 
@@ -695,7 +694,7 @@ public class TestPipelinePlacementPolicy {
               .setId(PipelineID.randomId())
               .setState(Pipeline.PipelineState.OPEN)
               .setReplicationConfig(ReplicationConfig
-                  .fromProtoTypeAndFactor(RATIS, THREE))
+                  .fromProtoTypeAndFactor(RATIS, 3))
               .setNodes(dnList)
               .build();
 
@@ -784,7 +783,7 @@ public class TestPipelinePlacementPolicy {
         .setId(PipelineID.randomId())
         .setState(Pipeline.PipelineState.OPEN)
         .setReplicationConfig(ReplicationConfig
-            .fromProtoTypeAndFactor(replicationType, replicationFactor))
+            .fromProtoTypeAndFactor(replicationType, replicationFactor.getNumber()))
         .setNodes(dnList)
         .build();
 

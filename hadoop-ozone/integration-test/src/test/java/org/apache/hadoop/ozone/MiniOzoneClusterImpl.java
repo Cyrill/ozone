@@ -247,7 +247,7 @@ public class MiniOzoneClusterImpl implements MiniOzoneCluster {
       TimeoutException, InterruptedException {
     GenericTestUtils.waitFor(() -> {
       int openPipelineCount = scm.getPipelineManager().
-          getPipelines(RatisReplicationConfig.getInstance(factor),
+          getPipelines(RatisReplicationConfig.getInstance(factor.getNumber()),
               Pipeline.PipelineState.OPEN).size();
       return openPipelineCount >= 1;
     }, 1000, timeoutInMs);

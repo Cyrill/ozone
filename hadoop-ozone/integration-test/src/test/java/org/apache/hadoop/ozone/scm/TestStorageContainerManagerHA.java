@@ -183,7 +183,7 @@ public class TestStorageContainerManagerHA {
       String keyName = UUID.randomUUID().toString();
 
       OzoneOutputStream out = bucket
-          .createKey(keyName, value.getBytes(UTF_8).length, RATIS, ONE,
+          .createKey(keyName, value.getBytes(UTF_8).length, RATIS, 1,
               new HashMap<>());
       out.write(value.getBytes(UTF_8));
       out.close();
@@ -199,8 +199,7 @@ public class TestStorageContainerManagerHA {
       final OmKeyArgs keyArgs = new OmKeyArgs.Builder()
           .setVolumeName(volumeName)
           .setBucketName(bucketName)
-          .setReplicationConfig(RatisReplicationConfig.getInstance(
-              HddsProtos.ReplicationFactor.ONE))
+          .setReplicationConfig(RatisReplicationConfig.getInstance(1))
           .setKeyName(keyName)
           .build();
       final OmKeyInfo keyInfo = cluster.getOzoneManager().lookupKey(keyArgs);

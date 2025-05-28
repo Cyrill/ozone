@@ -394,8 +394,7 @@ public class TestParentAcl {
         .setVolumeName(volume)
         .setBucketName(bucket)
         .setKeyName(keyName)
-        .setReplicationConfig(StandaloneReplicationConfig.getInstance(
-            HddsProtos.ReplicationFactor.ONE))
+        .setReplicationConfig(StandaloneReplicationConfig.getInstance(1))
         .setDataSize(0)
         // here we give test ugi full access
         .setAcls(OzoneAclUtil.getAclList(testUgi.getUserName(),

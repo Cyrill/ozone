@@ -118,7 +118,7 @@ public class TestHybridPipelineOnDatanode {
     // Write data into a key
     OzoneOutputStream out = bucket
         .createKey(keyName1, data.length, ReplicationType.RATIS,
-            ReplicationFactor.ONE, new HashMap<>());
+            1, new HashMap<>());
     out.write(value.getBytes(UTF_8));
     out.close();
 
@@ -127,7 +127,7 @@ public class TestHybridPipelineOnDatanode {
     // Write data into a key
     out = bucket
         .createKey(keyName2, data.length, ReplicationType.RATIS,
-            ReplicationFactor.THREE, new HashMap<>());
+            3, new HashMap<>());
     out.write(value.getBytes(UTF_8));
     out.close();
 

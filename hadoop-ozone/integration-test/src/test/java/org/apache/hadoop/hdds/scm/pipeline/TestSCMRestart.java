@@ -77,13 +77,11 @@ public class TestSCMRestart {
     pipelineManager = scm.getPipelineManager();
     ratisPipeline1 = pipelineManager.getPipeline(
         containerManager.allocateContainer(
-            RatisReplicationConfig.getInstance(
-                ReplicationFactor.THREE), "Owner1").getPipelineID());
+            RatisReplicationConfig.getInstance(3), "Owner1").getPipelineID());
     pipelineManager.openPipeline(ratisPipeline1.getId());
     ratisPipeline2 = pipelineManager.getPipeline(
         containerManager.allocateContainer(
-            RatisReplicationConfig.getInstance(
-                ReplicationFactor.ONE), "Owner2").getPipelineID());
+            RatisReplicationConfig.getInstance(1), "Owner2").getPipelineID());
     pipelineManager.openPipeline(ratisPipeline2.getId());
     // At this stage, there should be 2 pipeline one with 1 open container
     // each. Try restarting the SCM and then discover that pipeline are in
@@ -120,8 +118,7 @@ public class TestSCMRestart {
     // Try creating a new container, it should be from the same pipeline
     // as was before restart
     ContainerInfo containerInfo = newContainerManager
-        .allocateContainer(RatisReplicationConfig.getInstance(
-            ReplicationFactor.THREE), "Owner1");
+        .allocateContainer(RatisReplicationConfig.getInstance(3), "Owner1");
     Assertions.assertEquals(ratisPipeline1.getId(),
         containerInfo.getPipelineID());
   }

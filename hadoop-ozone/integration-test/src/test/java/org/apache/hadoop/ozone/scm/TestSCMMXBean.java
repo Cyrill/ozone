@@ -128,7 +128,7 @@ public class TestSCMMXBean {
     for (int i = 0; i < 10; i++) {
       containerInfoList.add(
           scmContainerManager.allocateContainer(
-              StandaloneReplicationConfig.getInstance(ReplicationFactor.ONE),
+              StandaloneReplicationConfig.getInstance(1),
               UUID.randomUUID().toString()));
     }
     long containerID;

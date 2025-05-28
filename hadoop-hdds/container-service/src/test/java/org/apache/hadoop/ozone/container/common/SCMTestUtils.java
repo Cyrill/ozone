@@ -159,11 +159,9 @@ public final class SCMTestUtils {
         HddsProtos.ReplicationType.STAND_ALONE;
   }
 
-  public static HddsProtos.ReplicationFactor getReplicationFactor(
+  public static int getReplicationFactor(
       ConfigurationSource conf) {
-    return isUseRatis(conf) ?
-        HddsProtos.ReplicationFactor.THREE :
-        HddsProtos.ReplicationFactor.ONE;
+    return isUseRatis(conf) ? 3 : 1;
   }
 
   private static boolean isUseRatis(ConfigurationSource c) {

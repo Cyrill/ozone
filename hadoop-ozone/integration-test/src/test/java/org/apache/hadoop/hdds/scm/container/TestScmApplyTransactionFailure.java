@@ -89,7 +89,7 @@ public class TestScmApplyTransactionFailure {
   @Test
   public void testAddContainerToClosedPipeline() throws Exception {
     RatisReplicationConfig replication =
-        RatisReplicationConfig.getInstance(ReplicationFactor.THREE);
+        RatisReplicationConfig.getInstance(3);
     List<Pipeline> pipelines =
         pipelineManager.getPipelines(replication, PipelineState.OPEN);
     Pipeline pipeline = pipelines.get(0);
@@ -117,7 +117,7 @@ public class TestScmApplyTransactionFailure {
   public void testAddDuplicatePipelineId()
       throws Exception {
     RatisReplicationConfig replication =
-        RatisReplicationConfig.getInstance(ReplicationFactor.THREE);
+        RatisReplicationConfig.getInstance(3);
     Pipeline existing = pipelineManager.getPipelines(
         replication, PipelineState.OPEN).get(0);
 

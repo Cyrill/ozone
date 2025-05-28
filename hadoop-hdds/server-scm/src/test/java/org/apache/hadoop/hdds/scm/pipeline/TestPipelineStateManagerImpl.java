@@ -94,11 +94,11 @@ public class TestPipelineStateManagerImpl {
 
   private Pipeline createDummyPipeline(int numNodes) {
     return createDummyPipeline(HddsProtos.ReplicationType.RATIS,
-        HddsProtos.ReplicationFactor.ONE, numNodes);
+        1, numNodes);
   }
 
   private Pipeline createDummyPipeline(HddsProtos.ReplicationType type,
-      HddsProtos.ReplicationFactor factor, int numNodes) {
+      int factor, int numNodes) {
     List<DatanodeDetails> nodes = new ArrayList<>();
     for (int i = 0; i < numNodes; i++) {
       nodes.add(MockDatanodeDetails.randomDatanodeDetails());
@@ -160,7 +160,7 @@ public class TestPipelineStateManagerImpl {
 
     Set<Pipeline> pipelines1 = new HashSet<>(stateManager
         .getPipelines(RatisReplicationConfig
-            .getInstance(ReplicationFactor.ONE)));
+            .getInstance(1)));
     Assertions.assertEquals(pipelines1.size(), pipelines.size());
 
     pipelines1 = new HashSet<>(stateManager.getPipelines());
@@ -184,19 +184,19 @@ public class TestPipelineStateManagerImpl {
         for (int i = 0; i < 5; i++) {
           // 5 pipelines in allocated state for each type and factor
           HddsProtos.Pipeline pipeline =
-              createDummyPipeline(type, factor, factor.getNumber())
+              createDummyPipeline(type, factor.getNumber(), factor.getNumber())
                   .getProtobufMessage(ClientVersion.CURRENT_VERSION);
           stateManager.addPipeline(pipeline);
           pipelines.add(pipeline);
 
           // 5 pipelines in open state for each type and factor
-          pipeline = createDummyPipeline(type, factor, factor.getNumber())
+          pipeline = createDummyPipeline(type, factor.getNumber(), factor.getNumber())
               .getProtobufMessage(ClientVersion.CURRENT_VERSION);
           stateManager.addPipeline(pipeline);
           pipelines.add(pipeline);
 
           // 5 pipelines in closed state for each type and factor
-          pipeline = createDummyPipeline(type, factor, factor.getNumber())
+          pipeline = createDummyPipeline(type, factor.getNumber(), factor.getNumber())
               .getProtobufMessage(ClientVersion.CURRENT_VERSION);
           stateManager.addPipeline(pipeline);
           pipelines.add(pipeline);
@@ -211,7 +211,7 @@ public class TestPipelineStateManagerImpl {
         // verify pipelines received
         List<Pipeline> pipelines1 =
             stateManager.getPipelines(
-                ReplicationConfig.fromProtoTypeAndFactor(type, factor));
+                ReplicationConfig.fromProtoTypeAndFactor(type, factor.getNumber()));
         Assertions.assertEquals(15, pipelines1.size());
         pipelines1.stream().forEach(p -> {
           Assertions.assertEquals(type, p.getType());
@@ -237,20 +237,20 @@ public class TestPipelineStateManagerImpl {
         for (int i = 0; i < 5; i++) {
           // 5 pipelines in allocated state for each type and factor
           HddsProtos.Pipeline pipeline =
-              createDummyPipeline(type, factor, factor.getNumber())
+              createDummyPipeline(type, factor.getNumber(), factor.getNumber())
                   .getProtobufMessage(ClientVersion.CURRENT_VERSION);
           stateManager.addPipeline(pipeline);
           pipelines.add(pipeline);
 
           // 5 pipelines in open state for each type and factor
-          pipeline = createDummyPipeline(type, factor, factor.getNumber())
+          pipeline = createDummyPipeline(type, factor.getNumber(), factor.getNumber())
               .getProtobufMessage(ClientVersion.CURRENT_VERSION);
           stateManager.addPipeline(pipeline);
           openPipeline(pipeline);
           pipelines.add(pipeline);
 
           // 5 pipelines in dormant state for each type and factor
-          pipeline = createDummyPipeline(type, factor, factor.getNumber())
+          pipeline = createDummyPipeline(type, factor.getNumber(), factor.getNumber())
               .getProtobufMessage(ClientVersion.CURRENT_VERSION);
           stateManager.addPipeline(pipeline);
           openPipeline(pipeline);
@@ -258,7 +258,7 @@ public class TestPipelineStateManagerImpl {
           pipelines.add(pipeline);
 
           // 5 pipelines in closed state for each type and factor
-          pipeline = createDummyPipeline(type, factor, factor.getNumber())
+          pipeline = createDummyPipeline(type, factor.getNumber(), factor.getNumber())
               .getProtobufMessage(ClientVersion.CURRENT_VERSION);
           stateManager.addPipeline(pipeline);
           finalizePipeline(pipeline);
@@ -275,7 +275,7 @@ public class TestPipelineStateManagerImpl {
           // verify pipelines received
           List<Pipeline> pipelines1 =
               stateManager.getPipelines(
-                  ReplicationConfig.fromProtoTypeAndFactor(type, factor),
+                  ReplicationConfig.fromProtoTypeAndFactor(type, factor.getNumber()),
                   state);
           Assertions.assertEquals(5, pipelines1.size());
           pipelines1.forEach(p -> {
@@ -456,14 +456,14 @@ public class TestPipelineStateManagerImpl {
   @Test
   public void testQueryPipeline() throws IOException, TimeoutException {
     Pipeline pipeline = createDummyPipeline(HddsProtos.ReplicationType.RATIS,
-        HddsProtos.ReplicationFactor.THREE, 3);
+        3, 3);
     // pipeline in allocated state should not be reported
     HddsProtos.Pipeline pipelineProto = pipeline
         .getProtobufMessage(ClientVersion.CURRENT_VERSION);
     stateManager.addPipeline(pipelineProto);
     Assertions.assertEquals(0, stateManager
         .getPipelines(RatisReplicationConfig
-            .getInstance(ReplicationFactor.THREE),
+            .getInstance(3),
             Pipeline.PipelineState.OPEN)
         .size());
 
@@ -471,12 +471,12 @@ public class TestPipelineStateManagerImpl {
     openPipeline(pipelineProto);
     Assertions.assertEquals(1, stateManager
         .getPipelines(RatisReplicationConfig
-            .getInstance(ReplicationFactor.THREE),
+            .getInstance(3),
             Pipeline.PipelineState.OPEN)
         .size());
 
     Pipeline pipeline2 = createDummyPipeline(HddsProtos.ReplicationType.RATIS,
-        HddsProtos.ReplicationFactor.THREE, 3);
+        3, 3);
     pipeline2 = Pipeline.newBuilder(pipeline2)
         .setState(Pipeline.PipelineState.OPEN)
         .build();
@@ -486,7 +486,7 @@ public class TestPipelineStateManagerImpl {
     stateManager.addPipeline(pipelineProto2);
     Assertions.assertEquals(2, stateManager
         .getPipelines(RatisReplicationConfig
-            .getInstance(ReplicationFactor.THREE),
+            .getInstance(3),
             Pipeline.PipelineState.OPEN)
         .size());
 
@@ -494,7 +494,7 @@ public class TestPipelineStateManagerImpl {
     finalizePipeline(pipelineProto2);
     Assertions.assertEquals(1, stateManager
         .getPipelines(RatisReplicationConfig
-            .getInstance(ReplicationFactor.THREE),
+            .getInstance(3),
             Pipeline.PipelineState.OPEN)
         .size());
 

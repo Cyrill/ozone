@@ -288,6 +288,12 @@ enum ReplicationType {
     NONE = -1; // Invalid Type
 }
 
+enum ReplicationFactor {
+    ONE = 1;
+    THREE = 3;
+    ZERO = 0; //Invalid Factor
+}
+
 message ECReplicationConfig {
     required int32 data = 1;
     required int32 parity = 2;

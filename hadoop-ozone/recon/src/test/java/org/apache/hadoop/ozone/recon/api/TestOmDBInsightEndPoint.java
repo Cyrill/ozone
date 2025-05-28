@@ -626,7 +626,7 @@ public class TestOmDBInsightEndPoint extends AbstractReconSqlDBTest {
         .setFile(isFile)
         .setObjectID(generateUniqueRandomLong())
         .setReplicationConfig(StandaloneReplicationConfig
-            .getInstance(HddsProtos.ReplicationFactor.ONE))
+            .getInstance(1))
         .setDataSize(random.nextLong())
         .build();
   }

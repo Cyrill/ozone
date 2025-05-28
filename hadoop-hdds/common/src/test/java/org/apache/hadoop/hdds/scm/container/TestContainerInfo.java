@@ -30,7 +30,6 @@ import java.util.Collections;
 
 import static org.apache.hadoop.hdds.protocol.proto.HddsProtos.LifeCycleState.CLOSING;
 import static org.apache.hadoop.hdds.protocol.proto.HddsProtos.LifeCycleState.OPEN;
-import static org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationFactor.THREE;
 import static org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationType.EC;
 import static org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationType.RATIS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -46,14 +45,14 @@ public class TestContainerInfo {
   @Test
   void getProtobufRatis() {
     ContainerInfo container = newBuilderForTest()
-        .setReplicationConfig(RatisReplicationConfig.getInstance(THREE))
+        .setReplicationConfig(RatisReplicationConfig.getInstance(3))
         .build();
 
     HddsProtos.ContainerInfoProto proto = container.getProtobuf();
 
     // No EC Config
     assertFalse(proto.hasEcReplicationConfig());
-    assertEquals(THREE, proto.getReplicationFactor());
+    assertEquals(3, proto.getReplicationFactor());
     assertEquals(RATIS, proto.getReplicationType());
 
     // Reconstruct object from Proto
@@ -61,7 +60,7 @@ public class TestContainerInfo {
     assertEquals(RATIS, recovered.getReplicationType());
     assertEquals(RatisReplicationConfig.class,
         recovered.getReplicationConfig().getClass());
-    assertEquals(THREE, recovered.getReplicationFactor());
+    assertEquals(3, recovered.getReplicationFactor());
   }
 
   @Test

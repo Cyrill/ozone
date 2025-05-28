@@ -409,7 +409,7 @@ public final class HddsTestUtils {
     for (ReplicationFactor factor : ReplicationFactor.values()) {
       // Trigger the processed pipeline report event
       for (Pipeline pipeline : pipelineManager
-          .getPipelines(RatisReplicationConfig.getInstance(factor))) {
+          .getPipelines(RatisReplicationConfig.getInstance(factor.getNumber()))) {
         pipelineManager.openPipeline(pipeline.getId());
       }
     }
@@ -542,7 +542,7 @@ public final class HddsTestUtils {
       throws IOException, TimeoutException {
     return containerManager
         .allocateContainer(RatisReplicationConfig
-                .getInstance(ReplicationFactor.THREE),
+                .getInstance(3),
             "root");
 
   }
@@ -659,7 +659,7 @@ public final class HddsTestUtils {
         .setContainerID(RandomUtils.nextLong())
         .setReplicationConfig(
             RatisReplicationConfig
-                .getInstance(ReplicationFactor.THREE))
+                .getInstance(3))
         .setState(state)
         .setSequenceId(10000L)
         .setOwner("TEST");
@@ -798,7 +798,7 @@ public final class HddsTestUtils {
     nodes.add(MockDatanodeDetails.randomDatanodeDetails());
     return Pipeline.newBuilder()
         .setReplicationConfig(
-            RatisReplicationConfig.getInstance(ReplicationFactor.THREE))
+            RatisReplicationConfig.getInstance(3))
         .setId(PipelineID.randomId())
         .setNodes(nodes)
         .setState(Pipeline.PipelineState.OPEN)

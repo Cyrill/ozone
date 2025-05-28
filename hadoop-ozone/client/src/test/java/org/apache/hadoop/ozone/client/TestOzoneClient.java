@@ -158,7 +158,7 @@ public class TestOzoneClient {
 
       OzoneOutputStream out = bucket.createKey(keyName,
           value.getBytes(UTF_8).length, ReplicationType.RATIS,
-          ONE, new HashMap<>());
+          1, new HashMap<>());
       out.write(value.getBytes(UTF_8));
       out.close();
       OzoneKey key = bucket.getKey(keyName);
@@ -201,7 +201,7 @@ public class TestOzoneClient {
 
       try (OzoneOutputStream out = bucket
           .createKey(keyName, value.getBytes(UTF_8).length,
-              ReplicationType.RATIS, ONE, new HashMap<>())) {
+              ReplicationType.RATIS, 1, new HashMap<>())) {
         out.write(value.getBytes(UTF_8));
         out.write(value.getBytes(UTF_8));
       }
@@ -256,7 +256,7 @@ public class TestOzoneClient {
       // Simulating first mismatch: Write less data than expected
       client.getProxy().setIsS3Request(true);
       OzoneOutputStream out1 = bucket.createKey(keyName,
-          value.getBytes(UTF_8).length, ReplicationType.RATIS, ONE,
+          value.getBytes(UTF_8).length, ReplicationType.RATIS, 1,
           new HashMap<>());
       out1.write(value.substring(0, value.length() - 1).getBytes(UTF_8));
       Assertions.assertThrows(IllegalStateException.class, out1::close,
@@ -264,7 +264,7 @@ public class TestOzoneClient {
 
       // Simulating second mismatch: Write more data than expected
       OzoneOutputStream out2 = bucket.createKey(keyName,
-          value.getBytes(UTF_8).length, ReplicationType.RATIS, ONE,
+          value.getBytes(UTF_8).length, ReplicationType.RATIS, 1,
           new HashMap<>());
       value += "1";
       out2.write(value.getBytes(UTF_8));

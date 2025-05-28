@@ -735,8 +735,7 @@ t
             .setBucketName(bucketName)
             .setKeyName(keyName)
             .setAcls(Collections.emptyList())
-            .setReplicationConfig(StandaloneReplicationConfig.getInstance(
-                HddsProtos.ReplicationFactor.THREE))
+            .setReplicationConfig(StandaloneReplicationConfig.getInstance(3))
             .build();
     writeClient.deleteKey(keyArg);
   }
@@ -751,8 +750,7 @@ t
             .setBucketName(bucketName)
             .setKeyName(keyName)
             .setAcls(Collections.emptyList())
-            .setReplicationConfig(StandaloneReplicationConfig.getInstance(
-                HddsProtos.ReplicationFactor.THREE))
+            .setReplicationConfig(StandaloneReplicationConfig.getInstance(3))
             .build();
     writeClient.renameKey(keyArg, toKeyName);
   }
@@ -774,7 +772,7 @@ t
             .setBucketName(bucketName)
             .setKeyName(keyName)
             .setAcls(Collections.emptyList())
-            .setReplicationConfig(RatisReplicationConfig.getInstance(THREE))
+            .setReplicationConfig(RatisReplicationConfig.getInstance(3))
             .setDataSize(1000L)
             .setLocationInfoList(new ArrayList<>())
             .build();

@@ -412,7 +412,7 @@ public class TestOmTableInsightTask extends AbstractReconSqlDBTest {
         .setKeyName(keyName)
         .setFile(isFile)
         .setReplicationConfig(StandaloneReplicationConfig
-            .getInstance(HddsProtos.ReplicationFactor.ONE))
+            .getInstance(1))
         .setDataSize(100L)
         .build();
   }

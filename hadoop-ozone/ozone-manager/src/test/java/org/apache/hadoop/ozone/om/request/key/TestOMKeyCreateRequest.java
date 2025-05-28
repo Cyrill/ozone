@@ -93,7 +93,7 @@ public class TestOMKeyCreateRequest extends TestOMKeyRequest {
   @Test
   public void testPreExecuteWithNormalKey() throws Exception {
     ReplicationConfig ratis3Config =
-        ReplicationConfig.fromProtoTypeAndFactor(RATIS, THREE);
+        ReplicationConfig.fromProtoTypeAndFactor(RATIS, 3);
     preExecuteTest(false, 0, ratis3Config);
   }
 
@@ -106,7 +106,7 @@ public class TestOMKeyCreateRequest extends TestOMKeyRequest {
   @Test
   public void testPreExecuteWithMultipartKey() throws Exception {
     ReplicationConfig ratis3Config =
-        ReplicationConfig.fromProtoTypeAndFactor(RATIS, THREE);
+        ReplicationConfig.fromProtoTypeAndFactor(RATIS, 3);
     preExecuteTest(true, 1, ratis3Config);
   }
 
@@ -668,7 +668,7 @@ public class TestOMKeyCreateRequest extends TestOMKeyRequest {
     KeyArgs.Builder keyArgs = KeyArgs.newBuilder()
         .setVolumeName(volumeName).setBucketName(bucketName)
         .setKeyName(keyName).setIsMultipartKey(isMultipartKey)
-        .setFactor(replicationFactor).setType(replicationType)
+        .setFactor(replicationFactor.getNumber()).setType(replicationType)
         .setLatestVersionLocation(true);
 
     // Configure for multipart upload, if applicable

@@ -36,7 +36,7 @@ public class TestQuotaUtil {
 
   @Test
   public void testRatisThreeReplication() {
-    ReplicationConfig repConfig = RatisReplicationConfig.getInstance(THREE);
+    ReplicationConfig repConfig = RatisReplicationConfig.getInstance(3);
     long replicatedSize =
         QuotaUtil.getReplicatedSize(123 * ONE_MB, repConfig);
     Assertions.assertEquals(123 * ONE_MB * 3, replicatedSize);
@@ -44,7 +44,7 @@ public class TestQuotaUtil {
 
   @Test
   public void testRatisOneReplication() {
-    ReplicationConfig repConfig = RatisReplicationConfig.getInstance(ONE);
+    ReplicationConfig repConfig = RatisReplicationConfig.getInstance(1);
     long replicatedSize =
         QuotaUtil.getReplicatedSize(123 * ONE_MB, repConfig);
     Assertions.assertEquals(123 * ONE_MB, replicatedSize);

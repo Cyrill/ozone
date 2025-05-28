@@ -216,32 +216,32 @@ public class TestNSSummaryEndpointWithOBSAndLegacy {
 
   private static final long FILE1_SIZE_WITH_REPLICA =
       getReplicatedSize(FILE_ONE_SIZE,
-          StandaloneReplicationConfig.getInstance(ONE));
+          StandaloneReplicationConfig.getInstance(1));
   private static final long FILE2_SIZE_WITH_REPLICA =
       getReplicatedSize(FILE_TWO_SIZE,
-          StandaloneReplicationConfig.getInstance(ONE));
+          StandaloneReplicationConfig.getInstance(1));
   private static final long FILE3_SIZE_WITH_REPLICA =
       getReplicatedSize(FILE_THREE_SIZE,
-          StandaloneReplicationConfig.getInstance(ONE));
+          StandaloneReplicationConfig.getInstance(1));
   private static final long FILE4_SIZE_WITH_REPLICA =
       getReplicatedSize(FILE_FOUR_SIZE,
-          StandaloneReplicationConfig.getInstance(ONE));
+          StandaloneReplicationConfig.getInstance(1));
   private static final long FILE5_SIZE_WITH_REPLICA =
       getReplicatedSize(FILE_FIVE_SIZE,
-          StandaloneReplicationConfig.getInstance(ONE));
+          StandaloneReplicationConfig.getInstance(1));
 
   private static final long FILE8_SIZE_WITH_REPLICA =
       getReplicatedSize(FILE_EIGHT_SIZE,
-          StandaloneReplicationConfig.getInstance(ONE));
+          StandaloneReplicationConfig.getInstance(1));
   private static final long FILE9_SIZE_WITH_REPLICA =
       getReplicatedSize(FILE_NINE_SIZE,
-          StandaloneReplicationConfig.getInstance(ONE));
+          StandaloneReplicationConfig.getInstance(1));
   private static final long FILE10_SIZE_WITH_REPLICA =
       getReplicatedSize(FILE_TEN_SIZE,
-          StandaloneReplicationConfig.getInstance(ONE));
+          StandaloneReplicationConfig.getInstance(1));
   private static final long FILE11_SIZE_WITH_REPLICA =
       getReplicatedSize(FILE_ELEVEN_SIZE,
-          StandaloneReplicationConfig.getInstance(ONE));
+          StandaloneReplicationConfig.getInstance(1));
 
   private static final long MULTI_BLOCK_KEY_SIZE_WITH_REPLICA
       = FILE3_SIZE_WITH_REPLICA;

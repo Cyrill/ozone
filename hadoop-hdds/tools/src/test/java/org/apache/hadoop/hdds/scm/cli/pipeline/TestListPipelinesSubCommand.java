@@ -188,11 +188,11 @@ public class TestListPipelinesSubCommand {
 
   private List<Pipeline> createPipelines() {
     List<Pipeline> pipelines = new ArrayList<>();
-    pipelines.add(createPipeline(StandaloneReplicationConfig.getInstance(ONE),
+    pipelines.add(createPipeline(StandaloneReplicationConfig.getInstance(1),
         Pipeline.PipelineState.OPEN));
-    pipelines.add(createPipeline(RatisReplicationConfig.getInstance(THREE),
+    pipelines.add(createPipeline(RatisReplicationConfig.getInstance(3),
         Pipeline.PipelineState.OPEN));
-    pipelines.add(createPipeline(RatisReplicationConfig.getInstance(THREE),
+    pipelines.add(createPipeline(RatisReplicationConfig.getInstance(3),
         Pipeline.PipelineState.CLOSED));
 
     pipelines.add(createPipeline(

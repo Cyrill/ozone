@@ -326,7 +326,7 @@ public class TestKeyManagerImpl {
     OmKeyArgs keyArgs = createBuilder()
         .setKeyName(KEY_NAME)
         .setDataSize(1000)
-        .setReplicationConfig(RatisReplicationConfig.getInstance(THREE))
+        .setReplicationConfig(RatisReplicationConfig.getInstance(3))
         .setAcls(OzoneAclUtil.getAclList(ugi.getUserName(), ugi.getGroupNames(),
             ALL, ALL))
         .build();
@@ -794,7 +794,7 @@ public class TestKeyManagerImpl {
     assumeFalse(nodeList.get(0).equals(nodeList.get(2)));
     // create a pipeline using 3 datanodes
     Pipeline pipeline = scm.getPipelineManager().createPipeline(
-        RatisReplicationConfig.getInstance(ReplicationFactor.THREE), nodeList);
+        RatisReplicationConfig.getInstance(3), nodeList);
     List<OmKeyLocationInfo> locationInfoList = new ArrayList<>();
     List<OmKeyLocationInfo> locationList =
         keySession.getKeyInfo().getLatestVersionLocations().getLocationList();
@@ -889,7 +889,7 @@ public class TestKeyManagerImpl {
     assumeFalse(nodeList.get(0).equals(nodeList.get(2)));
     // create a pipeline using 3 datanodes
     Pipeline pipeline = scm.getPipelineManager().createPipeline(
-        RatisReplicationConfig.getInstance(ReplicationFactor.THREE), nodeList);
+        RatisReplicationConfig.getInstance(3), nodeList);
     List<OmKeyLocationInfo> locationInfoList = new ArrayList<>();
     List<OmKeyLocationInfo> locationList =
         keySession.getKeyInfo().getLatestVersionLocations().getLocationList();
@@ -1538,7 +1538,7 @@ public class TestKeyManagerImpl {
         .setState(Pipeline.PipelineState.OPEN)
         .setId(PipelineID.randomId())
         .setReplicationConfig(
-            RatisReplicationConfig.getInstance(ReplicationFactor.THREE))
+            RatisReplicationConfig.getInstance(3))
         .setNodes(new ArrayList<>())
         .build();
   }
@@ -1704,7 +1704,7 @@ public class TestKeyManagerImpl {
         .setBucketName(bucketName)
         .setDataSize(0)
         .setReplicationConfig(
-            StandaloneReplicationConfig.getInstance(ONE))
+            StandaloneReplicationConfig.getInstance(1))
         .setAcls(OzoneAclUtil.getAclList(ugi.getUserName(), ugi.getGroupNames(),
             ALL, ALL))
         .setVolumeName(VOLUME_NAME);

@@ -119,7 +119,7 @@ class TestOzoneRpcClientWithKeyLatestVersion {
    * {@code content}. */
   private void createAndOverwriteKey(OzoneBucket bucket, String key,
       int versions, byte[] content) throws IOException {
-    ReplicationConfig replication = RatisReplicationConfig.getInstance(THREE);
+    ReplicationConfig replication = RatisReplicationConfig.getInstance(3);
     for (int i = 1; i < versions; i++) {
       writeKey(bucket, key, RandomUtils.nextBytes(content.length), replication);
     }

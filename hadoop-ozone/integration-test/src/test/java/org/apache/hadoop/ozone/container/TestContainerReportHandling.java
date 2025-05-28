@@ -148,7 +148,7 @@ public class TestContainerReportHandling {
     OzoneBucket bucket = volume.getBucket(BUCKET);
 
     try (OutputStream out = bucket.createKey(KEY, 0,
-        RatisReplicationConfig.getInstance(THREE), emptyMap())) {
+        RatisReplicationConfig.getInstance(3), emptyMap())) {
       out.write("Hello".getBytes(UTF_8));
     }
   }

@@ -639,7 +639,7 @@ public class TestOzoneClientMultipartUploadWithFSO {
         bucket.listParts(keyName, uploadID, 0, 3);
 
     Assert.assertEquals(
-        RatisReplicationConfig.getInstance(HddsProtos.ReplicationFactor.ONE),
+        RatisReplicationConfig.getInstance(1),
         ozoneMultipartUploadPartListParts.getReplicationConfig());
 
     Assert.assertEquals(3,
@@ -729,7 +729,7 @@ public class TestOzoneClientMultipartUploadWithFSO {
         bucket.listParts(keyName, uploadID, 0, 2);
 
     Assert.assertEquals(
-        RatisReplicationConfig.getInstance(HddsProtos.ReplicationFactor.ONE),
+        RatisReplicationConfig.getInstance(1),
         ozoneMultipartUploadPartListParts.getReplicationConfig());
 
     Assert.assertEquals(2,
@@ -801,7 +801,7 @@ public class TestOzoneClientMultipartUploadWithFSO {
         ozoneMultipartUploadPartListParts.getPartInfoList().size());
 
     Assert.assertEquals(
-        RatisReplicationConfig.getInstance(HddsProtos.ReplicationFactor.ONE),
+        RatisReplicationConfig.getInstance(1),
         ozoneMultipartUploadPartListParts.getReplicationConfig());
 
     // As we don't have any parts with greater than partNumberMarker and list
@@ -959,7 +959,7 @@ public class TestOzoneClientMultipartUploadWithFSO {
       ReplicationType replicationType, ReplicationFactor replicationFactor)
           throws IOException {
     OmMultipartInfo multipartInfo = oBucket.initiateMultipartUpload(kName,
-            replicationType, replicationFactor);
+            replicationType, replicationFactor.getValue());
 
     Assert.assertNotNull(multipartInfo);
     String uploadID = multipartInfo.getUploadID();

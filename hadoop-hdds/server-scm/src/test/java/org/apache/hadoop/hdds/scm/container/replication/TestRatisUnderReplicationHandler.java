@@ -94,7 +94,7 @@ public class TestRatisUnderReplicationHandler {
   private NodeManager nodeManager;
   private OzoneConfiguration conf;
   private static final RatisReplicationConfig RATIS_REPLICATION_CONFIG =
-      RatisReplicationConfig.getInstance(THREE);
+      RatisReplicationConfig.getInstance(3);
   private PlacementPolicy policy;
   private ReplicationManager replicationManager;
   private Set<Pair<DatanodeDetails, SCMCommand<?>>> commandsSent;
@@ -228,7 +228,7 @@ public class TestRatisUnderReplicationHandler {
 
     container = ReplicationTestUtil.createContainer(
         HddsProtos.LifeCycleState.CLOSED,
-        RatisReplicationConfig.getInstance(replicationFactor.toProto()),
+        RatisReplicationConfig.getInstance(replicationFactor.getValue()),
         RandomMappingGenerator.AVAILABLE_DCS
     );
 
@@ -499,7 +499,7 @@ public class TestRatisUnderReplicationHandler {
 
     long sequenceID = 10;
     container = ReplicationTestUtil.createContainerInfo(
-        RatisReplicationConfig.getInstance(THREE),
+        RatisReplicationConfig.getInstance(3),
         1, HddsProtos.LifeCycleState.CLOSED, sequenceID);
 
     Set<ContainerReplica> replicas

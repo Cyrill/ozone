@@ -219,7 +219,7 @@ public class TestOMOpenKeysDeleteRequest extends TestOMKeyRequest {
         .setBucketName(bucket)
         .setUpdateID(updateId)
         .setReplicationConfig(ReplicationConfig.fromTypeAndFactor(
-            ReplicationType.RATIS, ReplicationFactor.THREE));
+            ReplicationType.RATIS, 3));
 
     if (getBucketLayout().isFileSystemOptimized()) {
       builder.setParentObjectID(random.nextLong());
@@ -389,7 +389,7 @@ public class TestOMOpenKeysDeleteRequest extends TestOMKeyRequest {
         .setVolumeName(volume)
         .setBucketName(bucket)
         .setReplicationConfig(ReplicationConfig.fromTypeAndFactor(
-            ReplicationType.RATIS, ReplicationFactor.THREE));
+            ReplicationType.RATIS, 3));
 
     if (getBucketLayout().isFileSystemOptimized()) {
       builder.setParentObjectID(random.nextLong());

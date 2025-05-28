@@ -190,7 +190,7 @@ public class TestBlockManager {
             configurator.getLeaseManager(), 0);
     eventQueue.addHandler(SCMEvents.CLOSE_CONTAINER, closeContainerHandler);
     replicationConfig = RatisReplicationConfig
-        .getInstance(ReplicationFactor.THREE);
+        .getInstance(3);
 
     scm.getScmContext().updateSafeModeStatus(new SafeModeStatus(false, true));
   }

@@ -426,7 +426,7 @@ public final class OMRequestTestUtils {
             .setCreationTime(Time.now())
             .setModificationTime(Time.now())
             .setType(HddsProtos.ReplicationType.RATIS)
-            .setFactor(HddsProtos.ReplicationFactor.ONE).build()).build();
+            .setFactor(1).build()).build();
   }
 
   /**
@@ -629,7 +629,7 @@ public final class OMRequestTestUtils {
         .setDataSize(1000L)
         .setReplicationConfig(
             ReplicationConfig
-                .fromProtoTypeAndFactor(replicationType, replicationFactor))
+                .fromProtoTypeAndFactor(replicationType, replicationFactor.getNumber()))
         .setObjectID(objectID)
         .setUpdateID(objectID)
         .build();
@@ -646,7 +646,7 @@ public final class OMRequestTestUtils {
         .setCreationTime(creationTime)
         .setReplicationConfig(
             ReplicationConfig
-                .fromProtoTypeAndFactor(replicationType, replicationFactor))
+                .fromProtoTypeAndFactor(replicationType, replicationFactor.getNumber()))
         .setPartKeyInfoList(Collections.emptySortedMap())
         .setObjectID(objectID)
         .setUpdateID(objectID)
@@ -1511,7 +1511,7 @@ public final class OMRequestTestUtils {
             .setModificationTime(Time.now())
             .setDataSize(1000L)
             .setReplicationConfig(ReplicationConfig
-                    .fromProtoTypeAndFactor(replicationType, replicationFactor))
+                    .fromProtoTypeAndFactor(replicationType, replicationFactor.getNumber()))
             .setObjectID(objectID)
             .setUpdateID(trxnLogIndex)
             .setParentObjectID(parentID)

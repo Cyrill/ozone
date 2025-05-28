@@ -761,7 +761,7 @@ public class TestContainerReportHandler {
         NodeStatus.inServiceHealthy()).iterator();
 
     Pipeline pipeline = pipelineManager.createPipeline(
-        RatisReplicationConfig.getInstance(HddsProtos.ReplicationFactor.THREE));
+        RatisReplicationConfig.getInstance(3));
 
     final DatanodeDetails datanodeOne = nodeIterator.next();
     final DatanodeDetails datanodeTwo = nodeIterator.next();

@@ -130,7 +130,7 @@ public class TestUploadWithStream {
     try (OutputStream stream = bucket
         .createStreamKey(S3_COPY_EXISTING_KEY, keyContent.length,
             ReplicationConfig.fromTypeAndFactor(ReplicationType.RATIS,
-                ReplicationFactor.THREE), new HashMap<>())) {
+                3), new HashMap<>())) {
       stream.write(keyContent);
     }
 

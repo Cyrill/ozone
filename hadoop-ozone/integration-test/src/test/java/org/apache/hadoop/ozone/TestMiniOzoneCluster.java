@@ -95,8 +95,7 @@ public class TestMiniOzoneCluster {
       Pipeline pipeline = Pipeline.newBuilder()
           .setState(Pipeline.PipelineState.OPEN)
           .setId(PipelineID.randomId())
-          .setReplicationConfig(StandaloneReplicationConfig.getInstance(
-              ReplicationFactor.ONE))
+          .setReplicationConfig(StandaloneReplicationConfig.getInstance(1))
           .setNodes(dns)
           .build();
 

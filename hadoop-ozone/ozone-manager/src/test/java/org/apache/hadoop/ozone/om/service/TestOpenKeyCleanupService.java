@@ -390,8 +390,7 @@ class TestOpenKeyCleanupService {
             .setBucketName(bucketName)
             .setKeyName(keyName)
             .setAcls(Collections.emptyList())
-            .setReplicationConfig(RatisReplicationConfig.getInstance(
-                HddsProtos.ReplicationFactor.ONE))
+            .setReplicationConfig(RatisReplicationConfig.getInstance(1))
             .setLocationInfoList(new ArrayList<>())
             .build();
 
@@ -443,8 +442,7 @@ class TestOpenKeyCleanupService {
             .setBucketName(bucketName)
             .setKeyName(keyName)
             .setAcls(Collections.emptyList())
-            .setReplicationConfig(RatisReplicationConfig.getInstance(
-                HddsProtos.ReplicationFactor.ONE))
+            .setReplicationConfig(RatisReplicationConfig.getInstance(1))
             .setLocationInfoList(new ArrayList<>())
             .build();
 
@@ -462,8 +460,7 @@ class TestOpenKeyCleanupService {
               .setMultipartUploadID(omMultipartInfo.getUploadID())
               .setMultipartUploadPartNumber(i)
               .setAcls(Collections.emptyList())
-              .setReplicationConfig(RatisReplicationConfig.getInstance(
-                  HddsProtos.ReplicationFactor.ONE))
+              .setReplicationConfig(RatisReplicationConfig.getInstance(1))
               .build();
 
       OpenKeySession openKey = writeClient.openKey(partKeyArgs);
@@ -478,8 +475,7 @@ class TestOpenKeyCleanupService {
                 .setMultipartUploadID(omMultipartInfo.getUploadID())
                 .setMultipartUploadPartNumber(i)
                 .setAcls(Collections.emptyList())
-                .setReplicationConfig(RatisReplicationConfig.getInstance(
-                    HddsProtos.ReplicationFactor.ONE))
+                .setReplicationConfig(RatisReplicationConfig.getInstance(1))
                 .setLocationInfoList(Collections.emptyList())
                 .addMetadata(OzoneConsts.ETAG, DigestUtils.md5Hex(UUID.randomUUID()
                     .toString()))

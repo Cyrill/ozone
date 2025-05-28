@@ -98,7 +98,7 @@ public class TestDecommissionAndMaintenance {
   private static String bucketName = "bucket1";
   private static String volName = "vol1";
   private static RatisReplicationConfig ratisRepConfig =
-      RatisReplicationConfig.getInstance(HddsProtos.ReplicationFactor.THREE);
+      RatisReplicationConfig.getInstance(3);
   private static ECReplicationConfig ecRepConfig =
       new ECReplicationConfig(3, 2);
   private OzoneBucket bucket;

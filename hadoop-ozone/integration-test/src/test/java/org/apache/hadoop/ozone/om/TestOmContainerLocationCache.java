@@ -860,7 +860,7 @@ public class TestOmContainerLocationCache {
         .setState(Pipeline.PipelineState.OPEN)
         .setId(PipelineID.randomId())
         .setReplicationConfig(
-            RatisReplicationConfig.getInstance(ReplicationFactor.THREE))
+            RatisReplicationConfig.getInstance(3))
         .setNodes(nodes)
         .build();
   }

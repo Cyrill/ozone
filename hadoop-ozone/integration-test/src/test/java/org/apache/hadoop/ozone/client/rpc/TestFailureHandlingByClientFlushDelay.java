@@ -219,7 +219,7 @@ public class TestFailureHandlingByClientFlushDelay {
         .setBucketName(bucketName)
         .setReplicationConfig(
             RatisReplicationConfig
-                .getInstance(HddsProtos.ReplicationFactor.THREE))
+                .getInstance(3))
         .setKeyName(keyName)
         .build();
     OmKeyInfo keyInfo = cluster.getOzoneManager().lookupKey(keyArgs);

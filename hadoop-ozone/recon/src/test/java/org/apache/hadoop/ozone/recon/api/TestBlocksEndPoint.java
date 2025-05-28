@@ -275,7 +275,7 @@ public class TestBlocksEndPoint {
             .setContainerID(localContainerID.getId())
             .setNumberOfKeys(10)
             .setPipelineID(localPipeline.getId())
-            .setReplicationConfig(StandaloneReplicationConfig.getInstance(ONE))
+            .setReplicationConfig(StandaloneReplicationConfig.getInstance(1))
             .setOwner("test")
             .setState(state)
             .setDatacenters(Collections.emptySet())

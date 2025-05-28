@@ -113,7 +113,7 @@ public class TestReconPipelineManager {
     // Valid pipeline in Allocated state.
     Pipeline validPipeline = Pipeline.newBuilder()
         .setReplicationConfig(
-            StandaloneReplicationConfig.getInstance(ReplicationFactor.ONE))
+            StandaloneReplicationConfig.getInstance(1))
         .setId(pipelinesFromScm.get(0).getId())
         .setNodes(pipelinesFromScm.get(0).getNodes())
         .setState(Pipeline.PipelineState.ALLOCATED)
@@ -123,7 +123,7 @@ public class TestReconPipelineManager {
     // Invalid pipeline.
     Pipeline invalidPipeline = Pipeline.newBuilder()
         .setReplicationConfig(
-            StandaloneReplicationConfig.getInstance(ReplicationFactor.ONE))
+            StandaloneReplicationConfig.getInstance(1))
         .setId(PipelineID.randomId())
         .setNodes(Collections.singletonList(randomDatanodeDetails()))
         .setState(Pipeline.PipelineState.CLOSED)

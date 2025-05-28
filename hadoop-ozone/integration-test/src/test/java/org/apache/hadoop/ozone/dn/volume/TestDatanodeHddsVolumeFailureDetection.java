@@ -144,7 +144,7 @@ class TestDatanodeHddsVolumeFailureDetection {
       OzoneConfiguration conf = cluster.getConf();
       try (ScmClient scmClient = new ContainerOperationClient(conf)) {
         container = scmClient.createContainer(ReplicationType.STAND_ALONE,
-            ReplicationFactor.ONE, OzoneConsts.OZONE);
+            1, OzoneConsts.OZONE);
       }
 
       // corrupt container file by removing write permission on
@@ -201,7 +201,7 @@ class TestDatanodeHddsVolumeFailureDetection {
         OzoneConfiguration conf = cluster.getConf();
         try (ScmClient scmClient = new ContainerOperationClient(conf)) {
           ContainerWithPipeline c2 = scmClient.createContainer(
-              ReplicationType.STAND_ALONE, ReplicationFactor.ONE,
+              ReplicationType.STAND_ALONE, 1,
               OzoneConsts.OZONE);
           assertEquals(c2.getContainerInfo().getState(), LifeCycleState.OPEN);
         }
@@ -286,7 +286,7 @@ class TestDatanodeHddsVolumeFailureDetection {
       throws IOException {
     byte[] bytes = RandomUtils.nextBytes(KEY_SIZE);
     RatisReplicationConfig replication =
-        RatisReplicationConfig.getInstance(ReplicationFactor.ONE);
+        RatisReplicationConfig.getInstance(1);
     try (OutputStream out = bucket.createKey(key, bytes.length, replication,
         emptyMap())) {
       out.write(bytes);

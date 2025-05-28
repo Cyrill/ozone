@@ -2242,8 +2242,7 @@ public class TestRootedOzoneFileSystem {
     builder.setStorageType(StorageType.DISK);
     builder.setBucketLayout(BucketLayout.LEGACY);
     builder.setDefaultReplicationConfig(
-        new DefaultReplicationConfig(StandaloneReplicationConfig.getInstance(
-            HddsProtos.ReplicationFactor.ONE)));
+        new DefaultReplicationConfig(StandaloneReplicationConfig.getInstance(1)));
     BucketArgs omBucketArgs = builder.build();
     String vol = UUID.randomUUID().toString();
     String buck = UUID.randomUUID().toString();
@@ -2360,8 +2359,7 @@ public class TestRootedOzoneFileSystem {
     // write some test data into bucket
     try (OzoneOutputStream outputStream = objectStore.getVolume(volumeName).
             getBucket(bucketName).createKey(key, 1,
-                    RatisReplicationConfig.getInstance(
-                            HddsProtos.ReplicationFactor.THREE),
+                    RatisReplicationConfig.getInstance(3),
                     new HashMap<>())) {
       outputStream.write(RandomUtils.nextBytes(1));
     }
@@ -2370,8 +2368,7 @@ public class TestRootedOzoneFileSystem {
     long length = contentSummary.getLength();
     long spaceConsumed = contentSummary.getSpaceConsumed();
     long expectDiskUsage = QuotaUtil.getReplicatedSize(length,
-            RatisReplicationConfig.getInstance(
-                    HddsProtos.ReplicationFactor.THREE));
+            RatisReplicationConfig.getInstance(3));
     assertEquals(expectDiskUsage, spaceConsumed);
     //clean up
     ofs.delete(filePathTest, true);

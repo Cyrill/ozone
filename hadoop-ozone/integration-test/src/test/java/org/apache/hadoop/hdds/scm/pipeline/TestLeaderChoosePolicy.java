@@ -75,8 +75,7 @@ public class TestLeaderChoosePolicy {
   private void checkLeaderBalance(int dnNum, int leaderNumOfEachDn)
       throws Exception {
     List<Pipeline> pipelines = pipelineManager
-        .getPipelines(RatisReplicationConfig.getInstance(
-            ReplicationFactor.THREE), Pipeline.PipelineState.OPEN);
+        .getPipelines(RatisReplicationConfig.getInstance(3), Pipeline.PipelineState.OPEN);
 
     for (Pipeline pipeline : pipelines) {
       LambdaTestUtils.await(30000, 500, () ->
@@ -115,8 +114,7 @@ public class TestLeaderChoosePolicy {
     waitForPipelines(pipelineNum);
     // No Factor ONE pipeline is auto created.
     Assert.assertEquals(0,
-        pipelineManager.getPipelines(RatisReplicationConfig.getInstance(
-            ReplicationFactor.ONE)).size());
+        pipelineManager.getPipelines(RatisReplicationConfig.getInstance(1)).size());
 
     // pipelineNum pipelines in 3 datanodes,
     // each datanode has leaderNumOfEachDn leaders after balance
@@ -164,8 +162,7 @@ public class TestLeaderChoosePolicy {
     waitForPipelines(pipelineNum);
     // No Factor ONE pipeline is auto created.
     Assert.assertEquals(0, pipelineManager.getPipelines(
-        RatisReplicationConfig.getInstance(
-            ReplicationFactor.ONE)).size());
+        RatisReplicationConfig.getInstance(1)).size());
 
     // pipelineNum pipelines in 3 datanodes,
     // each datanode has leaderNumOfEachDn leaders after balance
@@ -177,8 +174,7 @@ public class TestLeaderChoosePolicy {
       // then check leader balance
 
       List<Pipeline> pipelines = pipelineManager
-          .getPipelines(RatisReplicationConfig.getInstance(
-              ReplicationFactor.THREE), Pipeline.PipelineState.OPEN);
+          .getPipelines(RatisReplicationConfig.getInstance(3), Pipeline.PipelineState.OPEN);
 
       int destroyNum = r.nextInt(pipelines.size());
       for (int k = 0; k <= destroyNum; k++) {
@@ -209,8 +205,7 @@ public class TestLeaderChoosePolicy {
   private void waitForPipelines(int numPipelines)
       throws TimeoutException, InterruptedException {
     GenericTestUtils.waitFor(() -> pipelineManager
-        .getPipelines(RatisReplicationConfig.getInstance(
-            ReplicationFactor.THREE), Pipeline.PipelineState.OPEN)
+        .getPipelines(RatisReplicationConfig.getInstance(3), Pipeline.PipelineState.OPEN)
         .size() >= numPipelines, 100, 60000);
   }
 }

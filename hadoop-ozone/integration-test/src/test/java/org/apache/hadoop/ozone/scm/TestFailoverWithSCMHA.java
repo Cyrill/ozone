@@ -147,7 +147,7 @@ public class TestFailoverWithSCMHA {
                 proxyProvider), StorageContainerLocationProtocol.class, conf);
 
     scmContainerClient.allocateContainer(HddsProtos.ReplicationType.RATIS,
-        HddsProtos.ReplicationFactor.ONE, "ozone");
+        1, "ozone");
     Assert.assertTrue(logCapture.getOutput()
         .contains("Performing failover to suggested leader"));
   }
@@ -222,7 +222,7 @@ public class TestFailoverWithSCMHA {
                 proxyProvider), StorageContainerLocationProtocol.class, conf);
 
     scmContainerClient.allocateContainer(HddsProtos.ReplicationType.RATIS,
-        HddsProtos.ReplicationFactor.ONE, "ozone");
+        1, "ozone");
     Assert.assertTrue(logCapture.getOutput()
         .contains("Performing failover to suggested leader"));
 

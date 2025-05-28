@@ -201,7 +201,7 @@ public class TestEndpoints extends AbstractReconSqlDBTest {
     ContainerInfo containerInfo = new ContainerInfo.Builder()
         .setContainerID(containerId)
         .setReplicationConfig(RatisReplicationConfig
-            .getInstance(ReplicationFactor.ONE))
+            .getInstance(1))
         .setState(LifeCycleState.OPEN)
         .setOwner("test")
         .setPipelineID(pipeline.getId())

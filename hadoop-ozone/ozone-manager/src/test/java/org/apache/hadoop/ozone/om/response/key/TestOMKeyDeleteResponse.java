@@ -91,7 +91,7 @@ public class TestOMKeyDeleteResponse extends TestOMKeyResponse {
         .setState(Pipeline.PipelineState.OPEN)
         .setId(PipelineID.randomId())
         .setReplicationConfig(RatisReplicationConfig
-            .getInstance(replicationFactor))
+            .getInstance(replicationFactor.getNumber()))
         .setNodes(new ArrayList<>())
         .build();
 

@@ -48,8 +48,7 @@ public class TestOmMultipartKeyInfoCodec
         .setUploadID(UUID.randomUUID().toString())
         .setCreationTime(Time.now())
         .setReplicationConfig(
-                RatisReplicationConfig.getInstance(
-                    HddsProtos.ReplicationFactor.THREE))
+                RatisReplicationConfig.getInstance(3))
         .build();
 
     byte[] data = new byte[0];

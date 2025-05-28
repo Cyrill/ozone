@@ -191,7 +191,7 @@ public class TestOzoneManagerRestart {
 
     String data = "random data";
     OzoneOutputStream ozoneOutputStream1 = ozoneBucket.createKey(key1,
-        data.length(), ReplicationType.RATIS, ReplicationFactor.ONE,
+        data.length(), ReplicationType.RATIS, 1,
         new HashMap<>());
 
     ozoneOutputStream1.write(data.getBytes(UTF_8), 0, data.length());

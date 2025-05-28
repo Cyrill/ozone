@@ -250,7 +250,7 @@ public class MockOmTransport implements OmTransport {
         }
       } else {
         keyInfoBuilder.setType(HddsProtos.ReplicationType.RATIS);
-        keyInfoBuilder.setFactor(HddsProtos.ReplicationFactor.THREE);
+        keyInfoBuilder.setFactor(3);
       }
     } else {
       // 1. Client passed the replication config.

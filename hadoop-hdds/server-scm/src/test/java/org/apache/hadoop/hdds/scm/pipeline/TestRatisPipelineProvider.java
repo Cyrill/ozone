@@ -132,7 +132,7 @@ public class TestRatisPipelineProvider {
       HddsProtos.ReplicationFactor factor)
       throws IOException, TimeoutException {
     Pipeline pipeline = provider.create(RatisReplicationConfig
-        .getInstance(factor));
+        .getInstance(factor.getNumber()));
     assertPipelineProperties(pipeline, factor, REPLICATION_TYPE,
         Pipeline.PipelineState.ALLOCATED);
     HddsProtos.Pipeline pipelineProto = pipeline.getProtobufMessage(
@@ -141,7 +141,7 @@ public class TestRatisPipelineProvider {
     nodeManager.addPipeline(pipeline);
 
     Pipeline pipeline1 = provider.create(RatisReplicationConfig
-        .getInstance(factor));
+        .getInstance(factor.getNumber()));
     HddsProtos.Pipeline pipelineProto1 = pipeline1.getProtobufMessage(
         ClientVersion.CURRENT_VERSION);
     assertPipelineProperties(pipeline1, factor, REPLICATION_TYPE,
@@ -182,7 +182,7 @@ public class TestRatisPipelineProvider {
     init(1);
     HddsProtos.ReplicationFactor factor = HddsProtos.ReplicationFactor.THREE;
     Pipeline pipeline = provider.create(RatisReplicationConfig
-        .getInstance(factor));
+        .getInstance(factor.getNumber()));
     assertPipelineProperties(pipeline, factor, REPLICATION_TYPE,
         Pipeline.PipelineState.ALLOCATED);
     HddsProtos.Pipeline pipelineProto = pipeline.getProtobufMessage(
@@ -191,7 +191,7 @@ public class TestRatisPipelineProvider {
 
     factor = HddsProtos.ReplicationFactor.ONE;
     Pipeline pipeline1 = provider.create(RatisReplicationConfig
-        .getInstance(factor));
+        .getInstance(factor.getNumber()));
     assertPipelineProperties(pipeline1, factor, REPLICATION_TYPE,
         Pipeline.PipelineState.ALLOCATED);
     HddsProtos.Pipeline pipelineProto1 = pipeline1.getProtobufMessage(
@@ -207,13 +207,13 @@ public class TestRatisPipelineProvider {
     init(1);
     HddsProtos.ReplicationFactor factor = HddsProtos.ReplicationFactor.THREE;
     Pipeline pipeline =
-        provider.create(RatisReplicationConfig.getInstance(factor),
+        provider.create(RatisReplicationConfig.getInstance(factor.getNumber()),
             createListOfNodes(factor.getNumber()), Collections.emptySet());
     assertPipelineProperties(pipeline, factor, REPLICATION_TYPE,
         Pipeline.PipelineState.OPEN);
 
     factor = HddsProtos.ReplicationFactor.ONE;
-    pipeline = provider.create(RatisReplicationConfig.getInstance(factor),
+    pipeline = provider.create(RatisReplicationConfig.getInstance(factor.getNumber()),
         createListOfNodes(factor.getNumber()), Collections.emptySet());
     assertPipelineProperties(pipeline, factor, REPLICATION_TYPE,
         Pipeline.PipelineState.OPEN);
@@ -229,13 +229,13 @@ public class TestRatisPipelineProvider {
     Set<ContainerReplica> replicas = createContainerReplicas(healthyNodes);
 
     Pipeline pipeline1 = provider.create(
-        RatisReplicationConfig.getInstance(ReplicationFactor.THREE),
+        RatisReplicationConfig.getInstance(3),
         healthyNodes, Collections.emptySet());
     Pipeline pipeline2 = provider.create(
-        RatisReplicationConfig.getInstance(ReplicationFactor.THREE),
+        RatisReplicationConfig.getInstance(3),
         healthyNodes, Collections.emptySet());
     Pipeline pipeline3 = provider.createForRead(
-        RatisReplicationConfig.getInstance(ReplicationFactor.THREE),
+        RatisReplicationConfig.getInstance(3),
         replicas);
 
     Assertions.assertEquals(pipeline1.getNodeSet(), pipeline2.getNodeSet());
@@ -259,19 +259,19 @@ public class TestRatisPipelineProvider {
     for (int i = 0; i < maxPipelinePerNode; i++) {
       // Saturate pipeline counts on all the 1st 3 DNs.
       addPipeline(dns, Pipeline.PipelineState.OPEN,
-          RatisReplicationConfig.getInstance(factor));
+          RatisReplicationConfig.getInstance(factor.getNumber()));
     }
     Set<DatanodeDetails> membersOfOpenPipelines = new HashSet<>(dns);
 
     // Use up next 3 DNs for a closed pipeline.
     dns = healthyNodes.subList(3, 6);
     addPipeline(dns, Pipeline.PipelineState.CLOSED,
-        RatisReplicationConfig.getInstance(factor));
+        RatisReplicationConfig.getInstance(factor.getNumber()));
     Set<DatanodeDetails> membersOfClosedPipelines = new HashSet<>(dns);
 
     // only 2 healthy DNs left that are not part of any pipeline
     Pipeline pipeline = provider.create(
-        RatisReplicationConfig.getInstance(factor));
+        RatisReplicationConfig.getInstance(factor.getNumber()));
     assertPipelineProperties(pipeline, factor, REPLICATION_TYPE,
         Pipeline.PipelineState.ALLOCATED);
     HddsProtos.Pipeline pipelineProto = pipeline.getProtobufMessage(
@@ -306,7 +306,7 @@ public class TestRatisPipelineProvider {
         .limit(healthyCount - 3).collect(Collectors.toList());
 
     Pipeline pipeline1 = provider.create(
-        RatisReplicationConfig.getInstance(ReplicationFactor.THREE),
+        RatisReplicationConfig.getInstance(3),
         excludedNodes, Collections.EMPTY_LIST, Collections.emptySet());
 
     for (DatanodeDetails dn : pipeline1.getNodes()) {
@@ -328,7 +328,7 @@ public class TestRatisPipelineProvider {
 
     Assertions.assertThrows(SCMException.class, () ->
         provider.create(RatisReplicationConfig
-                .getInstance(ReplicationFactor.THREE),
+                .getInstance(3),
             excludedNodes, Collections.EMPTY_LIST, Collections.emptySet()));
   }
 
@@ -347,7 +347,7 @@ public class TestRatisPipelineProvider {
         continue;
       }
       try {
-        provider.create(RatisReplicationConfig.getInstance(factor));
+        provider.create(RatisReplicationConfig.getInstance(factor.getNumber()));
         Assertions.fail("Expected SCMException for large container size with " +
             "replication factor " + factor.toString());
       } catch (SCMException ex) {
@@ -363,7 +363,7 @@ public class TestRatisPipelineProvider {
         continue;
       }
       try {
-        provider.create(RatisReplicationConfig.getInstance(factor));
+        provider.create(RatisReplicationConfig.getInstance(factor.getNumber()));
         Assertions.fail("Expected SCMException for large metadata size with " +
             "replication factor " + factor.toString());
       } catch (SCMException ex) {

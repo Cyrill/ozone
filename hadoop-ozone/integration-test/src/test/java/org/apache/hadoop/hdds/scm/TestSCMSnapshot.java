@@ -65,12 +65,12 @@ public class TestSCMSnapshot {
     PipelineManager pipelineManager = scm.getPipelineManager();
     Pipeline ratisPipeline1 = pipelineManager.getPipeline(
         containerManager.allocateContainer(
-            RatisReplicationConfig.getInstance(THREE), "Owner1")
+            RatisReplicationConfig.getInstance(3), "Owner1")
             .getPipelineID());
     pipelineManager.openPipeline(ratisPipeline1.getId());
     Pipeline ratisPipeline2 = pipelineManager.getPipeline(
         containerManager.allocateContainer(
-            RatisReplicationConfig.getInstance(ONE), "Owner2").getPipelineID());
+            RatisReplicationConfig.getInstance(1), "Owner2").getPipelineID());
     pipelineManager.openPipeline(ratisPipeline2.getId());
     long snapshotInfo2 = scm.getScmHAManager().asSCMHADBTransactionBuffer()
         .getLatestTrxInfo().getTransactionIndex();

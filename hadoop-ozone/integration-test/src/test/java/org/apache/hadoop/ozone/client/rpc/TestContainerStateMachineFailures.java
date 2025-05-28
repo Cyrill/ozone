@@ -204,7 +204,7 @@ public class TestContainerStateMachineFailures {
     OzoneOutputStream key =
         objectStore.getVolume(volumeName).getBucket(bucketName)
             .createKey("testQuasiClosed1", 1024, ReplicationType.RATIS,
-                ReplicationFactor.THREE, new HashMap<>());
+                3, new HashMap<>());
     key.write("ratis".getBytes(UTF_8));
     key.flush();
 
@@ -258,7 +258,7 @@ public class TestContainerStateMachineFailures {
     OzoneOutputStream key =
             objectStore.getVolume(volumeName).getBucket(bucketName)
                     .createKey("ratis", 1024, ReplicationType.RATIS,
-                            ReplicationFactor.ONE, new HashMap<>());
+                            1, new HashMap<>());
     byte[] testData = "ratis".getBytes(UTF_8);
     // First write and flush creates a container in the datanode
     key.write(testData);
@@ -314,7 +314,7 @@ public class TestContainerStateMachineFailures {
     OzoneOutputStream key =
             objectStore.getVolume(volumeName).getBucket(bucketName)
                     .createKey("ratis", 1024, ReplicationType.RATIS,
-                            ReplicationFactor.ONE, new HashMap<>());
+                            1, new HashMap<>());
     // First write and flush creates a container in the datanode
     key.write("ratis".getBytes(UTF_8));
     key.flush();
@@ -399,7 +399,7 @@ public class TestContainerStateMachineFailures {
     OzoneOutputStream key =
             objectStore.getVolume(volumeName).getBucket(bucketName)
                     .createKey("ratis", 1024, ReplicationType.RATIS,
-                            ReplicationFactor.ONE, new HashMap<>());
+                            1, new HashMap<>());
     // First write and flush creates a container in the datanode
     key.write("ratis".getBytes(UTF_8));
     key.flush();
@@ -492,7 +492,7 @@ public class TestContainerStateMachineFailures {
     OzoneOutputStream key =
             objectStore.getVolume(volumeName).getBucket(bucketName)
                     .createKey("ratis", 1024, ReplicationType.RATIS,
-                            ReplicationFactor.ONE, new HashMap<>());
+                            1, new HashMap<>());
     // First write and flush creates a container in the datanode
     key.write("ratis".getBytes(UTF_8));
     key.flush();
@@ -581,7 +581,7 @@ public class TestContainerStateMachineFailures {
     OzoneOutputStream key =
             objectStore.getVolume(volumeName).getBucket(bucketName)
                     .createKey("ratis-1", 1024, ReplicationType.RATIS,
-                            ReplicationFactor.ONE, new HashMap<>());
+                            1, new HashMap<>());
     // First write and flush creates a container in the datanode
     key.write("ratis".getBytes(UTF_8));
     key.flush();
@@ -709,7 +709,7 @@ public class TestContainerStateMachineFailures {
     OzoneOutputStream key =
         objectStore.getVolume(volumeName).getBucket(bucketName)
             .createKey("ratis1", 1024, ReplicationType.RATIS,
-                ReplicationFactor.THREE, new HashMap<>());
+                3, new HashMap<>());
 
     key.write("ratis".getBytes(UTF_8));
     key.flush();
@@ -744,7 +744,7 @@ public class TestContainerStateMachineFailures {
     OzoneOutputStream key =
         objectStore.getVolume(volumeName).getBucket(bucketName)
             .createKey("ratis2", 1024, ReplicationType.RATIS,
-                ReplicationFactor.THREE, new HashMap<>());
+                3, new HashMap<>());
 
     key.write("ratis".getBytes(UTF_8));
     key.flush();

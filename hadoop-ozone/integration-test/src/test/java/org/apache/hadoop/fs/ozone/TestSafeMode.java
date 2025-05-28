@@ -118,7 +118,7 @@ class TestSafeMode {
 
       // datanodes are still stopped
       RatisReplicationConfig replication =
-          RatisReplicationConfig.getInstance(THREE);
+          RatisReplicationConfig.getInstance(3);
       assertThrows(IOException.class, () -> cluster.getStorageContainerManager()
           .getWritableContainerFactory()
           .getContainer(MB, replication, OZONE, new ExcludeList(), Collections.emptySet()));

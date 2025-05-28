@@ -97,7 +97,7 @@ public class TestSCMPipelineBytesWrittenMetrics {
 
     OzoneOutputStream out = bucket
         .createKey(keyName, value.getBytes(UTF_8).length, ReplicationType.RATIS,
-            ReplicationFactor.THREE, new HashMap<>());
+            3, new HashMap<>());
     out.write(value.getBytes(UTF_8));
     out.close();
 

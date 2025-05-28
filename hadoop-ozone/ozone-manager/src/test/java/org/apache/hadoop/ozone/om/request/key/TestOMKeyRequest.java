@@ -183,7 +183,7 @@ public class TestOMKeyRequest {
         .setState(Pipeline.PipelineState.OPEN)
         .setId(PipelineID.randomId())
         .setReplicationConfig(
-            StandaloneReplicationConfig.getInstance(ReplicationFactor.ONE))
+            StandaloneReplicationConfig.getInstance(1))
         .setNodes(new ArrayList<>())
         .build();
 

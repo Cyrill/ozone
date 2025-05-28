@@ -767,7 +767,7 @@ public class TestContainerEndpoint {
     return new ContainerInfo.Builder()
         .setContainerID(containerId)
         .setReplicationConfig(
-            RatisReplicationConfig.getInstance(ReplicationFactor.THREE))
+            RatisReplicationConfig.getInstance(3))
         .setState(HddsProtos.LifeCycleState.OPEN)
         .setOwner("owner1")
         .setNumberOfKeys(keyCount)
@@ -1090,7 +1090,7 @@ public class TestContainerEndpoint {
             .setContainerID(localContainerID.getId())
             .setNumberOfKeys(10)
             .setPipelineID(localPipeline.getId())
-            .setReplicationConfig(StandaloneReplicationConfig.getInstance(ONE))
+            .setReplicationConfig(StandaloneReplicationConfig.getInstance(1))
             .setOwner("test")
             .setState(state)
             .setDatacenters(Collections.emptySet())

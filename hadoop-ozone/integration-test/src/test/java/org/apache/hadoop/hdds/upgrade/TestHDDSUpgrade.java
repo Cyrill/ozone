@@ -120,8 +120,7 @@ public class TestHDDSUpgrade {
       scmFinalizationExecutor;
 
   private static final ReplicationConfig RATIS_THREE =
-      ReplicationConfig.fromProtoTypeAndFactor(HddsProtos.ReplicationType.RATIS,
-          HddsProtos.ReplicationFactor.THREE);
+      ReplicationConfig.fromProtoTypeAndFactor(HddsProtos.ReplicationType.RATIS, 3);
 
   private static MiniOzoneClusterProvider clusterProvider;
 
@@ -215,7 +214,7 @@ public class TestHDDSUpgrade {
       OzoneOutputStream key =
           objectStore.getVolume(uniqueId).getBucket(uniqueId)
               .createKey(uniqueId, 1024, ReplicationType.RATIS,
-                  ReplicationFactor.THREE, new HashMap<>());
+                  3, new HashMap<>());
       key.write(uniqueId.getBytes(UTF_8));
       key.flush();
       key.close();
@@ -333,7 +332,7 @@ public class TestHDDSUpgrade {
       store.createVolume("vol1");
       store.getVolume("vol1").createBucket("buc1");
       store.getVolume("vol1").getBucket("buc1").createKey("key1", 100,
-          ReplicationType.RATIS, ReplicationFactor.THREE, new HashMap<>());
+          ReplicationType.RATIS, 3, new HashMap<>());
     }
   }
 

@@ -92,7 +92,7 @@ public class TestMultipartUploadWithCopy {
     try (OutputStream stream = bucket
         .createKey(EXISTING_KEY, keyContent.length,
             ReplicationConfig.fromTypeAndFactor(ReplicationType.RATIS,
-            ReplicationFactor.THREE),
+            3),
             new HashMap<String, String>() {{
               put(OzoneConsts.ETAG, DigestUtils.md5Hex(EXISTING_KEY_CONTENT));
             }}

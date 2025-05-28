@@ -139,7 +139,7 @@ public class ScmBlockLocationTestingClient implements ScmBlockLocationProtocol {
         .setState(Pipeline.PipelineState.OPEN)
         .setId(PipelineID.randomId())
         .setReplicationConfig(
-            StandaloneReplicationConfig.getInstance(ReplicationFactor.ONE))
+            StandaloneReplicationConfig.getInstance(1))
         .setNodes(dns)
         .setDatacenters(datacenters)
         .build();

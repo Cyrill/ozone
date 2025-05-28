@@ -152,7 +152,7 @@ public class TestContainerReplicationEndToEnd {
     OzoneOutputStream key =
         objectStore.getVolume(volumeName).getBucket(bucketName)
             .createKey(keyName, 0, ReplicationType.RATIS,
-                ReplicationFactor.THREE, new HashMap<>());
+                3, new HashMap<>());
     byte[] testData = "ratis".getBytes(UTF_8);
     // First write and flush creates a container in the datanode
     key.write(testData);

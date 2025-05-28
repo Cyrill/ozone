@@ -219,7 +219,7 @@ public class LoadBucket {
     @Override
     void doBucketOp(String key) throws IOException {
       os = bucket.createKey(key, 0, ReplicationType.RATIS,
-          ReplicationFactor.THREE, new HashMap<>());
+          3, new HashMap<>());
     }
 
     @Override

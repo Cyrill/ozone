@@ -174,7 +174,7 @@ public class TestScmClient {
         .setId(PipelineID.randomId())
         .setNodes(asList(randomDatanode(), randomDatanode()))
         .setReplicationConfig(fromTypeAndFactor(
-            ReplicationType.RATIS, ReplicationFactor.THREE))
+            ReplicationType.RATIS, 3))
         .setState(Pipeline.PipelineState.OPEN)
         .build();
     return new ContainerWithPipeline(containerInfo, pipeline);

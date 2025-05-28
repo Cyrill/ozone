@@ -422,8 +422,7 @@ public abstract class TestOmSnapshot {
         .setBucketName(bucketName)
         .setKeyName(keyName)
         .setAcls(Collections.emptyList())
-        .setReplicationConfig(StandaloneReplicationConfig.getInstance(
-            HddsProtos.ReplicationFactor.ONE))
+        .setReplicationConfig(StandaloneReplicationConfig.getInstance(1))
         .setLocationInfoList(new ArrayList<>())
         .build();
   }

@@ -150,7 +150,7 @@ public class TestContainerStateMachine {
     OzoneOutputStream key =
         objectStore.getVolume(volumeName).getBucket(bucketName)
             .createKey("ratis", 1024, ReplicationType.RATIS,
-                ReplicationFactor.ONE, new HashMap<>());
+                1, new HashMap<>());
     // First write and flush creates a container in the datanode
     key.write("ratis".getBytes(UTF_8));
     key.flush();
@@ -196,7 +196,7 @@ public class TestContainerStateMachine {
       OzoneOutputStream key =
           objectStore.getVolume(volumeName).getBucket(bucketName)
               .createKey(("ratis" + i), 1024, ReplicationType.RATIS,
-                  ReplicationFactor.ONE, new HashMap<>());
+                  1, new HashMap<>());
       // First write and flush creates a container in the datanode
       key.write(("ratis" + i).getBytes(UTF_8));
       key.flush();
@@ -220,7 +220,7 @@ public class TestContainerStateMachine {
       OzoneOutputStream key =
           objectStore.getVolume(volumeName).getBucket(bucketName)
               .createKey(("ratis" + i), 1024, ReplicationType.RATIS,
-                  ReplicationFactor.ONE, new HashMap<>());
+                  1, new HashMap<>());
       // First write and flush creates a container in the datanode
       key.write(("ratis" + i).getBytes(UTF_8));
       key.flush();

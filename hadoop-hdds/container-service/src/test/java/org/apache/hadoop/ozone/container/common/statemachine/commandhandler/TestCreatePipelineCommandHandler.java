@@ -78,7 +78,7 @@ public class TestCreatePipelineCommandHandler {
     final PipelineID pipelineID = PipelineID.randomId();
     final SCMCommand<CreatePipelineCommandProto> command =
         new CreatePipelineCommand(pipelineID, HddsProtos.ReplicationType.RATIS,
-            HddsProtos.ReplicationFactor.THREE, datanodes);
+            3, datanodes);
     stateContext = ContainerTestUtils.getMockContext(datanodes.get(0), conf);
 
     final XceiverServerSpi writeChanel = Mockito.mock(XceiverServerSpi.class);
@@ -108,7 +108,7 @@ public class TestCreatePipelineCommandHandler {
     final PipelineID pipelineID = PipelineID.randomId();
     final SCMCommand<CreatePipelineCommandProto> command =
         new CreatePipelineCommand(pipelineID, HddsProtos.ReplicationType.RATIS,
-            HddsProtos.ReplicationFactor.THREE, datanodes);
+            3, datanodes);
 
     final XceiverServerSpi writeChanel = Mockito.mock(XceiverServerSpi.class);
     stateContext = ContainerTestUtils.getMockContext(datanodes.get(0), conf);

@@ -432,8 +432,7 @@ class TestRatisContainerReplicaCount {
   @Test
   void testSufficientReplicationWithMismatchedReplicaState() {
     ContainerInfo container =
-        createContainerInfo(RatisReplicationConfig.getInstance(
-            THREE), 1L,
+        createContainerInfo(RatisReplicationConfig.getInstance(3), 1L,
             HddsProtos.LifeCycleState.CLOSED);
     Set<ContainerReplica> replicas =
         createReplicas(ContainerID.valueOf(1L), State.CLOSED, 0, 0);
@@ -449,8 +448,7 @@ class TestRatisContainerReplicaCount {
   @Test
   void testReplicaCounts() {
     ContainerInfo container =
-        createContainerInfo(RatisReplicationConfig.getInstance(
-                THREE), 1L,
+        createContainerInfo(RatisReplicationConfig.getInstance(3), 1L,
             HddsProtos.LifeCycleState.CLOSED);
     Set<ContainerReplica> replicas =
         createReplicas(ContainerID.valueOf(1L), State.CLOSED, 0, 0);
@@ -496,8 +494,7 @@ class TestRatisContainerReplicaCount {
   @Test
   void testUnhealthyReplicaOnDecommissionedNodeWithPendingDelete() {
     ContainerInfo container =
-        createContainerInfo(RatisReplicationConfig.getInstance(
-                THREE), 1L,
+        createContainerInfo(RatisReplicationConfig.getInstance(3), 1L,
             HddsProtos.LifeCycleState.CLOSED);
     Set<ContainerReplica> replicas =
         createReplicas(ContainerID.valueOf(1L), State.CLOSED, 0, 0);
@@ -559,8 +556,7 @@ class TestRatisContainerReplicaCount {
   @Test
   void testSufficientReplicationWithPendingDeleteOnUnhealthyReplica() {
     ContainerInfo container =
-        createContainerInfo(RatisReplicationConfig.getInstance(
-            THREE), 1L,
+        createContainerInfo(RatisReplicationConfig.getInstance(3), 1L,
             HddsProtos.LifeCycleState.CLOSED);
     Set<ContainerReplica> replicas =
         createReplicas(container.containerID(), State.CLOSED, 0, 0, 0);
@@ -588,8 +584,7 @@ class TestRatisContainerReplicaCount {
   @Test
   public void testUnderReplicationBecauseOfUnhealthyReplica() {
     ContainerInfo container =
-        createContainerInfo(RatisReplicationConfig.getInstance(
-                THREE), 1L,
+        createContainerInfo(RatisReplicationConfig.getInstance(3), 1L,
             HddsProtos.LifeCycleState.CLOSED);
     Set<ContainerReplica> replicas =
         createReplicas(container.containerID(), State.CLOSED, 0, 0);
@@ -648,8 +643,7 @@ class TestRatisContainerReplicaCount {
     First case: 3 CLOSED, 2 UNHEALTHY, 1 pending delete.
      */
     ContainerInfo container =
-        createContainerInfo(RatisReplicationConfig.getInstance(
-                THREE), 1L,
+        createContainerInfo(RatisReplicationConfig.getInstance(3), 1L,
             HddsProtos.LifeCycleState.CLOSED);
     Set<ContainerReplica> replicas =
         createReplicas(container.containerID(), State.CLOSED, 0, 0, 0);
@@ -674,8 +668,7 @@ class TestRatisContainerReplicaCount {
     /*
     Second case: 2 CLOSED, 1 CLOSING, 1 UNHEALTHY
      */
-    container = createContainerInfo(RatisReplicationConfig.getInstance(
-                THREE), 1L,
+    container = createContainerInfo(RatisReplicationConfig.getInstance(3), 1L,
         HddsProtos.LifeCycleState.CLOSED);
     replicas = createReplicas(container.containerID(), State.CLOSED, 0, 0);
     ContainerReplica unhealthyReplica =
@@ -752,7 +745,7 @@ class TestRatisContainerReplicaCount {
   @Test
   void testQuasiClosedReplicaWithCorrectSequenceID() {
     final ContainerInfo container =
-        createContainerInfo(RatisReplicationConfig.getInstance(THREE), 1L,
+        createContainerInfo(RatisReplicationConfig.getInstance(3), 1L,
             HddsProtos.LifeCycleState.CLOSED);
     final Set<ContainerReplica> replicas =
         createReplicas(container.containerID(), State.CLOSED, 0, 0);
@@ -784,7 +777,7 @@ class TestRatisContainerReplicaCount {
   void testQuasiClosedReplicaWithInCorrectSequenceID() {
     final long sequenceID = 101;
     final ContainerInfo container =
-        createContainerInfo(RatisReplicationConfig.getInstance(THREE), 1L,
+        createContainerInfo(RatisReplicationConfig.getInstance(3), 1L,
             HddsProtos.LifeCycleState.CLOSED, sequenceID);
     final ContainerID containerID = container.containerID();
 

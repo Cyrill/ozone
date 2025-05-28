@@ -339,7 +339,7 @@ public class TestInfoSubCommand {
   private ContainerWithPipeline getContainerWithPipeline(long containerID) {
     Pipeline pipeline = new Pipeline.Builder()
         .setState(Pipeline.PipelineState.CLOSED)
-        .setReplicationConfig(RatisReplicationConfig.getInstance(THREE))
+        .setReplicationConfig(RatisReplicationConfig.getInstance(3))
         .setId(PipelineID.randomId())
         .setNodes(datanodes)
         .build();
@@ -349,7 +349,7 @@ public class TestInfoSubCommand {
         .setSequenceId(1)
         .setPipelineID(pipeline.getId())
         .setUsedBytes(1234)
-        .setReplicationConfig(RatisReplicationConfig.getInstance(THREE))
+        .setReplicationConfig(RatisReplicationConfig.getInstance(3))
         .setNumberOfKeys(1)
         .setState(CLOSED)
         .build();
@@ -369,7 +369,7 @@ public class TestInfoSubCommand {
         .setSequenceId(1)
         .setPipelineID(pipeline.getId())
         .setUsedBytes(1234)
-        .setReplicationConfig(RatisReplicationConfig.getInstance(THREE))
+        .setReplicationConfig(RatisReplicationConfig.getInstance(3))
         .setNumberOfKeys(1)
         .setState(CLOSED)
         .build();

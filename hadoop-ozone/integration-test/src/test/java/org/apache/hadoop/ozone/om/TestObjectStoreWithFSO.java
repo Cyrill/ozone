@@ -181,7 +181,7 @@ public class TestObjectStoreWithFSO {
 
     String data = "random data";
     OzoneOutputStream ozoneOutputStream = ozoneBucket.createKey(key,
-            data.length(), ReplicationType.RATIS, ReplicationFactor.ONE,
+            data.length(), ReplicationType.RATIS, 1,
             new HashMap<>());
 
     KeyOutputStream keyOutputStream =
@@ -313,7 +313,7 @@ public class TestObjectStoreWithFSO {
 
     String data = "random data";
     OzoneOutputStream ozoneOutputStream = ozoneBucket.createKey(key,
-            data.length(), ReplicationType.RATIS, ReplicationFactor.ONE,
+            data.length(), ReplicationType.RATIS, 1,
             new HashMap<>());
 
     KeyOutputStream keyOutputStream =
@@ -783,7 +783,7 @@ public class TestObjectStoreWithFSO {
       String keyValue) throws IOException {
     OzoneOutputStream out = bucket.createKey(keyName,
             keyValue.getBytes(StandardCharsets.UTF_8).length, RATIS,
-            ONE, new HashMap<>());
+            1, new HashMap<>());
     out.write(keyValue.getBytes(StandardCharsets.UTF_8));
     out.close();
     OzoneKey key = bucket.getKey(keyName);

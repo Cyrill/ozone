@@ -186,7 +186,7 @@ public final class TestableCluster {
 
     // Make it a RATIS container if id is even, else make it an EC container.
     ReplicationConfig config = (id % 2 == 0)
-        ? RatisReplicationConfig.getInstance(HddsProtos.ReplicationFactor.THREE)
+        ? RatisReplicationConfig.getInstance(3)
         : new ECReplicationConfig(3, 2);
 
     builder.setReplicationConfig(config);

@@ -148,8 +148,7 @@ public class TestContainerStateCounts extends AbstractReconSqlDBTest {
     return new ContainerInfo.Builder()
         .setContainerID(containerId)
         .setReplicationConfig(
-            RatisReplicationConfig.getInstance(
-                HddsProtos.ReplicationFactor.THREE))
+            RatisReplicationConfig.getInstance(3))
         .setState(state)
         .setOwner("owner1")
         .setNumberOfKeys(keyCount)

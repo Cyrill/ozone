@@ -135,7 +135,7 @@ public class TestOMEpochForNonRatis {
     String data = "random data";
     OzoneOutputStream ozoneOutputStream = ozoneVolume.getBucket(bucketName)
         .createKey(keyName, data.length(), ReplicationType.RATIS,
-            ReplicationFactor.ONE, new HashMap<>());
+            1, new HashMap<>());
     ozoneOutputStream.write(data.getBytes(UTF_8), 0, data.length());
     ozoneOutputStream.close();
 

@@ -103,7 +103,7 @@ public class TestContainerReportWithKeys {
     OzoneOutputStream key =
         objectStore.getVolume(volumeName).getBucket(bucketName)
             .createKey(keyName, keySize, ReplicationType.RATIS,
-                ReplicationFactor.ONE, new HashMap<>());
+                1, new HashMap<>());
     String dataString = RandomStringUtils.randomAlphabetic(keySize);
     key.write(dataString.getBytes(UTF_8));
     key.close();
@@ -114,7 +114,7 @@ public class TestContainerReportWithKeys {
         .setKeyName(keyName)
         .setReplicationConfig(
             StandaloneReplicationConfig
-                .getInstance(HddsProtos.ReplicationFactor.ONE))
+                .getInstance(1))
         .setDataSize(keySize)
         .build();
 

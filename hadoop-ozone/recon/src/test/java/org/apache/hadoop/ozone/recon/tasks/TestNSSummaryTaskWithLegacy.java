@@ -523,8 +523,7 @@ public final class TestNSSummaryTaskWithLegacy {
         .setKeyName(key)
         .setFileName(fileName)
         .setReplicationConfig(
-            StandaloneReplicationConfig.getInstance(
-                HddsProtos.ReplicationFactor.ONE))
+            StandaloneReplicationConfig.getInstance(1))
         .setObjectID(objectID)
         .setParentObjectID(parentObjectId)
         .setDataSize(dataSize)
@@ -553,8 +552,7 @@ public final class TestNSSummaryTaskWithLegacy {
         .setKeyName(key)
         .setFileName(fileName)
         .setReplicationConfig(
-            StandaloneReplicationConfig.getInstance(
-                HddsProtos.ReplicationFactor.ONE))
+            StandaloneReplicationConfig.getInstance(1))
         .setObjectID(objectID)
         .setParentObjectID(parentObjectId)
         .build();
@@ -581,8 +579,7 @@ public final class TestNSSummaryTaskWithLegacy {
         .setKeyName(key)
         .setFileName(fileName)
         .setReplicationConfig(
-            StandaloneReplicationConfig.getInstance(
-                HddsProtos.ReplicationFactor.ONE))
+            StandaloneReplicationConfig.getInstance(1))
         .setObjectID(objectID)
         .build();
   }

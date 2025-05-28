@@ -596,7 +596,7 @@ public class TestOMFileCreateRequest extends TestOMKeyRequest {
 
     KeyArgs.Builder keyArgs = KeyArgs.newBuilder()
             .setVolumeName(volumeName).setBucketName(bucketName)
-            .setKeyName(keyName).setFactor(replicationFactor)
+            .setKeyName(keyName).setFactor(replicationFactor.getNumber())
             .setType(replicationType).setDataSize(dataSize);
 
     CreateFileRequest createFileRequest = CreateFileRequest.newBuilder()

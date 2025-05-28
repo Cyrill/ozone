@@ -60,8 +60,7 @@ public class TestQuasiClosedContainerHandler {
 
   @BeforeEach
   public void setup() {
-    ratisReplicationConfig = RatisReplicationConfig.getInstance(
-        HddsProtos.ReplicationFactor.THREE);
+    ratisReplicationConfig = RatisReplicationConfig.getInstance(3);
     replicationManager = Mockito.mock(ReplicationManager.class);
     quasiClosedContainerHandler =
         new QuasiClosedContainerHandler(replicationManager);

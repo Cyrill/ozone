@@ -186,8 +186,7 @@ public class TestReconContainerManager
   ContainerInfo newContainerInfo(long containerId, Pipeline pipeline) {
     return new ContainerInfo.Builder()
         .setContainerID(containerId)
-        .setReplicationConfig(RatisReplicationConfig.getInstance(
-            HddsProtos.ReplicationFactor.THREE))
+        .setReplicationConfig(RatisReplicationConfig.getInstance(3))
         .setState(HddsProtos.LifeCycleState.OPEN)
         .setOwner("owner2")
         .setNumberOfKeys(99L)

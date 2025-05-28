@@ -221,7 +221,7 @@ public class TestObjectStoreWithLegacyFS {
       OzoneBucket bucket, String keyName)
       throws IOException, NoSuchAlgorithmException {
     OmMultipartInfo omMultipartInfo = bucket.initiateMultipartUpload(keyName,
-        RatisReplicationConfig.getInstance(HddsProtos.ReplicationFactor.ONE));
+        RatisReplicationConfig.getInstance(1));
 
     assertNotNull(omMultipartInfo.getUploadID());
 

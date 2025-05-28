@@ -190,16 +190,14 @@ public class TestReconOmMetadataManagerImpl {
             .setBucketName("bucketOne")
             .setVolumeName("sampleVol")
             .setKeyName("key_one")
-            .setReplicationConfig(StandaloneReplicationConfig.getInstance(
-                HddsProtos.ReplicationFactor.ONE))
+            .setReplicationConfig(StandaloneReplicationConfig.getInstance(1))
             .build());
     omMetadataManager.getKeyTable(getBucketLayout()).put(
         "/sampleVol/bucketOne/key_two", new OmKeyInfo.Builder()
             .setBucketName("bucketOne")
             .setVolumeName("sampleVol")
             .setKeyName("key_two")
-            .setReplicationConfig(StandaloneReplicationConfig.getInstance(
-                HddsProtos.ReplicationFactor.ONE))
+            .setReplicationConfig(StandaloneReplicationConfig.getInstance(1))
             .build());
 
     return omMetadataManager;

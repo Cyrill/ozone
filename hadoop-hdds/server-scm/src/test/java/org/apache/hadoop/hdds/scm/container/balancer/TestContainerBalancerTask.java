@@ -1158,7 +1158,7 @@ public class TestContainerBalancerTask {
      */
     if (id % 2 == 0) {
       builder.setReplicationConfig(RatisReplicationConfig
-          .getInstance(HddsProtos.ReplicationFactor.THREE));
+          .getInstance(3));
     } else {
       builder.setReplicationConfig(new ECReplicationConfig(3, 2));
     }

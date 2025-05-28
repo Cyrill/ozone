@@ -67,7 +67,7 @@ public class TestVulnerableUnhealthyReplicasHandler {
   public void setup() throws NodeNotFoundException {
     replicationManager = Mockito.mock(ReplicationManager.class);
     handler = new VulnerableUnhealthyReplicasHandler(replicationManager);
-    repConfig = RatisReplicationConfig.getInstance(THREE);
+    repConfig = RatisReplicationConfig.getInstance(3);
     repQueue = new ReplicationQueue();
     report = new ReplicationManagerReport();
     requestBuilder = new ContainerCheckRequest.Builder()

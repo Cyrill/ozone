@@ -426,7 +426,7 @@ public class TestSCMNodeManager {
       ReplicationConfig ratisThree =
           ReplicationConfig.fromProtoTypeAndFactor(
               HddsProtos.ReplicationType.RATIS,
-              HddsProtos.ReplicationFactor.THREE);
+              3);
       scm.getPipelineManager().createPipeline(ratisThree);
       fail("3 nodes should not have been found for a pipeline.");
     } catch (SCMException ex) {
@@ -444,7 +444,7 @@ public class TestSCMNodeManager {
         .collect(Collectors.toSet());
 
     RatisReplicationConfig replConfig = RatisReplicationConfig
-        .getInstance(factor);
+        .getInstance(factor.getNumber());
 
     // Wait for the expected number of pipelines using allowed DNs.
     GenericTestUtils.waitFor(() -> {
@@ -1059,7 +1059,7 @@ public class TestSCMNodeManager {
     SCMCommand<?> createPipelineCommand =
         new CreatePipelineCommand(PipelineID.randomId(),
             HddsProtos.ReplicationType.RATIS,
-            HddsProtos.ReplicationFactor.THREE, emptyList());
+            3, emptyList());
 
     nodeManager.onMessage(
         new CommandForDatanode<>(datanode1, closeContainerCommand), null);

@@ -76,7 +76,7 @@ public class TestObjectHead {
     OzoneOutputStream out = bucket.createKey("key1",
         value.getBytes(UTF_8).length,
         ReplicationConfig.fromTypeAndFactor(ReplicationType.RATIS,
-        ReplicationFactor.ONE), new HashMap<>());
+        1), new HashMap<>());
     out.write(value.getBytes(UTF_8));
     out.close();
 
@@ -118,7 +118,7 @@ public class TestObjectHead {
     OzoneOutputStream out = bucket.createKey(keyPath,
         keyContent.getBytes(UTF_8).length,
         ReplicationConfig.fromTypeAndFactor(ReplicationType.RATIS,
-            ReplicationFactor.ONE), new HashMap<>());
+            1), new HashMap<>());
     out.write(keyContent.getBytes(UTF_8));
     out.close();
 
@@ -178,7 +178,7 @@ public class TestObjectHead {
     OzoneOutputStream out = bucket.createKey(keyPath,
         keyContent.getBytes(UTF_8).length,
         ReplicationConfig.fromTypeAndFactor(ReplicationType.RATIS,
-            ReplicationFactor.ONE), new HashMap<>());
+            1), new HashMap<>());
     out.write(keyContent.getBytes(UTF_8));
     out.close();
 

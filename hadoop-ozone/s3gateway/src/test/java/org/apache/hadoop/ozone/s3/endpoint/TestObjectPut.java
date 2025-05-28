@@ -102,7 +102,7 @@ class TestObjectPut {
   private LoadingCache<Pair<String, String>, OzoneKeyDetails> keyDetailsCache;
 
   static Stream<Arguments> argumentsForPutObject() {
-    ReplicationConfig ratis3 = RatisReplicationConfig.getInstance(HddsProtos.ReplicationFactor.THREE);
+    ReplicationConfig ratis3 = RatisReplicationConfig.getInstance(3);
     ECReplicationConfig ec = new ECReplicationConfig("rs-3-2-1024K");
     return Stream.of(
         Arguments.of(0, ratis3),
@@ -468,7 +468,7 @@ class TestObjectPut {
 
     //default type is set
     assertEquals(
-        RatisReplicationConfig.getInstance(HddsProtos.ReplicationFactor.THREE),
+        RatisReplicationConfig.getInstance(3),
         key.getReplicationConfig());
   }
 

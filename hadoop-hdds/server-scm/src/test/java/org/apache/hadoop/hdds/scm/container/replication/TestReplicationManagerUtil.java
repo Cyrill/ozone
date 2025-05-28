@@ -59,7 +59,7 @@ public class TestReplicationManagerUtil {
   @Test
   public void testGetExcludedAndUsedNodes() throws NodeNotFoundException {
     ContainerInfo container = createContainer(HddsProtos.LifeCycleState.CLOSED,
-        RatisReplicationConfig.getInstance(HddsProtos.ReplicationFactor.THREE));
+        RatisReplicationConfig.getInstance(3));
     ContainerID cid = container.containerID();
     Set<ContainerReplica> replicas = new HashSet<>();
     ContainerReplica good = createContainerReplica(cid, 0,
@@ -139,7 +139,7 @@ public class TestReplicationManagerUtil {
   @Test
   public void testGetUsedAndExcludedNodesForQuasiClosedContainer() throws NodeNotFoundException {
     ContainerInfo container = createContainer(HddsProtos.LifeCycleState.QUASI_CLOSED,
-        RatisReplicationConfig.getInstance(HddsProtos.ReplicationFactor.THREE));
+        RatisReplicationConfig.getInstance(3));
     ContainerID cid = container.containerID();
     Set<ContainerReplica> replicas = new HashSet<>();
     ContainerReplica good = createContainerReplica(cid, 0, IN_SERVICE,

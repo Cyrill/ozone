@@ -118,7 +118,7 @@ public class TestListStatus {
   private static void createFile(OzoneBucket bucket, String keyName)
       throws IOException {
     try (OzoneOutputStream oos = bucket.createFile(keyName, 0,
-        RatisReplicationConfig.getInstance(HddsProtos.ReplicationFactor.THREE),
+        RatisReplicationConfig.getInstance(3),
         true, false)) {
       oos.flush();
     }

@@ -43,9 +43,9 @@ public class TestOzoneClientUtils {
   private ReplicationConfig ecReplicationConfig =
       new ECReplicationConfig("rs-3-2-1024K");
   private ReplicationConfig ratis3ReplicationConfig =
-      RatisReplicationConfig.getInstance(HddsProtos.ReplicationFactor.THREE);
+      RatisReplicationConfig.getInstance(3);
   private ReplicationConfig ratis1ReplicationConfig =
-      RatisReplicationConfig.getInstance(HddsProtos.ReplicationFactor.ONE);
+      RatisReplicationConfig.getInstance(1);
 
   @Test()
   public void testNegativeLength() throws IOException {

@@ -153,7 +153,7 @@ public class TestContainerStateMachineFlushDelay {
     OzoneOutputStream key =
         objectStore.getVolume(volumeName).getBucket(bucketName)
             .createKey("ratis", 1024, ReplicationType.RATIS,
-                ReplicationFactor.ONE, new HashMap<>());
+                1, new HashMap<>());
     // Now ozone.client.stream.buffer.flush.delay is currently enabled
     // by default. Here we  written data(length 110) greater than chunk
     // Size(length 100), make sure flush will sync data.

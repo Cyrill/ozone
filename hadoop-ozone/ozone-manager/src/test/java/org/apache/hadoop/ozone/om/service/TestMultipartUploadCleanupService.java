@@ -217,7 +217,7 @@ public class TestMultipartUploadCleanupService {
             .setBucketName(bucketName)
             .setKeyName(keyName)
             .setAcls(Collections.emptyList())
-            .setReplicationConfig(StandaloneReplicationConfig.getInstance(ONE))
+            .setReplicationConfig(StandaloneReplicationConfig.getInstance(1))
             .setLocationInfoList(new ArrayList<>())
             .build();
 
@@ -236,7 +236,7 @@ public class TestMultipartUploadCleanupService {
               .setMultipartUploadPartNumber(i)
               .setAcls(Collections.emptyList())
               .setReplicationConfig(
-                  StandaloneReplicationConfig.getInstance(ONE))
+                  StandaloneReplicationConfig.getInstance(1))
               .build();
 
       OpenKeySession openKey = writeClient.openKey(partKeyArgs);
@@ -253,7 +253,7 @@ public class TestMultipartUploadCleanupService {
               .addMetadata(OzoneConsts.ETAG,
                   DigestUtils.md5Hex(UUID.randomUUID().toString()))
               .setReplicationConfig(
-                  StandaloneReplicationConfig.getInstance(ONE))
+                  StandaloneReplicationConfig.getInstance(1))
               .setLocationInfoList(Collections.emptyList())
               .build();
 

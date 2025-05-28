@@ -485,7 +485,7 @@ public class TestContainerKeyMapperTask {
         .setVolumeName(volume)
         .setKeyName(key)
         .setReplicationConfig(StandaloneReplicationConfig
-            .getInstance(HddsProtos.ReplicationFactor.ONE))
+            .getInstance(1))
         .setOmKeyLocationInfos(Collections.singletonList(
             omKeyLocationInfoGroup))
         .build();

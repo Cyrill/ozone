@@ -63,7 +63,7 @@ public final class TestHddsUpgradeUtils {
 
   private static final ReplicationConfig RATIS_THREE =
       ReplicationConfig.fromProtoTypeAndFactor(HddsProtos.ReplicationType.RATIS,
-          HddsProtos.ReplicationFactor.THREE);
+          3);
 
   public static void waitForFinalizationFromClient(
       StorageContainerLocationProtocol scmClient, String clientID)

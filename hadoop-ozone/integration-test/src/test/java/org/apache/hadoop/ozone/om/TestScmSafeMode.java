@@ -146,7 +146,7 @@ public class TestScmSafeMode {
     OzoneVolume volume = store.getVolume(volumeName);
     volume.createBucket(bucketName);
     OzoneBucket bucket = volume.getBucket(bucketName);
-    bucket.createKey(keyName, 1000, RATIS, ONE, new HashMap<>());
+    bucket.createKey(keyName, 1000, RATIS, 1, new HashMap<>());
 
     cluster.stop();
 
@@ -171,7 +171,7 @@ public class TestScmSafeMode {
 
 // As cluster is restarted with out datanodes restart
     IOException ioException = assertThrows(IOException.class,
-        () -> bucket1.createKey(keyName, 1000, RATIS, ONE,
+        () -> bucket1.createKey(keyName, 1000, RATIS, 1,
             new HashMap<>()));
     assertTrue(ioException.getMessage()
         .contains("SafeModePrecheck failed for allocateBlock"));
@@ -301,7 +301,7 @@ public class TestScmSafeMode {
     SCMException scmException = assertThrows(SCMException.class,
         () -> scm.getClientProtocolServer()
             .allocateContainer(ReplicationType.STAND_ALONE,
-                ReplicationFactor.ONE, ""));
+                1, ""));
     assertTrue(scmException.getMessage()
         .contains("SafeModePrecheck failed for allocateContainer"));
     cluster.startHddsDatanodes();

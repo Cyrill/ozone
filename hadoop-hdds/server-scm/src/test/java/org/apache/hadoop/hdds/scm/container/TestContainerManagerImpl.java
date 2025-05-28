@@ -87,8 +87,7 @@ public class TestContainerManagerImpl {
         conf, scmhaManager, SCMDBDefinition.SEQUENCE_ID.getTable(dbStore));
     final PipelineManager pipelineManager =
         new MockPipelineManager(dbStore, scmhaManager, nodeManager);
-    pipelineManager.createPipeline(RatisReplicationConfig.getInstance(
-        ReplicationFactor.THREE));
+    pipelineManager.createPipeline(RatisReplicationConfig.getInstance(3));
     pendingOpsMock = Mockito.mock(ContainerReplicaPendingOps.class);
     containerManager = new ContainerManagerImpl(conf,
         scmhaManager, sequenceIdGen, pipelineManager,
@@ -113,8 +112,7 @@ public class TestContainerManagerImpl {
     Assertions.assertTrue(
         containerManager.getContainers().isEmpty());
     final ContainerInfo container = containerManager.allocateContainer(
-        RatisReplicationConfig.getInstance(
-            ReplicationFactor.THREE), "admin");
+        RatisReplicationConfig.getInstance(3), "admin");
     Assertions.assertEquals(1, containerManager.getContainers().size());
     Assertions.assertNotNull(containerManager.getContainer(
         container.containerID()));
@@ -123,8 +121,7 @@ public class TestContainerManagerImpl {
   @Test
   void testUpdateContainerState() throws Exception {
     final ContainerInfo container = containerManager.allocateContainer(
-        RatisReplicationConfig.getInstance(
-            ReplicationFactor.THREE), "admin");
+        RatisReplicationConfig.getInstance(3), "admin");
     final ContainerID cid = container.containerID();
     Assertions.assertEquals(LifeCycleState.OPEN,
         containerManager.getContainer(cid).getState());
@@ -146,8 +143,7 @@ public class TestContainerManagerImpl {
   void testTransitionDeletingToClosedState() throws IOException, InvalidStateTransitionException {
     // allocate OPEN Ratis and Ec containers, and do a series of state changes to transition them to DELETING
     final ContainerInfo container = containerManager.allocateContainer(
-        RatisReplicationConfig.getInstance(
-            ReplicationFactor.THREE), "admin");
+        RatisReplicationConfig.getInstance(3), "admin");
     ContainerInfo ecContainer = containerManager.allocateContainer(new ECReplicationConfig(3, 2), "admin");
     final ContainerID cid = container.containerID();
     final ContainerID ecCid = ecContainer.containerID();
@@ -185,8 +181,7 @@ public class TestContainerManagerImpl {
   void testTransitionDeletingToClosedStateAllowsOnlyDeletingContainers() throws IOException {
     // test for RATIS container
     final ContainerInfo container = containerManager.allocateContainer(
-        RatisReplicationConfig.getInstance(
-            ReplicationFactor.THREE), "admin");
+        RatisReplicationConfig.getInstance(3), "admin");
     final ContainerID cid = container.containerID();
     assertEquals(LifeCycleState.OPEN, containerManager.getContainer(cid).getState());
     assertThrows(IOException.class, () -> containerManager.transitionDeletingToClosedState(cid));
@@ -205,7 +200,7 @@ public class TestContainerManagerImpl {
     List<ContainerID> ids = new ArrayList<>();
     for (int i = 0; i < 10; i++) {
       ContainerInfo container = containerManager.allocateContainer(
-          RatisReplicationConfig.getInstance(ReplicationFactor.THREE), "admin");
+          RatisReplicationConfig.getInstance(3), "admin");
       ids.add(container.containerID());
     }
 
@@ -273,8 +268,7 @@ public class TestContainerManagerImpl {
   void testUpdateContainerReplicaInvokesPendingOp()
       throws IOException, TimeoutException {
     final ContainerInfo container = containerManager.allocateContainer(
-        RatisReplicationConfig.getInstance(
-            ReplicationFactor.THREE), "admin");
+        RatisReplicationConfig.getInstance(3), "admin");
     DatanodeDetails dn = MockDatanodeDetails.randomDatanodeDetails();
     containerManager.updateContainerReplica(container.containerID(),
         ContainerReplica.newBuilder()
@@ -294,8 +288,7 @@ public class TestContainerManagerImpl {
   void testRemoveContainerReplicaInvokesPendingOp()
       throws IOException, TimeoutException {
     final ContainerInfo container = containerManager.allocateContainer(
-        RatisReplicationConfig.getInstance(
-            ReplicationFactor.THREE), "admin");
+        RatisReplicationConfig.getInstance(3), "admin");
     DatanodeDetails dn = MockDatanodeDetails.randomDatanodeDetails();
     containerManager.removeContainerReplica(container.containerID(),
         ContainerReplica.newBuilder()

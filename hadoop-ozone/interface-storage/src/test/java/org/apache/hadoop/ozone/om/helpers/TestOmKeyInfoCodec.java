@@ -82,7 +82,7 @@ public class TestOmKeyInfoCodec extends Proto2CodecTestBase<OmKeyInfo> {
         .setCreationTime(Time.now())
         .setModificationTime(Time.now())
         .setReplicationConfig(RatisReplicationConfig
-            .getInstance(HddsProtos.ReplicationFactor.THREE))
+            .getInstance(3))
         .setVolumeName(VOLUME)
         .setBucketName(BUCKET)
         .setKeyName(KEYNAME)

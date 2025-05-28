@@ -223,7 +223,7 @@ public abstract class TestOzoneManagerHA {
   public static void createKey(OzoneBucket ozoneBucket, String keyName) throws IOException {
     String data = "data" + RandomStringUtils.randomNumeric(5);
     OzoneOutputStream ozoneOutputStream = ozoneBucket.createKey(keyName, data.length(), ReplicationType.RATIS,
-        ReplicationFactor.ONE, new HashMap<>());
+        1, new HashMap<>());
     ozoneOutputStream.write(data.getBytes(UTF_8), 0, data.length());
     ozoneOutputStream.close();
   }
@@ -369,7 +369,7 @@ public abstract class TestOzoneManagerHA {
       throws Exception {
 
     OzoneOutputStream ozoneOutputStream = ozoneBucket.createFile(keyName,
-        data.length(), ReplicationType.RATIS, ReplicationFactor.ONE,
+        data.length(), ReplicationType.RATIS, 1,
         overwrite, recursive);
 
     ozoneOutputStream.write(data.getBytes(UTF_8), 0, data.length());
@@ -432,7 +432,7 @@ public abstract class TestOzoneManagerHA {
       String value = "random data";
       OzoneOutputStream ozoneOutputStream = ozoneBucket.createKey(keyName,
           value.length(), ReplicationType.RATIS,
-          ReplicationFactor.ONE, new HashMap<>());
+          1, new HashMap<>());
       ozoneOutputStream.write(value.getBytes(UTF_8), 0, value.length());
       ozoneOutputStream.close();
 

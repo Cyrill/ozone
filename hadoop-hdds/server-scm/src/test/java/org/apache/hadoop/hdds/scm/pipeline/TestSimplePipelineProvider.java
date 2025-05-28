@@ -90,7 +90,7 @@ public class TestSimplePipelineProvider {
   public void testCreatePipelineWithFactor() throws Exception {
     HddsProtos.ReplicationFactor factor = HddsProtos.ReplicationFactor.THREE;
     Pipeline pipeline =
-        provider.create(StandaloneReplicationConfig.getInstance(factor));
+        provider.create(StandaloneReplicationConfig.getInstance(factor.getNumber()));
     HddsProtos.Pipeline pipelineProto = pipeline.getProtobufMessage(
         ClientVersion.CURRENT_VERSION);
     stateManager.addPipeline(pipelineProto);
@@ -104,7 +104,7 @@ public class TestSimplePipelineProvider {
 
     factor = HddsProtos.ReplicationFactor.ONE;
     Pipeline pipeline1 =
-        provider.create(StandaloneReplicationConfig.getInstance(factor));
+        provider.create(StandaloneReplicationConfig.getInstance(factor.getNumber()));
     HddsProtos.Pipeline pipelineProto1 = pipeline1.getProtobufMessage(
         ClientVersion.CURRENT_VERSION);
     stateManager.addPipeline(pipelineProto1);
@@ -112,7 +112,7 @@ public class TestSimplePipelineProvider {
         HddsProtos.ReplicationType.STAND_ALONE);
     Assertions.assertEquals(
         ((StandaloneReplicationConfig) pipeline1.getReplicationConfig())
-            .getReplicationFactor(), factor);
+            .getReplicationFactor(), factor.getNumber());
     Assertions.assertEquals(pipeline1.getPipelineState(),
         Pipeline.PipelineState.OPEN);
     Assertions.assertEquals(pipeline1.getNodes().size(), factor.getNumber());
@@ -130,25 +130,25 @@ public class TestSimplePipelineProvider {
   public void testCreatePipelineWithNodes() throws IOException {
     HddsProtos.ReplicationFactor factor = HddsProtos.ReplicationFactor.THREE;
     Pipeline pipeline =
-        provider.create(StandaloneReplicationConfig.getInstance(factor),
+        provider.create(StandaloneReplicationConfig.getInstance(factor.getNumber()),
             createListOfNodes(factor.getNumber()), Collections.emptySet());
     Assertions.assertEquals(pipeline.getType(),
         HddsProtos.ReplicationType.STAND_ALONE);
     Assertions.assertEquals(
         ((StandaloneReplicationConfig) pipeline.getReplicationConfig())
-            .getReplicationFactor(), factor);
+            .getReplicationFactor(), factor.getNumber());
     Assertions.assertEquals(pipeline.getPipelineState(),
         Pipeline.PipelineState.OPEN);
     Assertions.assertEquals(pipeline.getNodes().size(), factor.getNumber());
 
     factor = HddsProtos.ReplicationFactor.ONE;
-    pipeline = provider.create(StandaloneReplicationConfig.getInstance(factor),
+    pipeline = provider.create(StandaloneReplicationConfig.getInstance(factor.getNumber()),
         createListOfNodes(factor.getNumber()), Collections.emptySet());
     Assertions.assertEquals(pipeline.getType(),
         HddsProtos.ReplicationType.STAND_ALONE);
     Assertions.assertEquals(
         ((StandaloneReplicationConfig) pipeline.getReplicationConfig())
-            .getReplicationFactor(), factor);
+            .getReplicationFactor(), factor.getNumber());
     Assertions.assertEquals(pipeline.getPipelineState(),
         Pipeline.PipelineState.OPEN);
     Assertions.assertEquals(pipeline.getNodes().size(), factor.getNumber());

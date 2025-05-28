@@ -178,7 +178,7 @@ public class TestKeyManagerUnit {
               .setMultipartUploadPartNumber(i)
               .setAcls(Collections.emptyList())
               .setReplicationConfig(
-                  RatisReplicationConfig.getInstance(ReplicationFactor.THREE))
+                  RatisReplicationConfig.getInstance(3))
               .build();
 
       OpenKeySession openKey = writeClient.openKey(partKeyArgs);
@@ -193,7 +193,7 @@ public class TestKeyManagerUnit {
               .setMultipartUploadPartNumber(i)
               .setAcls(Collections.emptyList())
               .setReplicationConfig(
-                  RatisReplicationConfig.getInstance(ReplicationFactor.THREE))
+                  RatisReplicationConfig.getInstance(3))
               .setLocationInfoList(Collections.emptyList())
               .build();
 
@@ -371,7 +371,7 @@ public class TestKeyManagerUnit {
         .setBucketName(bucket)
         .setKeyName(key)
         .setReplicationConfig(
-            RatisReplicationConfig.getInstance(ReplicationFactor.THREE))
+            RatisReplicationConfig.getInstance(3))
         .setAcls(new ArrayList<>())
         .build();
     OmMultipartInfo omMultipartInfo = omtest.initiateMultipartUpload(key1);
@@ -385,7 +385,7 @@ public class TestKeyManagerUnit {
         .setUploadID(uploadID)
         .setCreationTime(Time.now())
         .setReplicationConfig(
-            RatisReplicationConfig.getInstance(ReplicationFactor.THREE))
+            RatisReplicationConfig.getInstance(3))
         .build();
 
     metadataManager.getMultipartInfoTable().addCacheEntry(
@@ -415,7 +415,7 @@ public class TestKeyManagerUnit {
     final Pipeline pipeline1 = Pipeline.newBuilder()
         .setId(PipelineID.randomId())
         .setReplicationConfig(
-            RatisReplicationConfig.getInstance(ReplicationFactor.THREE))
+            RatisReplicationConfig.getInstance(3))
         .setState(Pipeline.PipelineState.OPEN)
         .setLeaderId(dn1.getUuid())
         .setNodes(Arrays.asList(dn1, dn2, dn3))
@@ -424,7 +424,7 @@ public class TestKeyManagerUnit {
     final Pipeline pipeline2 = Pipeline.newBuilder()
         .setId(PipelineID.randomId())
         .setReplicationConfig(
-            RatisReplicationConfig.getInstance(ReplicationFactor.THREE))
+            RatisReplicationConfig.getInstance(3))
         .setState(Pipeline.PipelineState.OPEN)
         .setLeaderId(dn1.getUuid())
         .setNodes(Arrays.asList(dn2, dn3, dn4))
@@ -518,7 +518,7 @@ public class TestKeyManagerUnit {
     final Pipeline pipelineOne = Pipeline.newBuilder()
         .setId(PipelineID.randomId())
         .setReplicationConfig(
-            RatisReplicationConfig.getInstance(ReplicationFactor.THREE))
+            RatisReplicationConfig.getInstance(3))
         .setState(Pipeline.PipelineState.OPEN)
         .setLeaderId(dnOne.getUuid())
         .setNodes(Arrays.asList(dnOne, dnTwo, dnThree))
@@ -527,7 +527,7 @@ public class TestKeyManagerUnit {
     final Pipeline pipelineTwo = Pipeline.newBuilder()
         .setId(PipelineID.randomId())
         .setReplicationConfig(
-            RatisReplicationConfig.getInstance(ReplicationFactor.THREE))
+            RatisReplicationConfig.getInstance(3))
         .setState(Pipeline.PipelineState.OPEN)
         .setLeaderId(dnFour.getUuid())
         .setNodes(Arrays.asList(dnFour, dnFive, dnSix))
@@ -596,7 +596,7 @@ public class TestKeyManagerUnit {
         .setModificationTime(Time.now())
         .setDataSize(256000)
         .setReplicationConfig(
-                    RatisReplicationConfig.getInstance(ReplicationFactor.THREE))
+                    RatisReplicationConfig.getInstance(3))
             .setAcls(Collections.emptyList())
         .build();
     OMRequestTestUtils.addKeyToOM(metadataManager, keyInfo);
@@ -661,7 +661,7 @@ public class TestKeyManagerUnit {
           .setOmKeyLocationInfos(singletonList(
               new OmKeyLocationInfoGroup(0, new ArrayList<>())))
           .setReplicationConfig(RatisReplicationConfig
-              .getInstance(ReplicationFactor.THREE))
+              .getInstance(3))
           .setKeyName(keyPrefix + i)
           .setObjectID(i)
           .setUpdateID(i)

@@ -201,7 +201,7 @@ public class TestBlockDeletion {
   private static Stream<ReplicationConfig> replicationConfigs() {
     return Stream.of(
         ReplicationConfig.fromTypeAndFactor(
-            ReplicationType.RATIS, ReplicationFactor.THREE),
+            ReplicationType.RATIS, 3),
         new ECReplicationConfig("rs-2-1-256k"));
   }
 
@@ -351,7 +351,7 @@ public class TestBlockDeletion {
     String keyName = UUID.randomUUID().toString();
     OzoneOutputStream out = bucket.createKey(keyName,
         value.getBytes(UTF_8).length, ReplicationType.RATIS,
-        ReplicationFactor.THREE, new HashMap<>());
+        3, new HashMap<>());
     out.write(value.getBytes(UTF_8));
     out.close();
 
@@ -359,7 +359,7 @@ public class TestBlockDeletion {
         .setBucketName(bucketName).setKeyName(keyName).setDataSize(0)
         .setReplicationConfig(
             RatisReplicationConfig
-                .getInstance(HddsProtos.ReplicationFactor.THREE))
+                .getInstance(3))
         .build();
     Thread.sleep(5000);
     List<ContainerInfo> containerInfos =
@@ -458,7 +458,7 @@ public class TestBlockDeletion {
     String keyName = UUID.randomUUID().toString();
     OzoneOutputStream out = bucket.createKey(keyName,
         value.getBytes(UTF_8).length, ReplicationType.RATIS,
-        ReplicationFactor.THREE, new HashMap<>());
+        3, new HashMap<>());
     out.write(value.getBytes(UTF_8));
     out.close();
 
@@ -466,7 +466,7 @@ public class TestBlockDeletion {
         .setBucketName(bucketName).setKeyName(keyName).setDataSize(0)
         .setReplicationConfig(
             RatisReplicationConfig
-                .getInstance(HddsProtos.ReplicationFactor.THREE))
+                .getInstance(3))
         .build();
     List<OmKeyLocationInfoGroup> omKeyLocationInfoGroupList =
         om.lookupKey(keyArgs).getKeyLocationVersions();
@@ -588,7 +588,7 @@ public class TestBlockDeletion {
     String keyName = UUID.randomUUID().toString();
     OzoneOutputStream out = bucket.createKey(keyName,
         value.getBytes(UTF_8).length, ReplicationType.RATIS,
-        ReplicationFactor.THREE, new HashMap<>());
+        3, new HashMap<>());
     out.write(value.getBytes(UTF_8));
     out.close();
 
@@ -596,7 +596,7 @@ public class TestBlockDeletion {
         .setBucketName(bucketName).setKeyName(keyName).setDataSize(0)
         .setReplicationConfig(
             RatisReplicationConfig
-                .getInstance(HddsProtos.ReplicationFactor.THREE))
+                .getInstance(3))
         .build();
     List<OmKeyLocationInfoGroup> omKeyLocationInfoGroupList =
         om.lookupKey(keyArgs).getKeyLocationVersions();
@@ -791,7 +791,7 @@ public class TestBlockDeletion {
       String keyName = UUID.randomUUID().toString();
       OzoneOutputStream out = bucket.createKey(keyName,
           value.getBytes(UTF_8).length, ReplicationType.RATIS,
-          ReplicationFactor.THREE, new HashMap<>());
+          3, new HashMap<>());
       out.write(value.getBytes(UTF_8));
       out.close();
       keys.add(keyName);
@@ -806,7 +806,7 @@ public class TestBlockDeletion {
           .setBucketName(bucketName).setKeyName(keys.get(j)).setDataSize(0)
           .setReplicationConfig(
               RatisReplicationConfig
-                  .getInstance(HddsProtos.ReplicationFactor.THREE))
+                  .getInstance(3))
           .build();
       writeClient.deleteKey(keyArgs);
     }

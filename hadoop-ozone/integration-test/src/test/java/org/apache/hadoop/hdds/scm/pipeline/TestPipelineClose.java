@@ -99,8 +99,7 @@ public class TestPipelineClose {
     containerManager = scm.getContainerManager();
     pipelineManager = scm.getPipelineManager();
     ContainerInfo containerInfo = containerManager
-        .allocateContainer(RatisReplicationConfig.getInstance(
-            ReplicationFactor.THREE), "testOwner");
+        .allocateContainer(RatisReplicationConfig.getInstance(3), "testOwner");
     ratisContainer = new ContainerWithPipeline(containerInfo,
         pipelineManager.getPipeline(containerInfo.getPipelineID()));
     pipelineManager = scm.getPipelineManager();
@@ -219,8 +218,7 @@ public class TestPipelineClose {
         ArgumentCaptor.forClass(PipelineActionsFromDatanode.class);
 
     ContainerInfo containerInfo = containerManager
-        .allocateContainer(RatisReplicationConfig.getInstance(
-            ReplicationFactor.THREE), "testOwner");
+        .allocateContainer(RatisReplicationConfig.getInstance(3), "testOwner");
     ContainerWithPipeline containerWithPipeline =
         new ContainerWithPipeline(containerInfo,
             pipelineManager.getPipeline(containerInfo.getPipelineID()));

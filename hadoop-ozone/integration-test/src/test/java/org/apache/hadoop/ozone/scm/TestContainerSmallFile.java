@@ -82,7 +82,7 @@ public class TestContainerSmallFile {
     ContainerWithPipeline container =
         storageContainerLocationClient.allocateContainer(
             SCMTestUtils.getReplicationType(ozoneConfig),
-            HddsProtos.ReplicationFactor.ONE, OzoneConsts.OZONE);
+            1, OzoneConsts.OZONE);
     XceiverClientSpi client = xceiverClientManager
         .acquireClient(container.getPipeline());
     ContainerProtocolCalls.createContainer(client,
@@ -105,7 +105,7 @@ public class TestContainerSmallFile {
     ContainerWithPipeline container =
         storageContainerLocationClient.allocateContainer(
             SCMTestUtils.getReplicationType(ozoneConfig),
-            HddsProtos.ReplicationFactor.ONE, OzoneConsts.OZONE);
+            1, OzoneConsts.OZONE);
     XceiverClientSpi client = xceiverClientManager
         .acquireClient(container.getPipeline());
     ContainerProtocolCalls.createContainer(client,
@@ -126,7 +126,7 @@ public class TestContainerSmallFile {
     ContainerWithPipeline container =
         storageContainerLocationClient.allocateContainer(
             SCMTestUtils.getReplicationType(ozoneConfig),
-            HddsProtos.ReplicationFactor.ONE, OzoneConsts.OZONE);
+            1, OzoneConsts.OZONE);
     XceiverClientSpi client = xceiverClientManager
         .acquireClient(container.getPipeline());
     ContainerProtocolCalls.createContainer(client,
@@ -149,7 +149,7 @@ public class TestContainerSmallFile {
     ContainerWithPipeline container =
         storageContainerLocationClient.allocateContainer(
             HddsProtos.ReplicationType.RATIS,
-            HddsProtos.ReplicationFactor.ONE, OzoneConsts.OZONE);
+            1, OzoneConsts.OZONE);
     XceiverClientSpi client = xceiverClientManager
         .acquireClient(container.getPipeline());
     ContainerProtocolCalls.createContainer(client,

@@ -503,8 +503,7 @@ public class TestContainerHealthTask extends AbstractReconSqlDBTest {
       ContainerInfo c = mock(ContainerInfo.class);
       when(c.getContainerID()).thenReturn((long)i);
       when(c.getReplicationConfig())
-          .thenReturn(RatisReplicationConfig.getInstance(
-              HddsProtos.ReplicationFactor.THREE));
+          .thenReturn(RatisReplicationConfig.getInstance(3));
       when(c.containerID()).thenReturn(ContainerID.valueOf(i));
       containers.add(c);
     }
@@ -516,7 +515,7 @@ public class TestContainerHealthTask extends AbstractReconSqlDBTest {
     when(c.getContainerID()).thenReturn((long)containerID);
     when(c.getReplicationConfig())
         .thenReturn(RatisReplicationConfig
-            .getInstance(HddsProtos.ReplicationFactor.THREE));
+            .getInstance(3));
     when(c.containerID()).thenReturn(ContainerID.valueOf(containerID));
     when(c.getState()).thenReturn(HddsProtos.LifeCycleState.DELETED);
     return c;

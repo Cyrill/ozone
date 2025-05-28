@@ -87,8 +87,7 @@ public class TestSCMContainerManagerMetrics {
         "NumSuccessfulCreateContainers", metrics);
 
     ContainerInfo containerInfo = containerManager.allocateContainer(
-        RatisReplicationConfig.getInstance(
-            HddsProtos.ReplicationFactor.ONE), OzoneConsts.OZONE);
+        RatisReplicationConfig.getInstance(1), OzoneConsts.OZONE);
 
     metrics = getMetrics(SCMContainerManagerMetrics.class.getSimpleName());
     Assertions.assertEquals(getLongCounter("NumSuccessfulCreateContainers",
@@ -96,8 +95,7 @@ public class TestSCMContainerManagerMetrics {
 
     Assertions.assertThrows(IOException.class, () ->
         containerManager.allocateContainer(
-            RatisReplicationConfig.getInstance(
-                HddsProtos.ReplicationFactor.THREE), OzoneConsts.OZONE));
+            RatisReplicationConfig.getInstance(3), OzoneConsts.OZONE));
     // allocateContainer should fail, so it should have the old metric value.
     metrics = getMetrics(SCMContainerManagerMetrics.class.getSimpleName());
     Assertions.assertEquals(getLongCounter("NumSuccessfulCreateContainers",
@@ -153,7 +151,7 @@ public class TestSCMContainerManagerMetrics {
         .createBucket(volumeName, bucketName);
     OzoneOutputStream ozoneOutputStream = client
         .getObjectStore().getClientProxy().createKey(volumeName, bucketName,
-            key, 0, ReplicationType.RATIS, ReplicationFactor.ONE,
+            key, 0, ReplicationType.RATIS, 1,
             new HashMap<>());
 
     String data = "file data";

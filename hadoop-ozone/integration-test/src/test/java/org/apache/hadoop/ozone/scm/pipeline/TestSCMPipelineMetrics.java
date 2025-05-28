@@ -105,7 +105,7 @@ public class TestSCMPipelineMetrics {
     AllocatedBlock block =
         cluster.getStorageContainerManager().getScmBlockManager()
             .allocateBlock(5,
-                RatisReplicationConfig.getInstance(ReplicationFactor.ONE),
+                RatisReplicationConfig.getInstance(1),
                 "Test", new ExcludeList(), Collections.emptySet());
     MetricsRecordBuilder metrics =
         getMetrics(SCMPipelineMetrics.class.getSimpleName());

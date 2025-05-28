@@ -118,8 +118,7 @@ public class TestPipelineDatanodesIntersection {
     int createdPipelineCount = 0;
     while (!end && createdPipelineCount <= healthyNodeCount * nodeHeaviness) {
       try {
-        Pipeline pipeline = provider.create(RatisReplicationConfig.getInstance(
-            ReplicationFactor.THREE));
+        Pipeline pipeline = provider.create(RatisReplicationConfig.getInstance(3));
         HddsProtos.Pipeline pipelineProto = pipeline.getProtobufMessage(
             ClientVersion.CURRENT_VERSION);
         stateManager.addPipeline(pipelineProto);
@@ -157,7 +156,7 @@ public class TestPipelineDatanodesIntersection {
     LOG.info("Among total " +
         stateManager
             .getPipelines(RatisReplicationConfig
-                .getInstance(ReplicationFactor.THREE))
+                .getInstance(3))
             .size() + " created pipelines" +
         " with " + healthyNodeCount + " healthy datanodes and " +
         nodeHeaviness + " as node heaviness, " +
