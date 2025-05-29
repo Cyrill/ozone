@@ -161,7 +161,7 @@ public class S3InitiateMultipartUploadRequestWithFSO
       // initiate MPU.
       final ReplicationConfig replicationConfig = OzoneConfigUtil
           .resolveReplicationConfigPreference(keyArgs.getType(),
-              keyArgs.getFactor(), keyArgs.getEcReplicationConfig(),
+              keyArgs.getReplicationFactor(), keyArgs.getEcReplicationConfig(),
               bucketInfo != null ?
                   bucketInfo.getDefaultReplicationConfig() :
                   null, ozoneManager);

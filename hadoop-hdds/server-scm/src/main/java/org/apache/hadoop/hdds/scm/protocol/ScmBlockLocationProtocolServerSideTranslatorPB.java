@@ -194,7 +194,7 @@ public final class ScmBlockLocationProtocolServerSideTranslatorPB
             request.getNumBlocks(),
             ReplicationConfig.fromProto(
                 request.getType(),
-                request.getFactor(),
+                request.getReplicationFactor(),
                 request.getEcReplicationConfig()),
             request.getOwner(),
             ExcludeList.getFromProtoBuf(request.getExcludeList()),

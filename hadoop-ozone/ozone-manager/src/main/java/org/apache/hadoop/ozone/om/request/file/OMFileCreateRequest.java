@@ -120,7 +120,7 @@ public class OMFileCreateRequest extends OMKeyRequest {
     final long requestedSize = keyArgs.getDataSize() > 0 ?
         keyArgs.getDataSize() : scmBlockSize;
 
-    int factor = keyArgs.getFactor();
+    int factor = keyArgs.getReplicationFactor();
     HddsProtos.ReplicationType type = keyArgs.getType();
 
     final OmBucketInfo bucketInfo = ozoneManager
@@ -151,7 +151,7 @@ public class OMFileCreateRequest extends OMKeyRequest {
             );
 
     KeyArgs.Builder newKeyArgs = keyArgs.toBuilder()
-        .setModificationTime(Time.now()).setType(type).setFactor(factor)
+        .setModificationTime(Time.now()).setType(type).setReplicationFactor(factor)
         .setDataSize(requestedSize);
 
     newKeyArgs.addAllKeyLocations(omKeyLocationInfoList.stream()
@@ -255,7 +255,7 @@ public class OMFileCreateRequest extends OMKeyRequest {
           getBucketInfo(omMetadataManager, volumeName, bucketName);
       final ReplicationConfig repConfig = OzoneConfigUtil
           .resolveReplicationConfigPreference(keyArgs.getType(),
-              keyArgs.getFactor(), keyArgs.getEcReplicationConfig(),
+              keyArgs.getReplicationFactor(), keyArgs.getEcReplicationConfig(),
               omBucketInfo.getDefaultReplicationConfig(),
               ozoneManager);
 

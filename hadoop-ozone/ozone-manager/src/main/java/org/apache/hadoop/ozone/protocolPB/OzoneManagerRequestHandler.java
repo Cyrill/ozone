@@ -978,7 +978,7 @@ public class OzoneManagerRequestHandler implements RequestHandler {
           ((ECReplicationConfig)omMultipartUploadListParts
               .getReplicationConfig()).toProto());
     } else {
-      response.setFactor(ReplicationConfig.getLegacyFactor(
+      response.setReplicationFactor(ReplicationConfig.getLegacyFactor(
           omMultipartUploadListParts.getReplicationConfig()));
     }
     response.setNextPartNumberMarker(
@@ -1016,7 +1016,7 @@ public class OzoneManagerRequestHandler implements RequestHandler {
                 ((ECReplicationConfig)upload.getReplicationConfig())
                     .toProto());
           } else {
-            bldr.setFactor(ReplicationConfig.getLegacyFactor(
+            bldr.setReplicationFactor(ReplicationConfig.getLegacyFactor(
                 upload.getReplicationConfig()));
           }
           bldr.setCreationTime(upload.getCreationTime().toEpochMilli());

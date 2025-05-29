@@ -119,7 +119,7 @@ message Pipeline {
     // TODO: remove the state and leaderID from this class
     optional PipelineState state = 2 [default = PIPELINE_ALLOCATED];
     optional ReplicationType type = 3 [default = STAND_ALONE];
-    optional int32 factor = 4 [default = 1];
+    optional ReplicationFactor factor = 4 [default = ONE];
     required PipelineID id = 5;
     optional string leaderID = 6;
     repeated uint32 memberOrders = 7;
@@ -127,6 +127,7 @@ message Pipeline {
     optional UUID suggestedLeaderID = 9;
     repeated uint32 memberReplicaIndexes = 10;
     optional ECReplicationConfig ecReplicationConfig = 11;
+    optional int32 replicationFactor = 12 [default = 1];
     // TODO(runzhiwang): when leaderID is gone, specify 6 as the index of leaderID128
     optional UUID leaderID128 = 100;
     repeated string datacenters = 103;
@@ -237,10 +238,11 @@ message ContainerInfoProto {
     required string owner = 7;
     optional int64 deleteTransactionId = 8;
     optional int64 sequenceId = 9;
-    optional int32 replicationFactor  = 10;
+    optional ReplicationFactor replicationFactor  = 10;
     required ReplicationType replicationType  = 11;
     optional ECReplicationConfig ecReplicationConfig = 12;
     repeated string datacenters = 13;
+    optional int32 factor = 14;
 }
 
 message ContainerWithPipeline {
@@ -303,8 +305,9 @@ message ECReplicationConfig {
 
 message DefaultReplicationConfig {
     required ReplicationType type = 1;
-    optional int32 factor = 2;
+    optional ReplicationFactor factor = 2;
     optional ECReplicationConfig ecReplicationConfig = 3;
+    optional int32 replicationFactor = 4;
 }
 
 enum ScmOps {

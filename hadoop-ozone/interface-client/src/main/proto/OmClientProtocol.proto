@@ -998,7 +998,7 @@ message KeyArgs {
     required string keyName = 3;
     optional uint64 dataSize = 4;
     optional hadoop.hdds.ReplicationType type = 5 [default = NONE];
-    optional int32 factor = 6 [default = 0];
+    optional hadoop.hdds.ReplicationFactor factor = 6 [default = ZERO];
     repeated KeyLocation keyLocations = 7;
     optional bool isMultipartKey = 8;
     optional string multipartUploadID = 9;
@@ -1023,6 +1023,7 @@ message KeyArgs {
     optional hadoop.hdds.ECReplicationConfig ecReplicationConfig = 19;
     // Force OM to update container cache location from SCL
     optional bool forceUpdateContainerCacheFromSCM = 20;
+    optional int32 replicationFactor = 21 [default = 0];
 }
 
 message KeyLocation {
@@ -1091,7 +1092,7 @@ message KeyInfo {
     required string keyName = 3;
     required uint64 dataSize = 4;
     required hadoop.hdds.ReplicationType type = 5;
-    optional int32 factor = 6;
+    optional hadoop.hdds.ReplicationFactor factor = 6;
     repeated KeyLocationList keyLocationList = 7;
     required uint64 creationTime = 8;
     required uint64 modificationTime = 9;
@@ -1105,6 +1106,7 @@ message KeyInfo {
     optional hadoop.hdds.ECReplicationConfig ecReplicationConfig = 17;
     optional FileChecksumProto fileChecksum = 18;
     optional bool isFile = 19;
+    optional int32 replicationFactor = 20;
 }
 
 message BasicKeyInfo {
@@ -1113,10 +1115,11 @@ message BasicKeyInfo {
     optional uint64 creationTime = 3;
     optional uint64 modificationTime = 4;
     optional hadoop.hdds.ReplicationType type = 5;
-    optional int32 factor = 6;
+    optional hadoop.hdds.ReplicationFactor factor = 6;
     optional hadoop.hdds.ECReplicationConfig ecReplicationConfig = 7;
     optional string eTag = 8;
     optional uint64 updateID = 9;
+    optional int32 replicationFactor = 10;
 }
 
 message DirectoryInfo {
@@ -1574,12 +1577,13 @@ message MultipartKeyInfo {
     required string uploadID = 1;
     required uint64 creationTime = 2;
     required hadoop.hdds.ReplicationType type = 3;
-    optional int32 factor = 4;
+    optional hadoop.hdds.ReplicationFactor factor = 4;
     repeated PartKeyInfo partKeyInfoList = 5;
     optional uint64 objectID = 6;
     optional uint64 updateID = 7;
     optional uint64 parentID = 8;
     optional hadoop.hdds.ECReplicationConfig ecReplicationConfig = 9;
+    optional int32 replicationFactor = 10;
 }
 
 message PartKeyInfo {
@@ -1653,11 +1657,12 @@ message MultipartUploadListPartsRequest {
 
 message MultipartUploadListPartsResponse {
     optional hadoop.hdds.ReplicationType type = 2;
-    optional int32 factor = 3;
+    optional hadoop.hdds.ReplicationFactor factor = 3;
     optional uint32 nextPartNumberMarker = 4;
     optional bool isTruncated = 5;
     repeated PartInfo partsList = 6;
     optional hadoop.hdds.ECReplicationConfig ecReplicationConfig = 7;
+    optional int32 replicationFactor = 8;
 }
 
 message ListMultipartUploadsRequest {
@@ -1678,8 +1683,9 @@ message MultipartUploadInfo {
     required string uploadId = 4;
     required uint64 creationTime = 5;
     required hadoop.hdds.ReplicationType type = 6;
-    optional int32 factor = 7;
+    optional hadoop.hdds.ReplicationFactor factor = 7;
     optional hadoop.hdds.ECReplicationConfig ecReplicationConfig = 8;
+    optional int32 replicationFactor = 9;
 }
 
 message PartInfo {

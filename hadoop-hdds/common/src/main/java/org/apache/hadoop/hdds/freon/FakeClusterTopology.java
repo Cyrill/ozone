@@ -55,7 +55,7 @@ public class FakeClusterTopology {
         if ((i + 1) % 3 == 0) {
           pipelines.add(Pipeline.newBuilder()
               .setId(PipelineID.randomId().getProtobuf())
-              .setFactor(3)
+              .setReplicationFactor(3)
               .setType(ReplicationType.RATIS)
               .addMembers(getDatanode(i - 2))
               .addMembers(getDatanode(i - 1))

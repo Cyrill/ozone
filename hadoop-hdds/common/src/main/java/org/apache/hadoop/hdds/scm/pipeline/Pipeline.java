@@ -397,7 +397,7 @@ public final class Pipeline {
       builder.setEcReplicationConfig(((ECReplicationConfig) replicationConfig)
           .toProto());
     } else {
-      builder.setFactor(ReplicationConfig.getLegacyFactor(replicationConfig));
+      builder.setReplicationFactor(ReplicationConfig.getLegacyFactor(replicationConfig));
     }
     if (leaderId != null) {
       HddsProtos.UUID uuid128 = HddsProtos.UUID.newBuilder()
@@ -481,7 +481,7 @@ public final class Pipeline {
     }
 
     final ReplicationConfig config = ReplicationConfig
-        .fromProto(pipeline.getType(), pipeline.getFactor(),
+        .fromProto(pipeline.getType(), pipeline.getReplicationFactor(),
             pipeline.getEcReplicationConfig());
     return new Builder().setId(PipelineID.getFromProtobuf(pipeline.getId()))
         .setReplicationConfig(config)

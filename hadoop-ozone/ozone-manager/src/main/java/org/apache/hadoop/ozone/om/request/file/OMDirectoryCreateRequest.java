@@ -380,12 +380,11 @@ public class OMDirectoryCreateRequest extends OMKeyRequest {
             .setCreationTime(keyArgs.getModificationTime())
             .setModificationTime(keyArgs.getModificationTime())
             .setDataSize(0);
-    if (keyArgs.getFactor() != 0 && keyArgs
-        .getFactor() != 0 && keyArgs
+    if (keyArgs.getReplicationFactor() != 0 && keyArgs
         .getType() != HddsProtos.ReplicationType.EC) {
       // Factor available and not an EC replication config.
       keyInfoBuilder.setReplicationConfig(ReplicationConfig
-          .fromProtoTypeAndFactor(keyArgs.getType(), keyArgs.getFactor()));
+          .fromProtoTypeAndFactor(keyArgs.getType(), keyArgs.getReplicationFactor()));
     } else if (keyArgs.getType() == HddsProtos.ReplicationType.EC) {
       // Found EC type
       keyInfoBuilder.setReplicationConfig(

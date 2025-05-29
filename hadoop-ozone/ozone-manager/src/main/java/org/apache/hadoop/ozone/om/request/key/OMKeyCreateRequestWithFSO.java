@@ -157,7 +157,7 @@ public class OMKeyCreateRequestWithFSO extends OMKeyCreateRequest {
 
       final ReplicationConfig repConfig = OzoneConfigUtil
           .resolveReplicationConfigPreference(keyArgs.getType(),
-              keyArgs.getFactor(), keyArgs.getEcReplicationConfig(),
+              keyArgs.getReplicationFactor(), keyArgs.getEcReplicationConfig(),
               bucketInfo.getDefaultReplicationConfig(),
               ozoneManager);
 

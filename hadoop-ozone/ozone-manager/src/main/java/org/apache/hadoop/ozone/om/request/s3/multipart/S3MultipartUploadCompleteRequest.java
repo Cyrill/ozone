@@ -214,7 +214,7 @@ public class S3MultipartUploadCompleteRequest extends OMKeyRequest {
 
           final ReplicationConfig replicationConfig = OzoneConfigUtil
               .resolveReplicationConfigPreference(keyArgs.getType(),
-                  keyArgs.getFactor(), keyArgs.getEcReplicationConfig(),
+                  keyArgs.getReplicationFactor(), keyArgs.getEcReplicationConfig(),
                   omBucketInfo != null ?
                       omBucketInfo.getDefaultReplicationConfig() :
                       null, ozoneManager);
@@ -476,7 +476,7 @@ public class S3MultipartUploadCompleteRequest extends OMKeyRequest {
           new OmKeyInfo.Builder().setVolumeName(volumeName)
           .setBucketName(bucketName).setKeyName(dbOpenKeyInfo.getKeyName())
           .setReplicationConfig(ReplicationConfig.fromProto(
-              partKeyInfo.getType(), partKeyInfo.getFactor(),
+              partKeyInfo.getType(), partKeyInfo.getReplicationFactor(),
               partKeyInfo.getEcReplicationConfig()))
           .setCreationTime(keyArgs.getModificationTime())
           .setModificationTime(keyArgs.getModificationTime())

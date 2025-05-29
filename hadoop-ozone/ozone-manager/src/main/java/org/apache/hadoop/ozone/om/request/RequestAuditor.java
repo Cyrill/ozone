@@ -75,7 +75,7 @@ public interface RequestAuditor {
       if (keyArgs.hasType()) {
         auditMap.put(OzoneConsts.REPLICATION_TYPE, keyArgs.getType().name());
       }
-      if (keyArgs.hasFactor() && keyArgs.getFactor() != 0) {
+      if (keyArgs.hasFactor() && keyArgs.getReplicationFactor() != 0) {
         auditMap.put(OzoneConsts.REPLICATION_FACTOR, String.valueOf(keyArgs.getFactor()));
       }
       if (keyArgs.hasEcReplicationConfig()) {

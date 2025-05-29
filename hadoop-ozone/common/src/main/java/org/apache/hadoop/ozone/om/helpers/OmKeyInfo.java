@@ -668,7 +668,7 @@ public final class OmKeyInfo extends WithParentObjectId
       kb.setEcReplicationConfig(
           ((ECReplicationConfig) replicationConfig).toProto());
     } else {
-      kb.setFactor(ReplicationConfig.getLegacyFactor(replicationConfig));
+      kb.setReplicationFactor(ReplicationConfig.getLegacyFactor(replicationConfig));
     }
     kb.setLatestVersion(latestVersion)
         .addAllKeyLocationList(keyLocations)
@@ -716,7 +716,7 @@ public final class OmKeyInfo extends WithParentObjectId
         .setCreationTime(keyInfo.getCreationTime())
         .setModificationTime(keyInfo.getModificationTime())
         .setReplicationConfig(ReplicationConfig
-            .fromProto(keyInfo.getType(), keyInfo.getFactor(),
+            .fromProto(keyInfo.getType(), keyInfo.getReplicationFactor(),
                 keyInfo.getEcReplicationConfig()))
         .addAllMetadata(KeyValueUtil.getFromProtobuf(keyInfo.getMetadataList()))
         .setFileEncryptionInfo(keyInfo.hasFileEncryptionInfo() ?

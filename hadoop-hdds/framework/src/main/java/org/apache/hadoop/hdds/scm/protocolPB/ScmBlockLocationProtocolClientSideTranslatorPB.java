@@ -170,12 +170,12 @@ public final class ScmBlockLocationProtocolClientSideTranslatorPB
 
     switch (replicationConfig.getReplicationType()) {
     case STAND_ALONE:
-      requestBuilder.setFactor(
+      requestBuilder.setReplicationFactor(
           ((StandaloneReplicationConfig) replicationConfig)
               .getReplicationFactor());
       break;
     case RATIS:
-      requestBuilder.setFactor(
+      requestBuilder.setReplicationFactor(
           ((RatisReplicationConfig) replicationConfig).getReplicationFactor());
       break;
     case EC:

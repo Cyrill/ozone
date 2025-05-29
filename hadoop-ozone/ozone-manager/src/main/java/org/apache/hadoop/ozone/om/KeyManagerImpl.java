@@ -837,7 +837,7 @@ public class KeyManagerImpl implements KeyManager {
             //if there are parts, use replication type from one of the parts
             replicationConfig = ReplicationConfig.fromProto(
                 partKeyInfo.getPartKeyInfo().getType(),
-                partKeyInfo.getPartKeyInfo().getFactor(),
+                partKeyInfo.getPartKeyInfo().getReplicationFactor(),
                 partKeyInfo.getPartKeyInfo().getEcReplicationConfig());
             count++;
           }

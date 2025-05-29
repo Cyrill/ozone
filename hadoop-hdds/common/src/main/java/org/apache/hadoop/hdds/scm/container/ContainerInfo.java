@@ -126,7 +126,7 @@ public final class ContainerInfo implements Comparable<ContainerInfo> {
   public static ContainerInfo fromProtobuf(HddsProtos.ContainerInfoProto info) {
     ContainerInfo.Builder builder = new ContainerInfo.Builder();
     final ReplicationConfig config = ReplicationConfig
-        .fromProto(info.getReplicationType(), info.getReplicationFactor(),
+        .fromProto(info.getReplicationType(), info.getFactor(),
             info.getEcReplicationConfig());
     builder.setUsedBytes(info.getUsedBytes())
         .setNumberOfKeys(info.getNumberOfKeys())
@@ -285,7 +285,7 @@ public final class ContainerInfo implements Comparable<ContainerInfo> {
       builder.setEcReplicationConfig(((ECReplicationConfig) replicationConfig)
           .toProto());
     } else {
-      builder.setReplicationFactor(
+      builder.setFactor(
           ReplicationConfig.getLegacyFactor(replicationConfig));
     }
 

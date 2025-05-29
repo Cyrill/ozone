@@ -304,7 +304,7 @@ public final class OmMultipartKeyInfo extends WithObjectID {
 
     final ReplicationConfig replicationConfig = ReplicationConfig.fromProto(
         multipartKeyInfo.getType(),
-        multipartKeyInfo.getFactor(),
+        multipartKeyInfo.getReplicationFactor(),
         multipartKeyInfo.getEcReplicationConfig()
     );
 
@@ -331,7 +331,7 @@ public final class OmMultipartKeyInfo extends WithObjectID {
       ECReplicationConfig ecConf = (ECReplicationConfig) replicationConfig;
       builder.setEcReplicationConfig(ecConf.toProto());
     } else {
-      builder.setFactor(ReplicationConfig.getLegacyFactor(replicationConfig));
+      builder.setReplicationFactor(ReplicationConfig.getLegacyFactor(replicationConfig));
     }
 
     builder.addAllPartKeyInfoList(partKeyInfoMap);

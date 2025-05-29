@@ -693,7 +693,7 @@ public final class OzoneManagerProtocolClientSideTranslatorPB
         keyArgs.setEcReplicationConfig(
             ((ECReplicationConfig) args.getReplicationConfig()).toProto());
       } else {
-        keyArgs.setFactor(
+        keyArgs.setReplicationFactor(
             ReplicationConfig.getLegacyFactor(args.getReplicationConfig()));
       }
       keyArgs.setType(args.getReplicationConfig().getReplicationType());
@@ -757,7 +757,7 @@ public final class OzoneManagerProtocolClientSideTranslatorPB
         keyArgs.setEcReplicationConfig(
             ((ECReplicationConfig) args.getReplicationConfig()).toProto());
       } else {
-        keyArgs.setFactor(
+        keyArgs.setReplicationFactor(
             ReplicationConfig.getLegacyFactor(args.getReplicationConfig()));
       }
       keyArgs.setType(args.getReplicationConfig().getReplicationType());
@@ -797,7 +797,7 @@ public final class OzoneManagerProtocolClientSideTranslatorPB
     if (replication instanceof ECReplicationConfig) {
       b.setEcReplicationConfig(((ECReplicationConfig) replication).toProto());
     } else {
-      b.setFactor(ReplicationConfig.getLegacyFactor(replication));
+      b.setReplicationFactor(ReplicationConfig.getLegacyFactor(replication));
     }
     b.setType(replication.getReplicationType());
   }
@@ -1730,7 +1730,7 @@ public final class OzoneManagerProtocolClientSideTranslatorPB
     OmMultipartUploadListParts omMultipartUploadListParts =
         new OmMultipartUploadListParts(
             ReplicationConfig.fromProto(
-                response.getType(), response.getFactor(),
+                response.getType(), response.getReplicationFactor(),
                 response.getEcReplicationConfig()),
             response.getNextPartNumberMarker(), response.getIsTruncated());
     omMultipartUploadListParts.addProtoPartList(response.getPartsListList());
@@ -1766,7 +1766,7 @@ public final class OzoneManagerProtocolClientSideTranslatorPB
                 proto.getKeyName(),
                 proto.getUploadId(),
                 Instant.ofEpochMilli(proto.getCreationTime()),
-                ReplicationConfig.fromProto(proto.getType(), proto.getFactor(),
+                ReplicationConfig.fromProto(proto.getType(), proto.getReplicationFactor(),
                     proto.getEcReplicationConfig())
             ))
             .collect(Collectors.toList());
@@ -2217,7 +2217,7 @@ public final class OzoneManagerProtocolClientSideTranslatorPB
         keyArgsBuilder.setEcReplicationConfig(
             ((ECReplicationConfig) args.getReplicationConfig()).toProto());
       } else {
-        keyArgsBuilder.setFactor(
+        keyArgsBuilder.setReplicationFactor(
             ReplicationConfig.getLegacyFactor(args.getReplicationConfig()));
       }
       keyArgsBuilder.setType(args.getReplicationConfig().getReplicationType());

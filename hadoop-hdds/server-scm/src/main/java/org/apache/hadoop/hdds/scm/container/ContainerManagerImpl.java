@@ -257,7 +257,7 @@ public class ContainerManagerImpl implements ContainerManager {
       containerInfoBuilder.setEcReplicationConfig(
           ((ECReplicationConfig) pipeline.getReplicationConfig()).toProto());
     } else {
-      containerInfoBuilder.setReplicationFactor(
+      containerInfoBuilder.setFactor(
           ReplicationConfig.getLegacyFactor(pipeline.getReplicationConfig()));
     }
 

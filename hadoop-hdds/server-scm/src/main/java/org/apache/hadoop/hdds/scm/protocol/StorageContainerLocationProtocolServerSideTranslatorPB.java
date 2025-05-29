@@ -734,7 +734,7 @@ public final class StorageContainerLocationProtocolServerSideTranslatorPB
       int clientVersion) throws IOException {
     ContainerWithPipeline cp = impl
         .allocateContainer(request.getReplicationType(),
-            request.getReplicationFactor(), request.getOwner());
+            request.getFactor(), request.getOwner());
     return ContainerResponseProto.newBuilder()
         .setContainerWithPipeline(cp.getProtobuf(clientVersion))
         .setErrorCode(ContainerResponseProto.Error.success)
@@ -831,11 +831,11 @@ public final class StorageContainerLocationProtocolServerSideTranslatorPB
       } else {
         if (request.hasFactor()) {
           repConfig = ReplicationConfig
-              .fromProtoTypeAndFactor(request.getType(), request.getFactor());
+              .fromProtoTypeAndFactor(request.getType(), request.getReplicationFactor());
         }
       }
     } else if (request.hasFactor()) {
-      factor = request.getFactor();
+      factor = request.getReplicationFactor();
     }
     List<ContainerInfo> containerList;
     if (factor != 0) {
@@ -907,7 +907,7 @@ public final class StorageContainerLocationProtocolServerSideTranslatorPB
       StorageContainerLocationProtocolProtos.PipelineRequestProto request,
       int clientVersion) throws IOException {
     Pipeline pipeline = impl.createReplicationPipeline(
-        request.getReplicationType(), request.getReplicationFactor(),
+        request.getReplicationType(), request.getFactor(),
         HddsProtos.NodePool.getDefaultInstance());
     if (pipeline == null) {
       return PipelineResponseProto.newBuilder()

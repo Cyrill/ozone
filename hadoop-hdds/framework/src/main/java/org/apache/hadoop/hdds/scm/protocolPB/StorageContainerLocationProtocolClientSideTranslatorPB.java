@@ -213,7 +213,7 @@ public final class StorageContainerLocationProtocolClientSideTranslatorPB
 
     ContainerRequestProto request = ContainerRequestProto.newBuilder()
         .setTraceID(TracingUtil.exportCurrentSpan())
-        .setReplicationFactor(factor)
+        .setFactor(factor)
         .setReplicationType(type)
         .setOwner(owner)
         .build();
@@ -426,7 +426,7 @@ public final class StorageContainerLocationProtocolClientSideTranslatorPB
             ((ECReplicationConfig)replicationConfig).toProto());
       } else {
         builder.setType(replicationConfig.getReplicationType());
-        builder.setFactor(((ReplicatedReplicationConfig)replicationConfig)
+        builder.setReplicationFactor(((ReplicatedReplicationConfig)replicationConfig)
             .getReplicationFactor());
       }
     } else if (replicationType != null) {
@@ -627,7 +627,7 @@ public final class StorageContainerLocationProtocolClientSideTranslatorPB
     PipelineRequestProto request = PipelineRequestProto.newBuilder()
         .setTraceID(TracingUtil.exportCurrentSpan())
         .setNodePool(nodePool)
-        .setReplicationFactor(factor)
+        .setFactor(factor)
         .setReplicationType(replicationType)
         .build();
 

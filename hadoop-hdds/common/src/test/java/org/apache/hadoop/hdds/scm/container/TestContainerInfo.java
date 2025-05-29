@@ -52,7 +52,7 @@ public class TestContainerInfo {
 
     // No EC Config
     assertFalse(proto.hasEcReplicationConfig());
-    assertEquals(3, proto.getReplicationFactor());
+    assertEquals(3, proto.getFactor());
     assertEquals(RATIS, proto.getReplicationType());
 
     // Reconstruct object from Proto

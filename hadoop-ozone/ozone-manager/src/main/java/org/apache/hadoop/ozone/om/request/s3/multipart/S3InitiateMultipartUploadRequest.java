@@ -189,7 +189,7 @@ public class S3InitiateMultipartUploadRequest extends OMKeyRequest {
       }
       final ReplicationConfig replicationConfig = OzoneConfigUtil
           .resolveReplicationConfigPreference(keyArgs.getType(),
-              keyArgs.getFactor(), keyArgs.getEcReplicationConfig(),
+              keyArgs.getReplicationFactor(), keyArgs.getEcReplicationConfig(),
               bucketInfo != null ?
                   bucketInfo.getDefaultReplicationConfig() :
                   null, ozoneManager);

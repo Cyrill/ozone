@@ -148,7 +148,7 @@ message AllocateScmBlockRequestProto {
   required uint64 size = 1;
   required uint32 numBlocks = 2;
   required ReplicationType type = 3;
-  optional int32 factor = 4;
+  optional hadoop.hdds.ReplicationFactor factor = 4;
   required string owner = 5;
   optional ExcludeListProto excludeList = 7;
 
@@ -157,6 +157,7 @@ message AllocateScmBlockRequestProto {
 
   optional string client = 9;
   repeated string datacenters = 10;
+  optional int32 replicationFactor = 11;
 
 }
 

@@ -47,7 +47,7 @@ public class DefaultReplicationConfig {
     ReplicationConfig config = proto.hasEcReplicationConfig()
         ? new ECReplicationConfig(proto.getEcReplicationConfig())
         : ReplicationConfig.fromProtoTypeAndFactor(
-            proto.getType(), proto.getFactor());
+            proto.getType(), proto.getReplicationFactor());
     return new DefaultReplicationConfig(config);
   }
 
@@ -71,7 +71,7 @@ public class DefaultReplicationConfig {
       builder.setEcReplicationConfig(this.ecReplicationConfig.toProto());
     } else {
       int factor = replicationConfig.getRequiredNodes();
-      builder.setFactor(factor);
+      builder.setReplicationFactor(factor);
     }
     return builder.build();
   }

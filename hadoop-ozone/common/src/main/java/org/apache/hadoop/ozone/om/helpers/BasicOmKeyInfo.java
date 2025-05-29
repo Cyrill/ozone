@@ -182,7 +182,7 @@ public class BasicOmKeyInfo {
       builder.setEcReplicationConfig(
           ((ECReplicationConfig) replicationConfig).toProto());
     } else {
-      builder.setFactor(ReplicationConfig.getLegacyFactor(replicationConfig));
+      builder.setReplicationFactor(ReplicationConfig.getLegacyFactor(replicationConfig));
     }
     if (StringUtils.isNotEmpty(eTag)) {
       builder.setETag(eTag);
@@ -210,7 +210,7 @@ public class BasicOmKeyInfo {
         .setModificationTime(basicKeyInfo.getModificationTime())
         .setReplicationConfig(ReplicationConfig.fromProto(
             basicKeyInfo.getType(),
-            basicKeyInfo.getFactor(),
+            basicKeyInfo.getReplicationFactor(),
             basicKeyInfo.getEcReplicationConfig()))
         .setETag(basicKeyInfo.getETag())
         .setIsFile(!keyName.endsWith("/"))
@@ -236,7 +236,7 @@ public class BasicOmKeyInfo {
         .setModificationTime(basicKeyInfo.getModificationTime())
         .setReplicationConfig(ReplicationConfig.fromProto(
             basicKeyInfo.getType(),
-            basicKeyInfo.getFactor(),
+            basicKeyInfo.getReplicationFactor(),
             basicKeyInfo.getEcReplicationConfig()))
         .setETag(basicKeyInfo.getETag())
         .setIsFile(!keyName.endsWith("/"))

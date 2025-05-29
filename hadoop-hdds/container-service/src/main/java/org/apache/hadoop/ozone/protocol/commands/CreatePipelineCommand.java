@@ -114,7 +114,7 @@ public class CreatePipelineCommand
     return CreatePipelineCommandProto.newBuilder()
         .setCmdId(getId())
         .setPipelineID(pipelineID.getProtobuf())
-        .setFactor(factor)
+        .setReplicationFactor(factor)
         .setType(type)
         .addAllDatanode(nodelist.stream()
             .map(DatanodeDetails::getProtoBufMessage)
@@ -128,7 +128,7 @@ public class CreatePipelineCommand
     Preconditions.checkNotNull(createPipelineProto);
     return new CreatePipelineCommand(createPipelineProto.getCmdId(),
         PipelineID.getFromProtobuf(createPipelineProto.getPipelineID()),
-        createPipelineProto.getType(), createPipelineProto.getFactor(),
+        createPipelineProto.getType(), createPipelineProto.getReplicationFactor(),
         createPipelineProto.getDatanodeList().stream()
             .map(DatanodeDetails::getFromProtoBuf)
             .collect(Collectors.toList()),
