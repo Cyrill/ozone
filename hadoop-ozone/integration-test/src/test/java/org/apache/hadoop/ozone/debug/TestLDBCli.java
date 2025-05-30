@@ -295,7 +295,7 @@ public class TestLDBCli {
         String key = "key" + i;
         OmKeyInfo value = OMRequestTestUtils.createOmKeyInfo("vol1", "buck1",
             key, HddsProtos.ReplicationType.STAND_ALONE,
-            HddsProtos.ReplicationFactor.ONE);
+            1);
         keyTable.put(key.getBytes(UTF_8),
             value.getProtobuf(ClientVersion.CURRENT_VERSION).toByteArray());
 

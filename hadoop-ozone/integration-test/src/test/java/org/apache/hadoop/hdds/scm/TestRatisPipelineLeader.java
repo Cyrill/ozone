@@ -24,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.hadoop.hdds.HddsConfigKeys;
 import org.apache.hadoop.hdds.client.RatisReplicationConfig;
 import org.apache.hadoop.hdds.conf.OzoneConfiguration;
+import org.apache.hadoop.hdds.protocol.proto.HddsProtos;
 import org.apache.hadoop.hdds.scm.pipeline.Pipeline;
 import org.apache.hadoop.hdds.scm.storage.ContainerProtocolCalls;
 import org.apache.hadoop.ozone.HddsDatanodeService;
@@ -63,7 +64,7 @@ public class TestRatisPipelineLeader {
         .setNumDatanodes(3)
         .build();
     cluster.waitForClusterToBeReady();
-    cluster.waitForPipelineTobeReady(3, 5000);
+    cluster.waitForPipelineTobeReady(HddsProtos.ReplicationFactor.THREE, 5000);
   }
 
   @AfterAll
