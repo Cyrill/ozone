@@ -24,7 +24,6 @@ import org.apache.hadoop.hdds.client.ReplicationConfig;
 import org.apache.hadoop.hdds.client.StandaloneReplicationConfig;
 import org.apache.hadoop.hdds.conf.OzoneConfiguration;
 import org.apache.hadoop.hdds.protocol.proto.HddsProtos;
-import org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationFactor;
 import org.apache.hadoop.hdds.scm.container.common.helpers.AllocatedBlock;
 import org.apache.hadoop.hdds.scm.container.common.helpers.ExcludeList;
 import org.apache.hadoop.hdds.scm.pipeline.Pipeline;
@@ -109,7 +108,7 @@ public class TestOMKeyRequest {
   protected String bucketName;
   protected String keyName;
   protected HddsProtos.ReplicationType replicationType;
-  protected HddsProtos.ReplicationFactor replicationFactor;
+  protected int replicationFactor;
   protected long clientID;
   protected long scmBlockSize = 1000L;
   protected long dataSize;
@@ -208,7 +207,7 @@ public class TestOMKeyRequest {
     volumeName = UUID.randomUUID().toString();
     bucketName = UUID.randomUUID().toString();
     keyName = UUID.randomUUID().toString();
-    replicationFactor = HddsProtos.ReplicationFactor.ONE;
+    replicationFactor = 1;
     replicationType = HddsProtos.ReplicationType.RATIS;
     clientID = Time.now();
     dataSize = 1000L;

@@ -81,7 +81,7 @@ public class TestOMDirectoryCreateResponse {
 
     OmKeyInfo omKeyInfo = OMRequestTestUtils.createOmKeyInfo(volumeName,
         bucketName, OzoneFSUtils.addTrailingSlashIfNeeded(keyName),
-        HddsProtos.ReplicationType.RATIS, HddsProtos.ReplicationFactor.ONE);
+        HddsProtos.ReplicationType.RATIS, 1);
 
     ThreadLocalRandom random = ThreadLocalRandom.current();
     long usedNamespace = Math.abs(random.nextLong(Long.MAX_VALUE));

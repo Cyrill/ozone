@@ -627,7 +627,7 @@ public class TestOmMetadataManager {
           expiredOpenKeyCreationTime : Time.now();
       final OmKeyInfo keyInfo = OMRequestTestUtils.createOmKeyInfo(volumeName,
           bucketName, "expired" + i, HddsProtos.ReplicationType.RATIS,
-          HddsProtos.ReplicationFactor.ONE, 0L, creationTime);
+          1, 0L, creationTime);
 
       final String dbOpenKeyName;
       if (bucketLayout.isFileSystemOptimized()) {
@@ -697,14 +697,14 @@ public class TestOmMetadataManager {
     for (int i = 0; i < numExpiredMPUOpenKeys; i++) {
       final OmKeyInfo keyInfo = OMRequestTestUtils.createOmKeyInfo(volumeName,
           bucketName, "expired" + i,
-          HddsProtos.ReplicationType.RATIS, HddsProtos.ReplicationFactor.ONE,
+          HddsProtos.ReplicationType.RATIS, 1,
           0L, expiredOpenKeyCreationTime, true);
 
       final String uploadId = OMMultipartUploadUtils.getMultipartUploadId();
       final OmMultipartKeyInfo multipartKeyInfo = OMRequestTestUtils.
           createOmMultipartKeyInfo(uploadId, expiredOpenKeyCreationTime,
               HddsProtos.ReplicationType.RATIS,
-              HddsProtos.ReplicationFactor.ONE, 0L);
+              1, 0L);
 
       if (bucketLayout.isFileSystemOptimized()) {
         keyInfo.setParentObjectID(i);
@@ -730,14 +730,14 @@ public class TestOmMetadataManager {
     for (int i = numExpiredMPUOpenKeys; i < 2 * numExpiredMPUOpenKeys; i++) {
       final OmKeyInfo keyInfo = OMRequestTestUtils.createOmKeyInfo(volumeName,
           bucketName, "expired" + i,
-          HddsProtos.ReplicationType.RATIS, HddsProtos.ReplicationFactor.ONE,
+          HddsProtos.ReplicationType.RATIS, 1,
           0L, expiredOpenKeyCreationTime, false);
 
       final String uploadId = OMMultipartUploadUtils.getMultipartUploadId();
       final OmMultipartKeyInfo multipartKeyInfo = OMRequestTestUtils.
           createOmMultipartKeyInfo(uploadId, expiredOpenKeyCreationTime,
               HddsProtos.ReplicationType.RATIS,
-              HddsProtos.ReplicationFactor.ONE, 0L);
+              1, 0L);
 
       if (bucketLayout.isFileSystemOptimized()) {
         keyInfo.setParentObjectID(i);
@@ -789,13 +789,13 @@ public class TestOmMetadataManager {
       final OmMultipartKeyInfo mpuKeyInfo = OMRequestTestUtils
           .createOmMultipartKeyInfo(uploadId, creationTime,
               HddsProtos.ReplicationType.RATIS,
-              HddsProtos.ReplicationFactor.ONE, 0L);
+              1, 0L);
 
       String keyName = "expired" + i;
       // Key info to construct the MPU DB key
       final OmKeyInfo keyInfo = OMRequestTestUtils.createOmKeyInfo(volumeName,
           bucketName, keyName, HddsProtos.ReplicationType.RATIS,
-          HddsProtos.ReplicationFactor.ONE, 0L, creationTime);
+          1, 0L, creationTime);
 
 
       for (int j = 1; j <= numPartsPerMPU; j++) {
@@ -868,10 +868,10 @@ public class TestOmMetadataManager {
     if (i % 2 == 0) {
       OMRequestTestUtils.addKeyToTable(false, volumeName, bucketName, keyName,
           1000L, HddsProtos.ReplicationType.RATIS,
-          HddsProtos.ReplicationFactor.ONE, omMetadataManager);
+          1, omMetadataManager);
     } else {
       OMRequestTestUtils.addKeyToTableCache(volumeName, bucketName, keyName,
-          HddsProtos.ReplicationType.RATIS, HddsProtos.ReplicationFactor.ONE,
+          HddsProtos.ReplicationType.RATIS, 1,
           omMetadataManager);
     }
   }

@@ -46,7 +46,7 @@ public class TestOMKeyAclRequestWithFSO extends TestOMKeyAclRequest {
 
     OmKeyInfo omKeyInfo = OMRequestTestUtils
         .createOmKeyInfo(volumeName, bucketName, key,
-            HddsProtos.ReplicationType.RATIS, HddsProtos.ReplicationFactor.ONE,
+            HddsProtos.ReplicationType.RATIS, 1,
             parentId + 1, parentId, 100, Time.now());
     OMRequestTestUtils
         .addFileToKeyTable(false, false, fileName, omKeyInfo, -1, 50,

@@ -179,7 +179,7 @@ public class TestOMKeyRenameRequestWithFSO extends TestOMKeyRenameRequest {
     long bucketId = random.nextLong();
     return OMRequestTestUtils.createOmKeyInfo(
         volumeName, bucketName, keyName,
-        HddsProtos.ReplicationType.RATIS, HddsProtos.ReplicationFactor.ONE,
+        HddsProtos.ReplicationType.RATIS, 1,
         bucketId + 100L, bucketId + 101L, 0L, Time.now());
   }
 

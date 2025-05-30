@@ -40,7 +40,7 @@ public class TestOMKeyRenameResponseWithFSO extends TestOMKeyRenameResponse {
     long bucketId = random.nextLong();
     return OMRequestTestUtils.createOmKeyInfo(
         volumeName, bucketName, keyName,
-        HddsProtos.ReplicationType.RATIS, HddsProtos.ReplicationFactor.ONE,
+        HddsProtos.ReplicationType.RATIS, 1,
         bucketId + 100L, bucketId + 101L, 0L, Time.now());
   }
 
@@ -49,7 +49,7 @@ public class TestOMKeyRenameResponseWithFSO extends TestOMKeyRenameResponse {
                                    String keyName) {
     return OMRequestTestUtils.createOmKeyInfo(toKeyInfo.getVolumeName(),
         toKeyInfo.getBucketName(), keyName, replicationType,
-        replicationFactor, toKeyInfo.getObjectID(),
+        replicationFactor.getNumber(), toKeyInfo.getObjectID(),
         toKeyInfo.getParentObjectID(), 0L, toKeyInfo.getCreationTime());
   }
 
@@ -81,10 +81,10 @@ public class TestOMKeyRenameResponseWithFSO extends TestOMKeyRenameResponse {
     String fromKeyParentName = UUID.randomUUID().toString();
     String toKeyParentName = UUID.randomUUID().toString();
     fromKeyParent = OMRequestTestUtils.createOmKeyInfo(volumeName,
-        bucketName, fromKeyParentName, replicationType, replicationFactor,
+        bucketName, fromKeyParentName, replicationType, replicationFactor.getNumber(),
         bucketId + 100L);
     toKeyParent = OMRequestTestUtils.createOmKeyInfo(volumeName,
-        bucketName, toKeyParentName, replicationType, replicationFactor,
+        bucketName, toKeyParentName, replicationType, replicationFactor.getNumber(),
         bucketId + 101L);
     fromKeyParent.setParentObjectID(bucketId);
     toKeyParent.setParentObjectID(bucketId);

@@ -32,7 +32,6 @@ import org.apache.hadoop.hdds.client.RatisReplicationConfig;
 import org.apache.hadoop.hdds.client.ReplicationConfig;
 import org.apache.hadoop.hdds.conf.OzoneConfiguration;
 import org.apache.hadoop.hdds.protocol.DatanodeDetails;
-import org.apache.hadoop.hdds.protocol.proto.HddsProtos;
 import org.apache.hadoop.hdds.protocol.proto
     .StorageContainerDatanodeProtocolProtos.LayoutVersionProto;
 import org.apache.hadoop.hdds.scm.PlacementPolicy;
@@ -153,8 +152,8 @@ public class TestContainerPlacement {
     Mockito.when(versionManager.getSoftwareLayoutVersion())
         .thenReturn(maxLayoutVersion());
     NetworkTopology clusterMap = new NetworkTopologyImpl(conf);
-      return new SCMNodeManager(config, storageConfig,
-        eventQueue, clusterMap, SCMContext.emptyContext(), versionManager);
+    return new SCMNodeManager(config, storageConfig,
+      eventQueue, clusterMap, SCMContext.emptyContext(), versionManager);
   }
 
   ContainerManager createContainerManager()

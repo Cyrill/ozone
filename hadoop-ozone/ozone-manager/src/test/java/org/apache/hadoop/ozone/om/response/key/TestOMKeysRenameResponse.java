@@ -32,7 +32,6 @@ import org.junit.jupiter.api.Test;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationFactor.THREE;
 import static org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationType.RATIS;
 
 /**
@@ -120,7 +119,7 @@ public class TestOMKeysRenameResponse extends TestOMKeyResponse {
       String key = parentDir.concat("/key" + i);
       String toKey = parentDir.concat("/newKey" + i);
       OMRequestTestUtils.addKeyToTable(false, volumeName,
-          bucketName, parentDir.concat("/key" + i), 0L, RATIS, THREE,
+          bucketName, parentDir.concat("/key" + i), 0L, RATIS, 3,
           omMetadataManager);
 
       OmKeyInfo omKeyInfo = omMetadataManager.getKeyTable(getBucketLayout())

@@ -77,7 +77,7 @@ public class TestS3MultipartUploadCompleteRequestWithFSO
     OmKeyInfo omKeyInfoFSO =
             OMRequestTestUtils.createOmKeyInfo(volumeName, bucketName, keyName,
                     HddsProtos.ReplicationType.RATIS,
-                    HddsProtos.ReplicationFactor.ONE, objectId, parentID, txnId,
+                    1, objectId, parentID, txnId,
                     Time.now(), true);
 
     // add key to openFileTable

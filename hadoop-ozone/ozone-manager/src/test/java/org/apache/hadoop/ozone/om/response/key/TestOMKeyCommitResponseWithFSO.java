@@ -64,7 +64,7 @@ public class TestOMKeyCommitResponseWithFSO extends TestOMKeyCommitResponse {
     Assertions.assertNotNull(omBucketInfo);
     return OMRequestTestUtils.createOmKeyInfo(volumeName,
             omBucketInfo.getBucketName(), keyName, replicationType,
-            replicationFactor,
+            replicationFactor.getNumber(),
             omBucketInfo.getObjectID() + 1,
             omBucketInfo.getObjectID(), 100, Time.now());
   }
@@ -79,7 +79,7 @@ public class TestOMKeyCommitResponseWithFSO extends TestOMKeyCommitResponse {
     OmKeyInfo omKeyInfoFSO =
             OMRequestTestUtils.createOmKeyInfo(volumeName, bucketName, keyName,
                     HddsProtos.ReplicationType.RATIS,
-                    HddsProtos.ReplicationFactor.ONE, objectId, parentID, 100,
+                    1, objectId, parentID, 100,
                     Time.now());
 
     String fileName = OzoneFSUtils.getFileName(keyName);

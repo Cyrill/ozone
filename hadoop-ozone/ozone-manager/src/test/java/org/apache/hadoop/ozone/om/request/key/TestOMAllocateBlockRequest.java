@@ -234,7 +234,7 @@ public class TestOMAllocateBlockRequest extends TestOMKeyRequest {
     KeyArgs keyArgs = KeyArgs.newBuilder()
         .setVolumeName(volumeName).setBucketName(bucketName)
         .setKeyName(keyName)
-        .setReplicationFactor(replicationFactor.getNumber()).setType(replicationType)
+        .setReplicationFactor(replicationFactor).setType(replicationType)
         .build();
 
     AllocateBlockRequest allocateBlockRequest =

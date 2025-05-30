@@ -107,7 +107,7 @@ public class TestOMKeyCreateRequestWithFSO extends TestOMKeyCreateRequest {
     String fileName = OzoneFSUtils.getFileName(keyName);
     OmKeyInfo omKeyInfo = OMRequestTestUtils.createOmKeyInfo(volumeName,
         bucketName, fileName, HddsProtos.ReplicationType.RATIS,
-        HddsProtos.ReplicationFactor.ONE,  parentId + 1, parentId, 100,
+        1,  parentId + 1, parentId, 100,
         Time.now());
     OMRequestTestUtils.addFileToKeyTable(false, false,
             fileName, omKeyInfo, -1, 50, omMetadataManager);

@@ -37,7 +37,6 @@ import org.apache.hadoop.ozone.om.protocol.OzoneManagerProtocol;
 
 import org.apache.commons.lang3.RandomStringUtils;
 
-import static org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationFactor.ONE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

@@ -53,7 +53,7 @@ public class TestOMFileCreateRequestWithFSO extends TestOMFileCreateRequest {
     String fileNameD = "d";
     OMRequestTestUtils.addKeyToTable(false, volumeName, bucketName,
             "a/b/c/" + fileNameD, 0L, HddsProtos.ReplicationType.RATIS,
-            HddsProtos.ReplicationFactor.ONE, omMetadataManager);
+            1, omMetadataManager);
 
     // cannot create file if directory of same name exists
     testNonRecursivePath("a/b/c", false, false, true);
@@ -77,7 +77,7 @@ public class TestOMFileCreateRequestWithFSO extends TestOMFileCreateRequest {
   public void testValidateAndUpdateCacheWithNamespaceQuotaExceeded()
       throws Exception {
     OMRequest omRequest = createFileRequest(volumeName, bucketName,
-        "/test/a1/a2", HddsProtos.ReplicationFactor.ONE,
+        "/test/a1/a2", 1,
         HddsProtos.ReplicationType.RATIS, false, true);
 
     // create bucket with quota limit 1
@@ -114,7 +114,7 @@ public class TestOMFileCreateRequestWithFSO extends TestOMFileCreateRequest {
     OmKeyInfo omKeyInfo =
             OMRequestTestUtils.createOmKeyInfo(volumeName, bucketName, key,
                     HddsProtos.ReplicationType.RATIS,
-                    HddsProtos.ReplicationFactor.ONE,
+                    1,
                     omDirInfo.getObjectID() + 10,
                     omDirInfo.getObjectID(), 100, Time.now());
     OMRequestTestUtils.addFileToKeyTable(false, false,
@@ -146,7 +146,7 @@ public class TestOMFileCreateRequestWithFSO extends TestOMFileCreateRequest {
     OmKeyInfo omKeyInfo =
             OMRequestTestUtils.createOmKeyInfo(volumeName, bucketName, key,
                     HddsProtos.ReplicationType.RATIS,
-                    HddsProtos.ReplicationFactor.ONE,
+                    1,
                     parentId + 1,
                     parentId, 100, Time.now());
     OMRequestTestUtils.addFileToKeyTable(false, false,

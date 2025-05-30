@@ -88,7 +88,7 @@ public class TestS3MultipartUploadCompleteResponseWithFSO
     OmKeyInfo omKeyInfoFSO =
             OMRequestTestUtils.createOmKeyInfo(volumeName, bucketName, keyName,
                     HddsProtos.ReplicationType.RATIS,
-                    HddsProtos.ReplicationFactor.ONE, objectId, parentID, txnId,
+                    1, objectId, parentID, txnId,
                     Time.now(), true);
 
     // add key to openFileTable
@@ -176,7 +176,7 @@ public class TestS3MultipartUploadCompleteResponseWithFSO
     OmKeyInfo omKeyInfoFSO =
         OMRequestTestUtils.createOmKeyInfo(volumeName, bucketName, keyName,
             HddsProtos.ReplicationType.RATIS,
-            HddsProtos.ReplicationFactor.ONE, objectId, parentID, txnId,
+            1, objectId, parentID, txnId,
             Time.now(), true);
 
     // add key to openFileTable
@@ -251,7 +251,7 @@ public class TestS3MultipartUploadCompleteResponseWithFSO
     OmKeyInfo prevKey = OMRequestTestUtils.createOmKeyInfo(volumeName,
             bucketName, keyName,
             HddsProtos.ReplicationType.RATIS,
-            HddsProtos.ReplicationFactor.ONE,
+            1,
             parentID + 8,
             parentID, 8, Time.now(), true);
     RepeatedOmKeyInfo prevKeys = new RepeatedOmKeyInfo(prevKey);
@@ -314,7 +314,7 @@ public class TestS3MultipartUploadCompleteResponseWithFSO
     OmKeyInfo omKeyInfo =
             OMRequestTestUtils.createOmKeyInfo(volumeName, bucketName, keyName,
                     HddsProtos.ReplicationType.RATIS,
-                    HddsProtos.ReplicationFactor.ONE,
+                    1,
                     parentID + 9,
                     parentID, 100, Time.now(), true);
     List<OmKeyInfo> unUsedParts = new ArrayList<>();

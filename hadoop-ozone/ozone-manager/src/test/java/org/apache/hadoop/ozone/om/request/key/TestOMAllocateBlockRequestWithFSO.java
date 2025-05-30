@@ -66,7 +66,7 @@ public class TestOMAllocateBlockRequestWithFSO
     OmKeyInfo omKeyInfoFSO =
             OMRequestTestUtils.createOmKeyInfo(volumeName, bucketName, keyName,
                     HddsProtos.ReplicationType.RATIS,
-                    HddsProtos.ReplicationFactor.ONE, objectId, parentID, txnId,
+                    1, objectId, parentID, txnId,
                     Time.now());
 
     // add key to openFileTable

@@ -49,7 +49,7 @@ public class TestQuotaRepairTask extends TestOMKeyRequest {
     for (int i = 0; i < count; i++) {
       OMRequestTestUtils.addKeyToTableAndCache(volumeName, bucketName,
           parentDir.concat("/key" + i), -1, HddsProtos.ReplicationType.RATIS,
-          HddsProtos.ReplicationFactor.THREE, 150 + i, omMetadataManager);
+          3, 150 + i, omMetadataManager);
     }
 
     String fsoBucketName = "fso" + bucketName;
@@ -62,7 +62,7 @@ public class TestQuotaRepairTask extends TestOMKeyRequest {
       OmKeyInfo omKeyInfo = OMRequestTestUtils.createOmKeyInfo(
           volumeName, fsoBucketName, fileName,
           HddsProtos.ReplicationType.RATIS,
-          HddsProtos.ReplicationFactor.ONE,
+          1,
           parentId + 1 + i,
           parentId, 100 + i, Time.now());
       omKeyInfo.setKeyName(fileName);

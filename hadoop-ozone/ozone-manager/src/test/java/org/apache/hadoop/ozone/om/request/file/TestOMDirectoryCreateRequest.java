@@ -287,7 +287,7 @@ public class TestOMDirectoryCreateRequest {
 
     OMRequestTestUtils.addKeyToTable(false, volumeName, bucketName,
         keyName.substring(0, 12), 1L, HddsProtos.ReplicationType.RATIS,
-        HddsProtos.ReplicationFactor.ONE, omMetadataManager);
+        1, omMetadataManager);
     OMRequest omRequest = createDirectoryRequest(volumeName, bucketName,
         keyName);
     OMDirectoryCreateRequest omDirectoryCreateRequest =
@@ -329,7 +329,7 @@ public class TestOMDirectoryCreateRequest {
 
     OMRequestTestUtils.addKeyToTable(false, volumeName, bucketName,
         OzoneFSUtils.addTrailingSlashIfNeeded(keyName), 1L,
-        HddsProtos.ReplicationType.RATIS, HddsProtos.ReplicationFactor.ONE,
+        HddsProtos.ReplicationType.RATIS, 1,
         omMetadataManager);
     OMRequest omRequest = createDirectoryRequest(volumeName, bucketName,
         keyName);
@@ -373,7 +373,7 @@ public class TestOMDirectoryCreateRequest {
     // Add a key with first two levels.
     OMRequestTestUtils.addKeyToTable(false, volumeName, bucketName,
         keyName.substring(0, 11), 1L, HddsProtos.ReplicationType.RATIS,
-        HddsProtos.ReplicationFactor.ONE, omMetadataManager);
+        1, omMetadataManager);
     OMRequest omRequest = createDirectoryRequest(volumeName, bucketName,
         keyName);
     OMDirectoryCreateRequest omDirectoryCreateRequest =

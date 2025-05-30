@@ -52,7 +52,7 @@ public class TestOMKeyDeleteResponseWithFSO extends TestOMKeyDeleteResponse {
     OmKeyInfo omKeyInfo =
             OMRequestTestUtils.createOmKeyInfo(volumeName, bucketName, keyName,
                     HddsProtos.ReplicationType.RATIS,
-                    HddsProtos.ReplicationFactor.ONE,
+                    1,
                     parentId + 1,
                     parentId, 100, Time.now());
     OMRequestTestUtils.addFileToKeyTable(false, false,
@@ -68,7 +68,7 @@ public class TestOMKeyDeleteResponseWithFSO extends TestOMKeyDeleteResponse {
     Assertions.assertNotNull(getOmBucketInfo());
     return OMRequestTestUtils.createOmKeyInfo(volumeName,
             getOmBucketInfo().getBucketName(), keyName, replicationType,
-            replicationFactor,
+            replicationFactor.getNumber(),
             getOmBucketInfo().getObjectID() + 1,
             getOmBucketInfo().getObjectID(), 100, Time.now());
   }

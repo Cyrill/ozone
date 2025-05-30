@@ -172,7 +172,7 @@ public class TestOMKeyDeleteResponse extends TestOMKeyResponse {
             keyName);
 
     OMRequestTestUtils.addKeyToTable(false, volumeName, bucketName, keyName,
-            clientID, replicationType, replicationFactor, omMetadataManager);
+            clientID, replicationType, replicationFactor.getNumber(), omMetadataManager);
     return ozoneKey;
   }
 

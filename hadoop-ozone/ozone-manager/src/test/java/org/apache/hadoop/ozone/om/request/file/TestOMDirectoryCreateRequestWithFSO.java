@@ -412,7 +412,7 @@ public class TestOMDirectoryCreateRequestWithFSO {
     // Add a file into the FileTable, this is to simulate "file exists" check.
     OmKeyInfo omKeyInfo = OMRequestTestUtils.createOmKeyInfo(volumeName,
             bucketName, keyName, HddsProtos.ReplicationType.RATIS,
-            HddsProtos.ReplicationFactor.THREE, objID++);
+            3, objID++);
     final long volumeId = omMetadataManager.getVolumeId(volumeName);
     final long bucketId = omBucketInfo.getObjectID();
 
@@ -490,7 +490,7 @@ public class TestOMDirectoryCreateRequestWithFSO {
     // Add a key in second level.
     OmKeyInfo omKeyInfo = OMRequestTestUtils.createOmKeyInfo(volumeName,
             bucketName, keyName, HddsProtos.ReplicationType.RATIS,
-            HddsProtos.ReplicationFactor.THREE, objID);
+            3, objID);
 
     final long volumeId = omMetadataManager.getVolumeId(volumeName);
     final long bucketId = omBucketInfo.getObjectID();

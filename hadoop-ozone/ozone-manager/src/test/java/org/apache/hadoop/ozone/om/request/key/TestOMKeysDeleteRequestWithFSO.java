@@ -86,7 +86,7 @@ public class TestOMKeysDeleteRequestWithFSO extends TestOMKeysDeleteRequest {
       OmKeyInfo omKeyInfo = OMRequestTestUtils
           .createOmKeyInfo(volumeName, bucketName, dir + "/" + file,
               HddsProtos.ReplicationType.RATIS,
-              HddsProtos.ReplicationFactor.ONE, parentId + 1, parentId, 100,
+              1, parentId + 1, parentId, 100,
               Time.now());
       omKeyInfo.setKeyName(file);
       OMRequestTestUtils

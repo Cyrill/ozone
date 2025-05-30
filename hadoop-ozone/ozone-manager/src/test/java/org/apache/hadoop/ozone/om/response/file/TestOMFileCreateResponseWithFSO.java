@@ -43,7 +43,7 @@ public class TestOMFileCreateResponseWithFSO extends TestOMKeyCreateResponse {
     Assertions.assertNotNull(omBucketInfo);
     return OMRequestTestUtils.createOmKeyInfo(volumeName,
             omBucketInfo.getBucketName(), keyName, replicationType,
-            replicationFactor,
+            replicationFactor.getNumber(),
             omBucketInfo.getObjectID() + 1,
             omBucketInfo.getObjectID(), 100, Time.now());
   }

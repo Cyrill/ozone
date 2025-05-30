@@ -121,12 +121,12 @@ public class TestOMBucketDeleteRequest extends TestBucketRequest {
     String uploadId = OMMultipartUploadUtils.getMultipartUploadId();
     final OmKeyInfo keyInfo = OMRequestTestUtils.createOmKeyInfo(volumeName,
         bucketName, UUID.randomUUID().toString(),
-        HddsProtos.ReplicationType.RATIS, HddsProtos.ReplicationFactor.ONE,
+        HddsProtos.ReplicationType.RATIS, 1,
         0L, creationTime, true);
     final OmMultipartKeyInfo multipartKeyInfo = OMRequestTestUtils.
         createOmMultipartKeyInfo(uploadId, Time.now(),
             HddsProtos.ReplicationType.RATIS,
-            HddsProtos.ReplicationFactor.ONE, 0L);
+            1, 0L);
     OMRequestTestUtils.addMultipartInfoToTable(false, keyInfo,
         multipartKeyInfo, 0L, omMetadataManager);
 

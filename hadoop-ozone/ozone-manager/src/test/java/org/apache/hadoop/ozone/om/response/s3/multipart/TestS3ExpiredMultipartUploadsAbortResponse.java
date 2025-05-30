@@ -20,7 +20,6 @@
 package org.apache.hadoop.ozone.om.response.s3.multipart;
 
 import org.apache.hadoop.hdds.protocol.proto.HddsProtos;
-import org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationFactor;
 import org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationType;
 import org.apache.hadoop.hdds.utils.UniqueId;
 import org.apache.hadoop.ozone.om.helpers.BucketLayout;
@@ -278,7 +277,7 @@ public class TestS3ExpiredMultipartUploadsAbortResponse
 
       final OmKeyInfo omKeyInfo = OMRequestTestUtils.createOmKeyInfo(volume,
           bucket, keyName,
-          HddsProtos.ReplicationType.RATIS, HddsProtos.ReplicationFactor.ONE,
+          HddsProtos.ReplicationType.RATIS, 1,
           0L, Time.now(), true);
 
       if (getBucketLayout().equals(BucketLayout.FILE_SYSTEM_OPTIMIZED)) {
@@ -294,7 +293,7 @@ public class TestS3ExpiredMultipartUploadsAbortResponse
 
       OmMultipartKeyInfo multipartKeyInfo = OMRequestTestUtils
           .createOmMultipartKeyInfo(uploadId, Time.now(),
-              ReplicationType.RATIS, ReplicationFactor.THREE, objectID);
+              ReplicationType.RATIS, 3, objectID);
 
       for (int j = 1; j <= numParts; j++) {
         PartKeyInfo part = createPartKeyInfo(volume, bucket, keyName, j);

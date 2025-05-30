@@ -481,7 +481,7 @@ public class TestS3ExpiredMultipartUploadsAbortRequest
         // Add key to open key table to be used in MPU commit processing
         OmKeyInfo omKeyInfo = OMRequestTestUtils.createOmKeyInfo(volume,
             bucket, keyName, HddsProtos.ReplicationType.RATIS,
-            HddsProtos.ReplicationFactor.ONE, parentID + j, parentID,
+            1, parentID + j, parentID,
             trxnLogIndex, Time.now(), true);
         String fileName = OzoneFSUtils.getFileName(keyName);
         OMRequestTestUtils.addFileToKeyTable(true, false,
@@ -563,7 +563,7 @@ public class TestS3ExpiredMultipartUploadsAbortRequest
         OMRequestTestUtils.addKeyToTable(
             true, true,
             volume, bucket, keyName, clientID, HddsProtos.ReplicationType.RATIS,
-            HddsProtos.ReplicationFactor.ONE, omMetadataManager);
+            1, omMetadataManager);
 
         OMClientResponse commitResponse =
             s3MultipartUploadCommitPartRequest.validateAndUpdateCache(

@@ -94,7 +94,7 @@ public class TestOMKeysDeleteResponseWithFSO
       OmKeyInfo omKeyInfo =
           OMRequestTestUtils.createOmKeyInfo(volumeName, bucketName, keyName,
               HddsProtos.ReplicationType.RATIS,
-              HddsProtos.ReplicationFactor.ONE, dirId + 1, buckId,
+              1, dirId + 1, buckId,
               dirId + 1, Time.now());
       ozoneDBKey = OMRequestTestUtils.addFileToKeyTable(false, false,
           keyName, omKeyInfo, -1, 50, omMetadataManager);

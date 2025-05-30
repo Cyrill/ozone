@@ -50,7 +50,6 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-import static org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationFactor.THREE;
 import static org.apache.hadoop.hdds.scm.container.balancer.MoveManager.MoveResult.COMPLETED;
 import static org.apache.hadoop.hdds.scm.container.balancer.MoveManager.MoveResult.DELETE_FAIL_POLICY;
 import static org.apache.hadoop.hdds.scm.container.balancer.MoveManager.MoveResult.DELETION_FAIL_NODE_NOT_IN_SERVICE;

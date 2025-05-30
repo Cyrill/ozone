@@ -153,7 +153,7 @@ public class TestOMKeyRenameResponse extends TestOMKeyResponse {
 
   protected OmKeyInfo getOmKeyInfo(String keyName) {
     return OMRequestTestUtils.createOmKeyInfo(volumeName, bucketName, keyName,
-        replicationType, replicationFactor, 0L);
+        replicationType, replicationFactor.getNumber(), 0L);
   }
 
   protected OmKeyInfo getOmKeyInfo(OmKeyInfo toKeyInfo,

@@ -62,7 +62,6 @@ import org.apache.hadoop.ozone.protocol.proto.OzoneManagerProtocolProtos
     .OMRequest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import static org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationFactor.THREE;
 import static org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationType.EC;
 import static org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationType.RATIS;
 import static org.apache.hadoop.ozone.OzoneConsts.OM_KEY_PREFIX;
@@ -668,7 +667,7 @@ public class TestOMKeyCreateRequest extends TestOMKeyRequest {
     KeyArgs.Builder keyArgs = KeyArgs.newBuilder()
         .setVolumeName(volumeName).setBucketName(bucketName)
         .setKeyName(keyName).setIsMultipartKey(isMultipartKey)
-        .setReplicationFactor(replicationFactor.getNumber()).setType(replicationType)
+        .setReplicationFactor(replicationFactor).setType(replicationType)
         .setLatestVersionLocation(true);
 
     // Configure for multipart upload, if applicable
@@ -925,7 +924,7 @@ public class TestOMKeyCreateRequest extends TestOMKeyRequest {
 
   protected void addToKeyTable(String keyName) throws Exception {
     OMRequestTestUtils.addKeyToTable(false, volumeName, bucketName,
-        keyName.substring(1), 0L, RATIS, THREE, omMetadataManager);
+        keyName.substring(1), 0L, RATIS, 3, omMetadataManager);
   }
 
 

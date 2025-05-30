@@ -80,7 +80,7 @@ public class TestOMKeyCommitResponse extends TestOMKeyResponse {
   public void testAddToDBBatchNoOp() throws Exception {
 
     OmKeyInfo omKeyInfo = OMRequestTestUtils.createOmKeyInfo(volumeName,
-        bucketName, keyName, replicationType, replicationFactor);
+        bucketName, keyName, replicationType, replicationFactor.getNumber());
 
     OzoneManagerProtocolProtos.OMResponse omResponse =
         OzoneManagerProtocolProtos.OMResponse.newBuilder().setCommitKeyResponse(
@@ -138,7 +138,7 @@ public class TestOMKeyCommitResponse extends TestOMKeyResponse {
   @NotNull
   protected void addKeyToOpenKeyTable() throws Exception {
     OMRequestTestUtils.addKeyToTable(true, volumeName, bucketName, keyName,
-            clientID, replicationType, replicationFactor, omMetadataManager);
+            clientID, replicationType, replicationFactor.getNumber(), omMetadataManager);
   }
 
   @NotNull

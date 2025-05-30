@@ -17,8 +17,6 @@
  */
 package org.apache.hadoop.hdds.client;
 
-import org.apache.hadoop.hdds.protocol.proto.HddsProtos;
-
 /**
  * Interface extension to denote replication configurations that work by
  * copying the data replicationFactor times, like RATIS or STANDALONE

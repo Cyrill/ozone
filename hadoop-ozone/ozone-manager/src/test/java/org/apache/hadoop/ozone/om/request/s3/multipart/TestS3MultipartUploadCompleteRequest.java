@@ -334,7 +334,7 @@ public class TestS3MultipartUploadCompleteRequest
                              String keyName, long clientID) throws Exception {
     OMRequestTestUtils.addKeyToTable(true, true, volumeName, bucketName,
             keyName, clientID, HddsProtos.ReplicationType.RATIS,
-            HddsProtos.ReplicationFactor.ONE, omMetadataManager);
+            1, omMetadataManager);
   }
 
   protected String getMultipartKey(String volumeName, String bucketName,

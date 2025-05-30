@@ -18,7 +18,6 @@
 
 package org.apache.hadoop.ozone.recon.api;
 
-import static org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationFactor.ONE;
 import static org.apache.hadoop.ozone.om.helpers.QuotaUtil.getReplicatedSize;
 
 import org.apache.hadoop.hdds.client.BlockID;

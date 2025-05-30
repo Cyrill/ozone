@@ -321,7 +321,7 @@ public class TestOMSnapshotCreateRequest {
     String fromKeyParentName = UUID.randomUUID().toString();
     OmKeyInfo fromKeyParent = OMRequestTestUtils.createOmKeyInfo(volumeName,
         bucketName, fromKeyParentName, HddsProtos.ReplicationType.RATIS,
-        HddsProtos.ReplicationFactor.THREE, 100L);
+        3, 100L);
 
     OmKeyInfo toKeyInfo = addKey(toKey, offset + 4L);
     OmKeyInfo fromKeyInfo = addKey(fromKey, offset + 5L);
@@ -380,7 +380,7 @@ public class TestOMSnapshotCreateRequest {
 
   private OmKeyInfo addKey(String keyName, long objectId) {
     return OMRequestTestUtils.createOmKeyInfo(volumeName, bucketName, keyName,
-        HddsProtos.ReplicationType.RATIS, HddsProtos.ReplicationFactor.THREE,
+        HddsProtos.ReplicationType.RATIS, 3,
         objectId);
   }
 

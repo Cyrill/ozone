@@ -166,7 +166,7 @@ public final class OMRequestTestUtils {
   @SuppressWarnings("parameterNumber")
   public static void addKeyToTableAndCache(String volumeName, String bucketName,
       String keyName, long clientID, HddsProtos.ReplicationType replicationType,
-      HddsProtos.ReplicationFactor replicationFactor, long trxnLogIndex,
+      int replicationFactor, long trxnLogIndex,
       OMMetadataManager omMetadataManager) throws Exception {
     addKeyToTable(false, true, volumeName, bucketName, keyName, clientID,
         replicationType, replicationFactor, trxnLogIndex, omMetadataManager);
@@ -190,7 +190,7 @@ public final class OMRequestTestUtils {
   public static void addKeyToTable(boolean openKeyTable, String volumeName,
       String bucketName, String keyName, long clientID,
       HddsProtos.ReplicationType replicationType,
-      HddsProtos.ReplicationFactor replicationFactor,
+      int replicationFactor,
       OMMetadataManager omMetadataManager,
       List<OmKeyLocationInfo> locationList, long version) throws Exception {
     addKeyToTable(openKeyTable, false, volumeName, bucketName, keyName,
@@ -216,7 +216,7 @@ public final class OMRequestTestUtils {
   public static void addKeyToTable(boolean openKeyTable, String volumeName,
       String bucketName, String keyName, long clientID,
       HddsProtos.ReplicationType replicationType,
-      HddsProtos.ReplicationFactor replicationFactor,
+      int replicationFactor,
       OMMetadataManager omMetadataManager) throws Exception {
     addKeyToTable(openKeyTable, false, volumeName, bucketName, keyName,
         clientID, replicationType, replicationFactor, 0L, omMetadataManager);
@@ -242,7 +242,7 @@ public final class OMRequestTestUtils {
   public static void addKeyToTable(boolean openKeyTable, boolean isMultipartKey,
       String volumeName, String bucketName, String keyName, long clientID,
       HddsProtos.ReplicationType replicationType,
-      HddsProtos.ReplicationFactor replicationFactor,
+      int replicationFactor,
       OMMetadataManager omMetadataManager) throws Exception {
     addKeyToTable(openKeyTable, isMultipartKey, false,
         volumeName, bucketName, keyName, clientID, replicationType,
@@ -258,7 +258,7 @@ public final class OMRequestTestUtils {
   public static void addKeyToTable(boolean openKeyTable, boolean addToCache,
       String volumeName, String bucketName, String keyName, long clientID,
       HddsProtos.ReplicationType replicationType,
-      HddsProtos.ReplicationFactor replicationFactor, long trxnLogIndex,
+      int replicationFactor, long trxnLogIndex,
       OMMetadataManager omMetadataManager,
       List<OmKeyLocationInfo> locationList, long version) throws Exception {
 
@@ -280,7 +280,7 @@ public final class OMRequestTestUtils {
   public static void addKeyToTable(boolean openKeyTable, boolean addToCache,
       String volumeName, String bucketName, String keyName, long clientID,
       HddsProtos.ReplicationType replicationType,
-      HddsProtos.ReplicationFactor replicationFactor, long trxnLogIndex,
+      int replicationFactor, long trxnLogIndex,
       OMMetadataManager omMetadataManager) throws Exception {
 
     OmKeyInfo omKeyInfo = createOmKeyInfo(volumeName, bucketName, keyName,
@@ -299,7 +299,7 @@ public final class OMRequestTestUtils {
   public static void addKeyToTable(boolean openKeyTable, boolean isMultipartKey,
       boolean addToCache, String volumeName, String bucketName, String keyName,
       long clientID, HddsProtos.ReplicationType replicationType,
-      HddsProtos.ReplicationFactor replicationFactor, long trxnLogIndex,
+      int replicationFactor, long trxnLogIndex,
       OMMetadataManager omMetadataManager) throws Exception {
 
     OmKeyInfo omKeyInfo = createOmKeyInfo(volumeName, bucketName, keyName,
@@ -451,7 +451,7 @@ public final class OMRequestTestUtils {
       String bucketName,
       String keyName,
       HddsProtos.ReplicationType replicationType,
-      HddsProtos.ReplicationFactor replicationFactor,
+      int replicationFactor,
       OMMetadataManager omMetadataManager) {
 
     OmKeyInfo omKeyInfo = createOmKeyInfo(volumeName, bucketName, keyName,
@@ -554,7 +554,7 @@ public final class OMRequestTestUtils {
    */
   public static OmKeyInfo createOmKeyInfo(String volumeName, String bucketName,
       String keyName, HddsProtos.ReplicationType replicationType,
-      HddsProtos.ReplicationFactor replicationFactor) {
+      int replicationFactor) {
     return createOmKeyInfo(volumeName, bucketName, keyName, replicationType,
         replicationFactor, 0L);
   }
@@ -580,7 +580,7 @@ public final class OMRequestTestUtils {
    */
   public static OmKeyInfo createOmKeyInfo(String volumeName, String bucketName,
       String keyName, HddsProtos.ReplicationType replicationType,
-      HddsProtos.ReplicationFactor replicationFactor, long objectID) {
+      int replicationFactor, long objectID) {
     return createOmKeyInfo(volumeName, bucketName, keyName, replicationType,
             replicationFactor, objectID, Time.now());
   }
@@ -590,7 +590,7 @@ public final class OMRequestTestUtils {
    */
   public static OmKeyInfo createOmKeyInfo(String volumeName, String bucketName,
       String keyName, HddsProtos.ReplicationType replicationType,
-      HddsProtos.ReplicationFactor replicationFactor, long objectID,
+      int replicationFactor, long objectID,
       long creationTime) {
     return createOmKeyInfo(volumeName, bucketName, keyName, replicationType,
             replicationFactor, objectID, creationTime, 0L, false);
@@ -602,7 +602,7 @@ public final class OMRequestTestUtils {
   @SuppressWarnings("parameterNumber")
   public static OmKeyInfo createOmKeyInfo(String volumeName, String bucketName,
       String keyName, HddsProtos.ReplicationType replicationType,
-      HddsProtos.ReplicationFactor replicationFactor, long objectID,
+      int replicationFactor, long objectID,
       long creationTime, boolean isMultipartKey) {
     return createOmKeyInfo(volumeName, bucketName, keyName, replicationType,
         replicationFactor, objectID, creationTime, 0L, isMultipartKey);
@@ -614,7 +614,7 @@ public final class OMRequestTestUtils {
   @SuppressWarnings("parameterNumber")
   private static OmKeyInfo createOmKeyInfo(String volumeName, String bucketName,
       String keyName, HddsProtos.ReplicationType replicationType,
-      HddsProtos.ReplicationFactor replicationFactor, long objectID,
+      int replicationFactor, long objectID,
       long creationTime, long version, boolean isMultipartKey) {
     return new OmKeyInfo.Builder()
         .setVolumeName(volumeName)
@@ -629,7 +629,7 @@ public final class OMRequestTestUtils {
         .setDataSize(1000L)
         .setReplicationConfig(
             ReplicationConfig
-                .fromProtoTypeAndFactor(replicationType, replicationFactor.getNumber()))
+                .fromProtoTypeAndFactor(replicationType, replicationFactor))
         .setObjectID(objectID)
         .setUpdateID(objectID)
         .build();
@@ -640,13 +640,13 @@ public final class OMRequestTestUtils {
    */
   public static OmMultipartKeyInfo createOmMultipartKeyInfo(String uploadId,
         long creationTime, HddsProtos.ReplicationType replicationType,
-        HddsProtos.ReplicationFactor replicationFactor, long objectID) {
+        int replicationFactor, long objectID) {
     return new OmMultipartKeyInfo.Builder()
         .setUploadID(uploadId)
         .setCreationTime(creationTime)
         .setReplicationConfig(
             ReplicationConfig
-                .fromProtoTypeAndFactor(replicationType, replicationFactor.getNumber()))
+                .fromProtoTypeAndFactor(replicationType, replicationFactor))
         .setPartKeyInfoList(Collections.emptySortedMap())
         .setObjectID(objectID)
         .setUpdateID(objectID)
@@ -1456,7 +1456,7 @@ public final class OMRequestTestUtils {
   @SuppressWarnings("parameterNumber")
   public static OmKeyInfo createOmKeyInfo(String volumeName, String bucketName,
       String keyName, HddsProtos.ReplicationType replicationType,
-      HddsProtos.ReplicationFactor replicationFactor, long objectID,
+      int replicationFactor, long objectID,
       long parentID, long trxnLogIndex, long creationTime) {
     return createOmKeyInfo(volumeName, bucketName, keyName,
       replicationType, replicationFactor, objectID,
@@ -1469,7 +1469,7 @@ public final class OMRequestTestUtils {
   @SuppressWarnings("parameterNumber")
   public static OmKeyInfo createOmKeyInfo(String volumeName, String bucketName,
       String keyName, HddsProtos.ReplicationType replicationType,
-      HddsProtos.ReplicationFactor replicationFactor, long objectID,
+      int replicationFactor, long objectID,
       long parentID, long trxnLogIndex, long creationTime,
       boolean isMultipartKey) {
     return createOmKeyInfo(volumeName, bucketName, keyName,
@@ -1483,7 +1483,7 @@ public final class OMRequestTestUtils {
   @SuppressWarnings("parameterNumber")
   public static OmKeyInfo createOmKeyInfo(String volumeName, String bucketName,
       String keyName, HddsProtos.ReplicationType replicationType,
-      HddsProtos.ReplicationFactor replicationFactor, long objectID,
+      int replicationFactor, long objectID,
       long parentID, long trxnLogIndex, long creationTime, long version) {
     return createOmKeyInfo(volumeName, bucketName, keyName, replicationType,
         replicationFactor, objectID, parentID, trxnLogIndex, creationTime,
@@ -1496,7 +1496,7 @@ public final class OMRequestTestUtils {
   @SuppressWarnings("parameterNumber")
   private static OmKeyInfo createOmKeyInfo(String volumeName, String bucketName,
       String keyName, HddsProtos.ReplicationType replicationType,
-      HddsProtos.ReplicationFactor replicationFactor, long objectID,
+      int replicationFactor, long objectID,
       long parentID, long trxnLogIndex, long creationTime, long version,
       boolean isMultipartKey) {
     String fileName = OzoneFSUtils.getFileName(keyName);
@@ -1511,7 +1511,7 @@ public final class OMRequestTestUtils {
             .setModificationTime(Time.now())
             .setDataSize(1000L)
             .setReplicationConfig(ReplicationConfig
-                    .fromProtoTypeAndFactor(replicationType, replicationFactor.getNumber()))
+                    .fromProtoTypeAndFactor(replicationType, replicationFactor))
             .setObjectID(objectID)
             .setUpdateID(trxnLogIndex)
             .setParentObjectID(parentID)

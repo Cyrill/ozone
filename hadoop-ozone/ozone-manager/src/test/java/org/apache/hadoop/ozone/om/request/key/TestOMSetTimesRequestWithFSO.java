@@ -117,7 +117,7 @@ public class TestOMSetTimesRequestWithFSO extends TestOMSetTimesRequest {
 
     OmKeyInfo omKeyInfo = OMRequestTestUtils
         .createOmKeyInfo(volumeName, bucketName, FILE_NAME,
-            HddsProtos.ReplicationType.RATIS, HddsProtos.ReplicationFactor.ONE,
+            HddsProtos.ReplicationType.RATIS, 1,
             parentId + 1, parentId, 100, Time.now());
     OMRequestTestUtils
         .addFileToKeyTable(false, false, FILE_NAME, omKeyInfo, -1, 50,

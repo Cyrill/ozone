@@ -118,7 +118,7 @@ public class TestOMKeyResponse {
   @NotNull
   protected OmKeyInfo getOmKeyInfo() {
     return OMRequestTestUtils.createOmKeyInfo(volumeName, bucketName, keyName,
-            replicationType, replicationFactor);
+            replicationType, replicationFactor.getNumber());
   }
 
   @NotNull

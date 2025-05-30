@@ -151,7 +151,7 @@ public class TestOMKeysDeleteRequest extends TestOMKeyRequest {
       key = parentDir.concat("/key" + i);
       OMRequestTestUtils.addKeyToTableCache(volumeName, bucketName,
           parentDir.concat("/key" + i), HddsProtos.ReplicationType.RATIS,
-          HddsProtos.ReplicationFactor.THREE, omMetadataManager);
+          3, omMetadataManager);
       deleteKeyArgs.addKeys(key);
       deleteKeyList.add(key);
     }

@@ -165,8 +165,8 @@ public class RatisPipelineProvider
     final int factor =
         replicationConfig.getReplicationFactor();
     if (factor == 1) {
-        dns = pickNodesNotUsed(replicationConfig, minRatisVolumeSizeBytes,
-              containerSizeBytes, conf);
+      dns = pickNodesNotUsed(replicationConfig, minRatisVolumeSizeBytes,
+            containerSizeBytes, conf);
     } else {
       List<DatanodeDetails> excludeDueToEngagement = filterPipelineEngagement();
       if (!excludeDueToEngagement.isEmpty()) {

@@ -67,7 +67,7 @@ public class TestS3MultipartUploadCommitPartRequestWithFSO
     long txnLogId = 0L;
     OmKeyInfo omKeyInfo = OMRequestTestUtils.createOmKeyInfo(volumeName,
             bucketName, keyName, HddsProtos.ReplicationType.RATIS,
-            HddsProtos.ReplicationFactor.ONE, parentID + 1, parentID,
+            1, parentID + 1, parentID,
             txnLogId, Time.now(), true);
     String fileName = OzoneFSUtils.getFileName(keyName);
     OMRequestTestUtils.addFileToKeyTable(true, false,

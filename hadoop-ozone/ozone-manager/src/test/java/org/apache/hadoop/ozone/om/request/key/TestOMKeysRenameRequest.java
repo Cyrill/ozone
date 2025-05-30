@@ -124,7 +124,7 @@ public class TestOMKeysRenameRequest extends TestOMKeyRequest {
       String toKey = parentDir.concat("/newKey" + i);
       OMRequestTestUtils.addKeyToTableCache(volumeName, bucketName,
           parentDir.concat("/key" + i), HddsProtos.ReplicationType.RATIS,
-          HddsProtos.ReplicationFactor.THREE, omMetadataManager);
+          3, omMetadataManager);
 
       RenameKeysMap.Builder renameKey = RenameKeysMap.newBuilder()
           .setFromKeyName(key)
