@@ -135,10 +135,7 @@ public final class OzoneClientUtils {
       clientDeterminedReplConfig = bucketReplConfig;
     } else {
       // Let's validate the client side available replication configs.
-      boolean isReplicationInSupportedList = true;
-//          replication == ReplicationFactor.ONE.getValue()
-//              || replication == ReplicationFactor.THREE.getValue()
-//              || replication == ReplicationFactor.SIX.getValue();
+      boolean isReplicationInSupportedList = replication > 0;
 
       if (isReplicationInSupportedList) {
         if (clientConfiguredReplConfig != null) {

@@ -119,7 +119,7 @@ public class TestOzoneClientUtils {
   public void testResolveRepConfWhenFSPassedIsInvalidButBucketDefaultNonEC() {
     ReplicationConfig replicationConfig = OzoneClientUtils
         .resolveClientSideReplicationConfig(
-            (short) -1, null, ratis3ReplicationConfig,
+            (short) 10, null, ratis3ReplicationConfig,
             new OzoneConfiguration());
     // Configured client config also null.
     Assertions.assertNull(replicationConfig);

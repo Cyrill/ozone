@@ -164,13 +164,10 @@ public class RatisPipelineProvider
 
     final int factor =
         replicationConfig.getReplicationFactor();
-    switch (factor) {
-    case 1:
-      dns = pickNodesNotUsed(replicationConfig, minRatisVolumeSizeBytes,
-          containerSizeBytes, conf);
-      break;
-    case 3:
-    case 6:
+    if (factor == 1) {
+        dns = pickNodesNotUsed(replicationConfig, minRatisVolumeSizeBytes,
+              containerSizeBytes, conf);
+    } else {
       List<DatanodeDetails> excludeDueToEngagement = filterPipelineEngagement();
       if (!excludeDueToEngagement.isEmpty()) {
         if (excludedNodes.isEmpty()) {
@@ -180,11 +177,8 @@ public class RatisPipelineProvider
         }
       }
       dns = placementPolicy.chooseDatanodes(excludedNodes,
-          favoredNodes, datacenters, factor, minRatisVolumeSizeBytes,
-          containerSizeBytes);
-      break;
-    default:
-      throw new IllegalStateException("Unknown factor: " + factor);
+              favoredNodes, datacenters, factor, minRatisVolumeSizeBytes,
+              containerSizeBytes);
     }
 
     DatanodeDetails suggestedLeader = leaderChoosePolicy.chooseLeader(dns);

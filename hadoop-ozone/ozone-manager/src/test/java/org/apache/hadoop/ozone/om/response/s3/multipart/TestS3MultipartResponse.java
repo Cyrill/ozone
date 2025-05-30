@@ -160,7 +160,7 @@ public class TestS3MultipartResponse {
             .setModificationTime(Time.now())
             .setObjectID(UUID.randomUUID().hashCode())
             .setType(HddsProtos.ReplicationType.RATIS)
-            .setFactor(1).build()).build();
+            .setReplicationFactor(1).build()).build();
   }
 
   public PartKeyInfo createPartKeyInfoFSO(
@@ -184,7 +184,7 @@ public class TestS3MultipartResponse {
             .setObjectID(UUID.randomUUID().hashCode())
             .setParentID(parentID)
             .setType(HddsProtos.ReplicationType.RATIS)
-            .setFactor(1).build()).build();
+            .setReplicationFactor(1).build()).build();
   }
 
   @SuppressWarnings("parameternumber")

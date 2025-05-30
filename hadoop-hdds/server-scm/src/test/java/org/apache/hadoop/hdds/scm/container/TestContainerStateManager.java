@@ -163,7 +163,7 @@ public class TestContainerStateManager {
         .setNumberOfKeys(0)
         .setOwner("root")
         .setReplicationType(HddsProtos.ReplicationType.RATIS)
-        .setReplicationFactor(3);
+        .setFactor(3);
 
     HddsProtos.ContainerInfoProto container = builder.build();
     HddsProtos.ContainerID cid = HddsProtos.ContainerID.newBuilder().setId(container.getContainerID()).build();
@@ -182,7 +182,7 @@ public class TestContainerStateManager {
         .setNumberOfKeys(0)
         .setOwner("root")
         .setReplicationType(HddsProtos.ReplicationType.RATIS)
-        .setReplicationFactor(3);
+        .setFactor(3);
 
     HddsProtos.ContainerInfoProto container = builder.build();
     HddsProtos.ContainerID cid = HddsProtos.ContainerID.newBuilder().setId(container.getContainerID()).build();

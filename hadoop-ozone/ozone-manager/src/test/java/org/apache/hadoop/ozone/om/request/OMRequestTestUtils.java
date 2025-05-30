@@ -426,7 +426,7 @@ public final class OMRequestTestUtils {
             .setCreationTime(Time.now())
             .setModificationTime(Time.now())
             .setType(HddsProtos.ReplicationType.RATIS)
-            .setFactor(1).build()).build();
+            .setReplicationFactor(1).build()).build();
   }
 
   /**

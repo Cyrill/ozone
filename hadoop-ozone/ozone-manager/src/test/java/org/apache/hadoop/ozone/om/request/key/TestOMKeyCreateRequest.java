@@ -668,7 +668,7 @@ public class TestOMKeyCreateRequest extends TestOMKeyRequest {
     KeyArgs.Builder keyArgs = KeyArgs.newBuilder()
         .setVolumeName(volumeName).setBucketName(bucketName)
         .setKeyName(keyName).setIsMultipartKey(isMultipartKey)
-        .setFactor(replicationFactor.getNumber()).setType(replicationType)
+        .setReplicationFactor(replicationFactor.getNumber()).setType(replicationType)
         .setLatestVersionLocation(true);
 
     // Configure for multipart upload, if applicable
@@ -709,7 +709,7 @@ public class TestOMKeyCreateRequest extends TestOMKeyRequest {
       keyArgs.setEcReplicationConfig(
           ((ECReplicationConfig) repConfig).toProto());
     } else {
-      keyArgs.setFactor(ReplicationConfig.getLegacyFactor(repConfig));
+      keyArgs.setReplicationFactor(ReplicationConfig.getLegacyFactor(repConfig));
     }
 
     if (isMultipartKey) {

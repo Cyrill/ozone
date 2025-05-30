@@ -75,7 +75,7 @@ public class TestOmKeyInfo {
 
     // No EC Config
     Assertions.assertFalse(omKeyProto.hasEcReplicationConfig());
-    Assertions.assertEquals(THREE, omKeyProto.getFactor());
+    Assertions.assertEquals(3, omKeyProto.getReplicationFactor());
     Assertions.assertEquals(RATIS, omKeyProto.getType());
 
     // Reconstruct object from Proto

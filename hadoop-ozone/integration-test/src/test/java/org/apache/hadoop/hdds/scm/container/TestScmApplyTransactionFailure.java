@@ -143,7 +143,7 @@ public class TestScmApplyTransactionFailure {
             .setDeleteTransactionId(0)
             .setReplicationType(pipeline.getType());
 
-    containerInfoBuilder.setReplicationFactor(
+    containerInfoBuilder.setFactor(
         ReplicationConfig.getLegacyFactor(pipeline.getReplicationConfig()));
     return containerInfoBuilder.build();
   }

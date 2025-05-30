@@ -41,8 +41,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationFactor.ONE;
-import static org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationFactor.THREE;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -98,7 +96,7 @@ public class TestListPipelinesSubCommand {
   @Test
   public void testExceptionIfReplicationWithoutType() {
     CommandLine c = new CommandLine(cmd);
-    c.parseArgs("-r", "THREE");
+    c.parseArgs("-r", "3");
     Assertions.assertThrows(IllegalArgumentException.class,
         () -> cmd.execute(scmClient));
   }
@@ -118,7 +116,7 @@ public class TestListPipelinesSubCommand {
   @Test
   public void testReplicationAndType() throws IOException {
     CommandLine c = new CommandLine(cmd);
-    c.parseArgs("-r", "THREE", "-t", "RATIS");
+    c.parseArgs("-r", "3", "-t", "RATIS");
     cmd.execute(scmClient);
 
     String output = outContent.toString(DEFAULT_ENCODING);
@@ -130,7 +128,7 @@ public class TestListPipelinesSubCommand {
   @Test
   public void testLegacyFactorWithoutType() throws IOException {
     CommandLine c = new CommandLine(cmd);
-    c.parseArgs("-ffc", "THREE");
+    c.parseArgs("-ffc", "3");
     cmd.execute(scmClient);
 
     String output = outContent.toString(DEFAULT_ENCODING);
@@ -142,7 +140,7 @@ public class TestListPipelinesSubCommand {
   @Test
   public void factorAndReplicationAreMutuallyExclusive() {
     CommandLine c = new CommandLine(cmd);
-    c.parseArgs("-r", "THREE", "-ffc", "ONE");
+    c.parseArgs("-r", "3", "-ffc", "1");
     Assertions.assertThrows(IllegalArgumentException.class,
         () -> cmd.execute(scmClient));
   }
@@ -163,7 +161,7 @@ public class TestListPipelinesSubCommand {
   @Test
   public void testReplicationAndTypeAndState() throws IOException {
     CommandLine c = new CommandLine(cmd);
-    c.parseArgs("-r", "THREE", "-t", "RATIS", "-s", "OPEN");
+    c.parseArgs("-r", "3", "-t", "RATIS", "-s", "OPEN");
     cmd.execute(scmClient);
 
     String output = outContent.toString(DEFAULT_ENCODING);
@@ -176,7 +174,7 @@ public class TestListPipelinesSubCommand {
   @Test
   public void testLegacyFactorAndState() throws IOException {
     CommandLine c = new CommandLine(cmd);
-    c.parseArgs("-ffc", "THREE", "-fst", "OPEN");
+    c.parseArgs("-ffc", "3", "-fst", "OPEN");
     cmd.execute(scmClient);
 
     String output = outContent.toString(DEFAULT_ENCODING);
