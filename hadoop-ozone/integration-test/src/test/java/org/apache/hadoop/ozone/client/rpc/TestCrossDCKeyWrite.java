@@ -232,7 +232,7 @@ class TestCrossDCKeyWrite {
         keyInfo.getLatestVersionLocations().getLocationList()) {
       ContainerInfo container = storageContainerLocationClient.getContainer(info.getContainerID());
       if (!(ReplicationConfig.getLegacyFactor(container.getReplicationConfig())
-         == replicationFactor.getNumber()) || container.getReplicationType() != replicationType) {
+        == replicationFactor.getNumber()) || container.getReplicationType() != replicationType) {
         return false;
       }
     }
