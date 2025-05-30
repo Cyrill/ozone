@@ -59,7 +59,6 @@ import java.util.List;
 import java.util.Map;
 
 import static org.apache.hadoop.hdds.client.ReplicationType.RATIS;
-import static org.apache.hadoop.hdds.client.ReplicationFactor.ONE;
 import static org.apache.hadoop.hdds.scm.ScmConfigKeys.OZONE_SCM_DEADNODE_INTERVAL;
 import static org.apache.hadoop.hdds.scm.ScmConfigKeys.OZONE_SCM_STALENODE_INTERVAL;
 import static org.junit.jupiter.api.Assertions.assertEquals;

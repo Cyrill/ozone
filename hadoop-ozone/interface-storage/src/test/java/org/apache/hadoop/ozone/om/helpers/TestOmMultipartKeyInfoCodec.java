@@ -19,7 +19,6 @@
 package org.apache.hadoop.ozone.om.helpers;
 
 import org.apache.hadoop.hdds.client.RatisReplicationConfig;
-import org.apache.hadoop.hdds.protocol.proto.HddsProtos;
 import org.apache.hadoop.hdds.utils.db.Codec;
 import org.apache.hadoop.hdds.utils.db.Proto2CodecTestBase;
 import org.apache.ozone.test.GenericTestUtils;

@@ -34,7 +34,6 @@ import java.util.concurrent.ThreadLocalRandom;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.emptyMap;
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
-import static org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationFactor.THREE;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 /**

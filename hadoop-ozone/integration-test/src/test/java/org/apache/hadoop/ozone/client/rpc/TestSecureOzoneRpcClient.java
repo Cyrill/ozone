@@ -342,9 +342,9 @@ public class TestSecureOzoneRpcClient extends TestOzoneRpcClient {
         keyInfo.getLatestVersionLocations().getLocationList()) {
       ContainerInfo container =
           storageContainerLocationClient.getContainer(info.getContainerID());
-        if (!(ReplicationConfig.getLegacyFactor(container.getReplicationConfig())
-         == replicationFactor.getNumber()) || (
-          container.getReplicationType() != replicationType)) {
+      if (!(ReplicationConfig.getLegacyFactor(container.getReplicationConfig())
+            == replicationFactor.getNumber()) || (
+            container.getReplicationType() != replicationType)) {
         return false;
       }
     }

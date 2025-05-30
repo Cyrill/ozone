@@ -26,8 +26,6 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import static org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationFactor.ONE;
-import static org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationFactor.THREE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**

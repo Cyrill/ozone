@@ -21,7 +21,6 @@ package org.apache.hadoop.ozone.om.request.s3.multipart;
 
 import com.google.common.base.Optional;
 import org.apache.hadoop.hdds.client.ReplicationConfig;
-import org.apache.hadoop.hdds.client.ReplicationFactor;
 import org.apache.hadoop.hdds.client.ReplicationType;
 import org.apache.hadoop.hdds.protocol.proto.HddsProtos;
 import org.apache.hadoop.hdds.utils.UniqueId;

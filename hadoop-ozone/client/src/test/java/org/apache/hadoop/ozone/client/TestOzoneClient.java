@@ -47,7 +47,6 @@ import java.util.HashMap;
 import java.util.UUID;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.apache.hadoop.hdds.client.ReplicationFactor.ONE;
 import static org.apache.hadoop.ozone.OzoneConfigKeys.OZONE_CLIENT_CROSS_DC_READ_ALLOW;
 
 /**

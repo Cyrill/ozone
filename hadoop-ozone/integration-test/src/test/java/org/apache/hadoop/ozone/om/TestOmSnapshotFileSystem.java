@@ -75,7 +75,6 @@ import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 
 import static org.apache.hadoop.fs.ozone.Constants.LISTING_PAGE_SIZE;
-import static org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationFactor.ONE;
 import static org.apache.hadoop.ozone.OzoneConfigKeys.OZONE_FS_ITERATE_BATCH_SIZE;
 import static org.apache.hadoop.ozone.OzoneConsts.OM_KEY_PREFIX;
 import static org.apache.hadoop.ozone.OzoneConsts.OZONE_URI_SCHEME;
