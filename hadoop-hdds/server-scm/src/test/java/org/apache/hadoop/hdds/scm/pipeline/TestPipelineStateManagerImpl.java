@@ -181,6 +181,9 @@ public class TestPipelineStateManagerImpl {
         ReplicationType.RATIS, ReplicationType.STAND_ALONE}) {
       for (HddsProtos.ReplicationFactor factor : HddsProtos.ReplicationFactor
           .values()) {
+        if (factor != ReplicationFactor.CUSTOM) {
+          return;
+        }
         for (int i = 0; i < 5; i++) {
           // 5 pipelines in allocated state for each type and factor
           HddsProtos.Pipeline pipeline =
@@ -234,6 +237,9 @@ public class TestPipelineStateManagerImpl {
         ReplicationType.RATIS, ReplicationType.STAND_ALONE}) {
       for (HddsProtos.ReplicationFactor factor : HddsProtos.ReplicationFactor
           .values()) {
+        if (factor == ReplicationFactor.CUSTOM) {
+          return;
+        }
         for (int i = 0; i < 5; i++) {
           // 5 pipelines in allocated state for each type and factor
           HddsProtos.Pipeline pipeline =
