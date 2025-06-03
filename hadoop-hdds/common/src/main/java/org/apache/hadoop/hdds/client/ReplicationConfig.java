@@ -199,7 +199,16 @@ public interface ReplicationConfig {
     case STAND_ALONE:
       ReplicationFactor factor;
       int customFactor;
-      factor = ReplicationFactor.valueOf(Integer.parseInt(replication));
+      try {
+        factor = ReplicationFactor.valueOf(Integer.parseInt(replication));
+      } catch (NumberFormatException e) {
+        try {
+          factor = ReplicationFactor.valueOf(replication);
+        } catch (IllegalArgumentException ex) {
+          throw new IllegalArgumentException(replication +
+                  " is not supported for " + type + " replication type", e);
+        }
+      }
       if (factor == ReplicationFactor.CUSTOM && type == ReplicationType.RATIS) {
         customFactor = Integer.parseInt(replication);
         replicationConfig = fromTypeAndCustomFactor(customFactor);
