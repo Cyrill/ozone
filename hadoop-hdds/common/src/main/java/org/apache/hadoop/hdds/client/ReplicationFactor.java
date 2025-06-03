@@ -57,9 +57,7 @@ public enum ReplicationFactor {
     if (value == 6) {
       return SIX;
     }
-    else {
-      return CUSTOM;
-    }
+    return CUSTOM;
   }
 
   public static ReplicationFactor fromProto(

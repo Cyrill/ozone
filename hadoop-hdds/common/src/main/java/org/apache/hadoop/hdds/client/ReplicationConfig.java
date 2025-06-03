@@ -56,8 +56,8 @@ public interface ReplicationConfig {
   }
 
   static ReplicationConfig fromProtoTypeAndCustomFactor(int factor) {
-      return RatisReplicationConfig.getInstance(factor);
-    }
+    return RatisReplicationConfig.getInstance(factor);
+  }
 
   /**
    * Helper method to create proper replication method from old-style
