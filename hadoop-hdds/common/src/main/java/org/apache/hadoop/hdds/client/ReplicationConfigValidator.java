@@ -33,7 +33,7 @@ import java.util.regex.Pattern;
 public class ReplicationConfigValidator {
 
   @Config(key = "allowed-configs",
-      defaultValue = "^((STANDALONE|RATIS)/(ONE|THREE|SIX))|"
+      defaultValue = "^((STANDALONE|RATIS)/(ONE|THREE|SIX|CUSTOM))|"
           + "(EC/(3-2|6-3|10-4)-(512|1024|2048|4096)k)"
           + "$",
       type = ConfigType.STRING,

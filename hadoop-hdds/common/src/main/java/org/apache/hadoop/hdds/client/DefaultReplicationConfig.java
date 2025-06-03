@@ -44,10 +44,16 @@ public class DefaultReplicationConfig {
       throw new IllegalArgumentException(
           "Invalid argument: default replication config is null");
     }
-    ReplicationConfig config = proto.hasEcReplicationConfig()
-        ? new ECReplicationConfig(proto.getEcReplicationConfig())
-        : ReplicationConfig.fromProtoTypeAndFactor(
-            proto.getType(), proto.getFactor());
+    ReplicationConfig config;
+    if (proto.getFactor() == HddsProtos.ReplicationFactor.CUSTOM) {
+      config = ReplicationConfig.fromProtoTypeAndCustomFactor(
+              proto.getIntFactor());
+    } else {
+      config = proto.hasEcReplicationConfig()
+              ? new ECReplicationConfig(proto.getEcReplicationConfig())
+              : ReplicationConfig.fromProtoTypeAndFactor(
+              proto.getType(), proto.getFactor());
+    }
     return new DefaultReplicationConfig(config);
   }
 
@@ -72,6 +78,9 @@ public class DefaultReplicationConfig {
     } else {
       ReplicationFactor factor =
           ReplicationFactor.valueOf(replicationConfig.getRequiredNodes());
+      if (factor == ReplicationFactor.CUSTOM) {
+        builder.setIntFactor(replicationConfig.getRequiredNodes());
+      }
       builder.setFactor(factor.toProto());
     }
     return builder.build();

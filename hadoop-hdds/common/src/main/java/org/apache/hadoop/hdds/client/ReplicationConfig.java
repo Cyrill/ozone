@@ -55,6 +55,10 @@ public interface ReplicationConfig {
     }
   }
 
+  static ReplicationConfig fromProtoTypeAndCustomFactor(int factor) {
+      return RatisReplicationConfig.getInstance(factor);
+    }
+
   /**
    * Helper method to create proper replication method from old-style
    * factor+type definition.
@@ -68,6 +72,10 @@ public interface ReplicationConfig {
     return fromProtoTypeAndFactor(
         HddsProtos.ReplicationType.valueOf(type.name()),
         HddsProtos.ReplicationFactor.valueOf(factor.name()));
+  }
+
+  static ReplicationConfig fromTypeAndCustomFactor(int factor) {
+    return fromProtoTypeAndCustomFactor(factor);
   }
 
   static ReplicationConfig getDefault(ConfigurationSource config) {
@@ -190,17 +198,14 @@ public interface ReplicationConfig {
     case RATIS:
     case STAND_ALONE:
       ReplicationFactor factor;
-      try {
-        factor = ReplicationFactor.valueOf(Integer.parseInt(replication));
-      } catch (NumberFormatException ex) {
-        try {
-          factor = ReplicationFactor.valueOf(replication);
-        } catch (IllegalArgumentException e) {
-          throw new IllegalArgumentException(replication +
-              " is not supported for " + type + " replication type", e);
-        }
+      int customFactor;
+      factor = ReplicationFactor.valueOf(Integer.parseInt(replication));
+      if (factor == ReplicationFactor.CUSTOM && type == ReplicationType.RATIS) {
+        customFactor = Integer.parseInt(replication);
+        replicationConfig = fromTypeAndCustomFactor(customFactor);
+      } else {
+        replicationConfig = fromTypeAndFactor(type, factor);
       }
-      replicationConfig = fromTypeAndFactor(type, factor);
       break;
     case EC:
       replicationConfig = new ECReplicationConfig(replication);

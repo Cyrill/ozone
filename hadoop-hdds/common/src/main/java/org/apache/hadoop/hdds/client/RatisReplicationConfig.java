@@ -25,8 +25,7 @@ import org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationType;
 
 import java.util.Objects;
 
-import static org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationFactor.ONE;
-import static org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationFactor.THREE;
+import static org.apache.hadoop.hdds.protocol.proto.HddsProtos.ReplicationFactor.*;
 
 /**
  * Replication configuration for Ratis replication.
@@ -35,6 +34,7 @@ public final class RatisReplicationConfig
     implements ReplicatedReplicationConfig {
 
   private final ReplicationFactor replicationFactor;
+  private final int customFactor;
   private static final ReplicationType REPLICATION_TYPE = ReplicationType.RATIS;
 
   private static final RatisReplicationConfig RATIS_ONE_CONFIG =
@@ -59,12 +59,22 @@ public final class RatisReplicationConfig
     return new RatisReplicationConfig(factor);
   }
 
+  public static RatisReplicationConfig getInstance(int customFactor) {
+    return new RatisReplicationConfig(customFactor);
+  }
+
   /**
    * Use the static getInstance method rather than the private constructor.
    * @param replicationFactor
    */
   private RatisReplicationConfig(ReplicationFactor replicationFactor) {
+    this.customFactor = 0;
     this.replicationFactor = replicationFactor;
+  }
+
+  private RatisReplicationConfig(int customFactor) {
+    this.replicationFactor = CUSTOM;
+    this.customFactor = customFactor;
   }
 
   public static boolean hasFactor(ReplicationConfig replicationConfig,
@@ -84,6 +94,9 @@ public final class RatisReplicationConfig
 
   @Override
   public int getRequiredNodes() {
+    if (replicationFactor == CUSTOM) {
+      return customFactor;
+    }
     return replicationFactor.getNumber();
   }
 
