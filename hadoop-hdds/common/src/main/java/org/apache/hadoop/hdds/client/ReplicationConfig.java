@@ -210,7 +210,7 @@ public interface ReplicationConfig {
           factor = ReplicationFactor.valueOf(replication);
         } catch (IllegalArgumentException ex) {
           throw new IllegalArgumentException(replication +
-                  " is not supported for " + type + " replication type", e);
+              " is not supported for " + type + " replication type", e);
         }
       }
       if (factor == ReplicationFactor.CUSTOM && type == ReplicationType.RATIS) {

@@ -127,7 +127,7 @@ public final class ContainerInfo implements Comparable<ContainerInfo> {
     ContainerInfo.Builder builder = new ContainerInfo.Builder();
     final ReplicationConfig config = ReplicationConfig
         .fromProto(info.getReplicationType(), info.getReplicationFactor(),
-                   info.getEcReplicationConfig(), info.getIntFactor());
+            info.getEcReplicationConfig(), info.getIntFactor());
     builder.setUsedBytes(info.getUsedBytes())
         .setNumberOfKeys(info.getNumberOfKeys())
         .setState(info.getState())

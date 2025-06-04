@@ -191,7 +191,6 @@ public class RatisPipelineProvider
           containerSizeBytes);
       }
       break;
-
     default:
       throw new IllegalStateException("Unknown factor: " + factor.name());
     }

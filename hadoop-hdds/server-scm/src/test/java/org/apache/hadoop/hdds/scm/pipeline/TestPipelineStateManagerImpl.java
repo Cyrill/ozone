@@ -181,7 +181,7 @@ public class TestPipelineStateManagerImpl {
         ReplicationType.RATIS, ReplicationType.STAND_ALONE}) {
       for (HddsProtos.ReplicationFactor factor : HddsProtos.ReplicationFactor
           .values()) {
-        if (factor != ReplicationFactor.CUSTOM) {
+        if (factor == ReplicationFactor.CUSTOM) {
           return;
         }
         for (int i = 0; i < 5; i++) {
