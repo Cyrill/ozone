@@ -104,12 +104,16 @@ public interface ReplicationConfig {
   static ReplicationConfig fromProto(
       HddsProtos.ReplicationType type,
       HddsProtos.ReplicationFactor factor,
-      HddsProtos.ECReplicationConfig ecConfig) {
+      HddsProtos.ECReplicationConfig ecConfig,
+      int customFactor) {
     switch (type) {
     case EC:
       return new ECReplicationConfig(ecConfig);
     case RATIS:
     case STAND_ALONE:
+      if (factor == HddsProtos.ReplicationFactor.CUSTOM) {
+        return fromProtoTypeAndCustomFactor(customFactor);
+      }
       return fromProtoTypeAndFactor(type, factor);
     default:
       throw new UnsupportedOperationException(

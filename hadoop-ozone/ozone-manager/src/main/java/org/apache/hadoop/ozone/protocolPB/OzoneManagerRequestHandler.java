@@ -980,6 +980,10 @@ public class OzoneManagerRequestHandler implements RequestHandler {
     } else {
       response.setFactor(ReplicationConfig.getLegacyFactor(
           omMultipartUploadListParts.getReplicationConfig()));
+      if (ReplicationConfig.getLegacyFactor(
+              omMultipartUploadListParts.getReplicationConfig()) == HddsProtos.ReplicationFactor.CUSTOM) {
+        response.setIntFactor(omMultipartUploadListParts.getReplicationConfig().getRequiredNodes());
+      }
     }
     response.setNextPartNumberMarker(
         omMultipartUploadListParts.getNextPartNumberMarker());
@@ -1018,6 +1022,10 @@ public class OzoneManagerRequestHandler implements RequestHandler {
           } else {
             bldr.setFactor(ReplicationConfig.getLegacyFactor(
                 upload.getReplicationConfig()));
+            if (ReplicationConfig.getLegacyFactor(
+                    upload.getReplicationConfig()) == HddsProtos.ReplicationFactor.CUSTOM) {
+              bldr.setIntFactor(upload.getReplicationConfig().getRequiredNodes());
+            }
           }
           bldr.setCreationTime(upload.getCreationTime().toEpochMilli());
           return bldr.build();

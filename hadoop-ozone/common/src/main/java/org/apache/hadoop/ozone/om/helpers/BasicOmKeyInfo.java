@@ -23,6 +23,7 @@ import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.hadoop.hdds.client.ECReplicationConfig;
 import org.apache.hadoop.hdds.client.ReplicationConfig;
+import org.apache.hadoop.hdds.protocol.proto.HddsProtos;
 import org.apache.hadoop.ozone.protocol.proto.OzoneManagerProtocolProtos.BasicKeyInfo;
 import org.apache.hadoop.ozone.protocol.proto.OzoneManagerProtocolProtos.ListKeysRequest;
 
@@ -183,6 +184,9 @@ public class BasicOmKeyInfo {
           ((ECReplicationConfig) replicationConfig).toProto());
     } else {
       builder.setFactor(ReplicationConfig.getLegacyFactor(replicationConfig));
+      if (ReplicationConfig.getLegacyFactor(replicationConfig) == HddsProtos.ReplicationFactor.CUSTOM) {
+        builder.setIntFactor(replicationConfig.getRequiredNodes());
+      }
     }
     if (StringUtils.isNotEmpty(eTag)) {
       builder.setETag(eTag);
@@ -211,7 +215,8 @@ public class BasicOmKeyInfo {
         .setReplicationConfig(ReplicationConfig.fromProto(
             basicKeyInfo.getType(),
             basicKeyInfo.getFactor(),
-            basicKeyInfo.getEcReplicationConfig()))
+            basicKeyInfo.getEcReplicationConfig(),
+            basicKeyInfo.getIntFactor()))
         .setETag(basicKeyInfo.getETag())
         .setIsFile(!keyName.endsWith("/"))
         .setUpdateId(basicKeyInfo.getUpdateID());
@@ -237,7 +242,8 @@ public class BasicOmKeyInfo {
         .setReplicationConfig(ReplicationConfig.fromProto(
             basicKeyInfo.getType(),
             basicKeyInfo.getFactor(),
-            basicKeyInfo.getEcReplicationConfig()))
+            basicKeyInfo.getEcReplicationConfig(),
+            basicKeyInfo.getIntFactor()))
         .setETag(basicKeyInfo.getETag())
         .setIsFile(!keyName.endsWith("/"))
         .setUpdateId(basicKeyInfo.getUpdateID());

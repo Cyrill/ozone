@@ -157,7 +157,7 @@ message AllocateScmBlockRequestProto {
 
   optional string client = 9;
   repeated string datacenters = 10;
-
+  optional int32 customFactor = 11;
 }
 
 /**

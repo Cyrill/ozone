@@ -18,6 +18,7 @@ package org.apache.hadoop.ozone.om.helpers;
 
 import org.apache.hadoop.hdds.client.ECReplicationConfig;
 import org.apache.hadoop.hdds.client.ReplicationConfig;
+import org.apache.hadoop.hdds.protocol.proto.HddsProtos;
 import org.apache.hadoop.hdds.utils.db.Codec;
 import org.apache.hadoop.hdds.utils.db.DelegatedCodec;
 import org.apache.hadoop.hdds.utils.db.Proto2Codec;
@@ -305,7 +306,8 @@ public final class OmMultipartKeyInfo extends WithObjectID {
     final ReplicationConfig replicationConfig = ReplicationConfig.fromProto(
         multipartKeyInfo.getType(),
         multipartKeyInfo.getFactor(),
-        multipartKeyInfo.getEcReplicationConfig()
+        multipartKeyInfo.getEcReplicationConfig(),
+        multipartKeyInfo.getIntFactor()
     );
 
     return new OmMultipartKeyInfo(multipartKeyInfo.getUploadID(),
@@ -332,6 +334,9 @@ public final class OmMultipartKeyInfo extends WithObjectID {
       builder.setEcReplicationConfig(ecConf.toProto());
     } else {
       builder.setFactor(ReplicationConfig.getLegacyFactor(replicationConfig));
+      if (ReplicationConfig.getLegacyFactor(replicationConfig) == HddsProtos.ReplicationFactor.CUSTOM) {
+        builder.setIntFactor(replicationConfig.getRequiredNodes());
+      }
     }
 
     builder.addAllPartKeyInfoList(partKeyInfoMap);

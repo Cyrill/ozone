@@ -85,7 +85,7 @@ public final class OzoneConfigUtil {
     if (clientType != HddsProtos.ReplicationType.NONE) {
       // Client passed the replication config, so let's use it.
       replicationConfig = ReplicationConfig
-          .fromProto(clientType, clientFactor, clientECReplicationConfig);
+          .fromProto(clientType, clientFactor, clientECReplicationConfig, 0);
 
       ozoneManager.validateReplicationConfig(replicationConfig);
     } else if (bucketDefaultReplicationConfig != null) {

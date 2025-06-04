@@ -477,7 +477,7 @@ public class S3MultipartUploadCompleteRequest extends OMKeyRequest {
           .setBucketName(bucketName).setKeyName(dbOpenKeyInfo.getKeyName())
           .setReplicationConfig(ReplicationConfig.fromProto(
               partKeyInfo.getType(), partKeyInfo.getFactor(),
-              partKeyInfo.getEcReplicationConfig()))
+              partKeyInfo.getEcReplicationConfig(), 0))
           .setCreationTime(keyArgs.getModificationTime())
           .setModificationTime(keyArgs.getModificationTime())
           .setDataSize(dataSize)

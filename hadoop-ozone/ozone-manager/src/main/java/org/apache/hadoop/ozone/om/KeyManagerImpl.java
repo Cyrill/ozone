@@ -838,7 +838,7 @@ public class KeyManagerImpl implements KeyManager {
             replicationConfig = ReplicationConfig.fromProto(
                 partKeyInfo.getPartKeyInfo().getType(),
                 partKeyInfo.getPartKeyInfo().getFactor(),
-                partKeyInfo.getPartKeyInfo().getEcReplicationConfig());
+                partKeyInfo.getPartKeyInfo().getEcReplicationConfig(), 0);
             count++;
           }
         }
