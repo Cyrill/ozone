@@ -135,7 +135,7 @@ public class TestReplicationConfig {
             .build();
 
     ReplicationConfig config = ReplicationConfig
-        .fromProto(ReplicationType.EC, null, proto);
+        .fromProto(ReplicationType.EC, null, proto, 0);
 
     validate(config, EcCodec.valueOf(codec), data, parity, chunkSize);
   }
@@ -149,7 +149,7 @@ public class TestReplicationConfig {
             .setData(data).setParity(parity).setEcChunkSize(chunkSize).build();
 
     ReplicationConfig config =
-        ReplicationConfig.fromProto(ReplicationType.EC, null, proto);
+        ReplicationConfig.fromProto(ReplicationType.EC, null, proto, 0);
 
     assertEquals(EcCodec.valueOf(
         codec) + ECReplicationConfig.EC_REPLICATION_PARAMS_DELIMITER

@@ -186,7 +186,7 @@ public class RatisPipelineProvider
                 favoredNodes, datacenters, replicationConfig.getRequiredNodes(), minRatisVolumeSizeBytes,
                 containerSizeBytes);
       } else {
-      dns = placementPolicy.chooseDatanodes(excludedNodes,
+        dns = placementPolicy.chooseDatanodes(excludedNodes,
           favoredNodes, datacenters, factor.getNumber(), minRatisVolumeSizeBytes,
           containerSizeBytes);
       }
