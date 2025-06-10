@@ -153,10 +153,10 @@ class TestCustomReplicationFactor {
 
   static void createAndVerifyStreamKeyData(OzoneBucket bucket, int replicationFactor)
           throws Exception {
-  Instant testStartTime = Instant.now();
-  String keyName = UUID.randomUUID().toString();
-  String value = "sample value";
-  try (OzoneDataStreamOutput out = bucket.createStreamKey(keyName,
+    Instant testStartTime = Instant.now();
+    String keyName = UUID.randomUUID().toString();
+    String value = "sample value";
+    try (OzoneDataStreamOutput out = bucket.createStreamKey(keyName,
         value.getBytes(StandardCharsets.UTF_8).length,
         ReplicationConfig.fromTypeAndCustomFactor(replicationFactor),
           new HashMap<>())) {
@@ -173,7 +173,7 @@ class TestCustomReplicationFactor {
           value.getBytes(StandardCharsets.UTF_8).length,
           ReplicationConfig.fromTypeAndCustomFactor(replicationFactor),
             new HashMap<>())) {
-        out.write(value.getBytes(StandardCharsets.UTF_8));
+      out.write(value.getBytes(StandardCharsets.UTF_8));
     }
     verifyKeyData(bucket, keyName, value, testStartTime, replicationFactor);
 
@@ -182,7 +182,7 @@ class TestCustomReplicationFactor {
             value.getBytes(StandardCharsets.UTF_8).length,
             ReplicationConfig.fromTypeAndCustomFactor(replicationFactor),
             new HashMap<>())) {
-        out.write(value.getBytes(StandardCharsets.UTF_8));
+      out.write(value.getBytes(StandardCharsets.UTF_8));
     }
   }
 
@@ -219,20 +219,19 @@ class TestCustomReplicationFactor {
     HddsProtos.ReplicationFactor replicationFactor =
             HddsProtos.ReplicationFactor.valueOf(factor);
     OmKeyInfo keyInfo = ozoneManager.lookupKey(keyArgs);
-    for (OmKeyLocationInfo info :
-      keyInfo.getLatestVersionLocations().getLocationList()) {
-        ContainerInfo container = storageContainerLocationClient.getContainer(info.getContainerID());
-        if (!ReplicationConfig.getLegacyFactor(container.getReplicationConfig())
-                .equals(replicationFactor) || container.getReplicationType() != replicationType) {
-          return false;
-        }
+    for (OmKeyLocationInfo info : keyInfo.getLatestVersionLocations().getLocationList()) {
+      ContainerInfo container = storageContainerLocationClient.getContainer(info.getContainerID());
+      if (!ReplicationConfig.getLegacyFactor(container.getReplicationConfig())
+              .equals(replicationFactor) || container.getReplicationType() != replicationType) {
+        return false;
+      }
     }
     return true;
   }
 
   private static Stream<Arguments> bucketConfigs() {
     List<Arguments> args = new ArrayList<>();
-    int[] customFactors = {2,4,5,6,7,8};
+    int[] customFactors = {2, 4, 5, 6, 7, 8};
     for (BucketLayout layout : BucketLayout.values()) {
       for (int factor : customFactors) {
         args.add(Arguments.of(layout, factor));
