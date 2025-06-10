@@ -161,8 +161,8 @@ class TestCustomReplicationFactor {
         ReplicationConfig.fromTypeAndCustomFactor(replicationFactor),
           new HashMap<>())) {
       out.write(value.getBytes(StandardCharsets.UTF_8));
-  }
-  verifyKeyData(bucket, keyName, value, testStartTime, replicationFactor);
+    }
+    verifyKeyData(bucket, keyName, value, testStartTime, replicationFactor);
   }
 
   static void createAndVerifyKeyData(OzoneBucket bucket, int replicationFactor) throws Exception {
