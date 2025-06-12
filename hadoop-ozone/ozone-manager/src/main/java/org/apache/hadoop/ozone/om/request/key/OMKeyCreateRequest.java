@@ -140,7 +140,7 @@ public class OMKeyCreateRequest extends OMKeyRequest {
       if (intFactor != 0) {
         repConfig = ReplicationConfig.fromProtoTypeAndCustomFactor(intFactor);
       } else {
-      repConfig = OzoneConfigUtil
+        repConfig = OzoneConfigUtil
           .resolveReplicationConfigPreference(type, factor,
               keyArgs.getEcReplicationConfig(),
               bucketInfo.getDefaultReplicationConfig(),
