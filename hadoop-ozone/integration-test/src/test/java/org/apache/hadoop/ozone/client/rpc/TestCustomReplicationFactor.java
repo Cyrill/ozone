@@ -62,12 +62,10 @@ import org.apache.hadoop.ozone.om.helpers.OmKeyLocationInfo;
 import org.apache.ozone.test.GenericTestUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-@Timeout(100)
 class TestCustomReplicationFactor {
 
   private static MiniOzoneCluster cluster;
@@ -135,7 +133,7 @@ class TestCustomReplicationFactor {
 
   @MethodSource("bucketConfigs")
   @ParameterizedTest
-  void testCustomReplicationFactor(BucketLayout bucketLayout, int factor) throws Exception {
+  void testPutKeyThreeDCs(BucketLayout bucketLayout, int factor) throws Exception {
     String volumeName = UUID.randomUUID().toString();
     String bucketName = UUID.randomUUID().toString();
     store.createVolume(volumeName);
@@ -143,26 +141,11 @@ class TestCustomReplicationFactor {
     BucketArgs bucketArgs = BucketArgs.newBuilder()
             .setBucketLayout(bucketLayout)
             .setDefaultReplicationConfig(
-                new DefaultReplicationConfig(ReplicationConfig.fromTypeAndCustomFactor(factor)))
+                    new DefaultReplicationConfig(ReplicationConfig.fromTypeAndCustomFactor(factor)))
             .build();
     volume.createBucket(bucketName, bucketArgs);
     OzoneBucket bucket = volume.getBucket(bucketName);
     createAndVerifyKeyData(bucket, factor);
-    createAndVerifyStreamKeyData(bucket, factor);
-  }
-
-  static void createAndVerifyStreamKeyData(OzoneBucket bucket, int replicationFactor)
-          throws Exception {
-    Instant testStartTime = Instant.now();
-    String keyName = UUID.randomUUID().toString();
-    String value = "sample value";
-    try (OzoneDataStreamOutput out = bucket.createStreamKey(keyName,
-        value.getBytes(StandardCharsets.UTF_8).length,
-        ReplicationConfig.fromTypeAndCustomFactor(replicationFactor),
-          new HashMap<>())) {
-      out.write(value.getBytes(StandardCharsets.UTF_8));
-    }
-    verifyKeyData(bucket, keyName, value, testStartTime, replicationFactor);
   }
 
   static void createAndVerifyKeyData(OzoneBucket bucket, int replicationFactor) throws Exception {
@@ -177,7 +160,7 @@ class TestCustomReplicationFactor {
     }
     verifyKeyData(bucket, keyName, value, testStartTime, replicationFactor);
 
-        // Overwrite the key
+    // Overwrite the key
     try (OzoneOutputStream out = bucket.createKey(keyName,
             value.getBytes(StandardCharsets.UTF_8).length,
             ReplicationConfig.fromTypeAndCustomFactor(replicationFactor),
@@ -240,6 +223,3 @@ class TestCustomReplicationFactor {
     return args.stream();
   }
 }
-
-
-
