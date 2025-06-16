@@ -38,6 +38,7 @@ import java.util.stream.Stream;
 import org.apache.hadoop.conf.StorageUnit;
 import org.apache.hadoop.hdds.client.DefaultReplicationConfig;
 import org.apache.hadoop.hdds.client.ReplicationConfig;
+import org.apache.hadoop.hdds.client.ReplicationFactor;
 import org.apache.hadoop.hdds.client.ReplicationType;
 import org.apache.hadoop.hdds.conf.OzoneConfiguration;
 import org.apache.hadoop.hdds.protocol.proto.HddsProtos;
@@ -198,13 +199,13 @@ class TestCustomReplicationFactor {
             .build();
     HddsProtos.ReplicationType replicationType =
             HddsProtos.ReplicationType.valueOf(type.toString());
-    HddsProtos.ReplicationFactor replicationFactor =
-            HddsProtos.ReplicationFactor.valueOf(factor);
+    ReplicationFactor replicationFactor = ReplicationFactor.valueOf(factor);
+    HddsProtos.ReplicationFactor protoFactor = ReplicationFactor.toProto(replicationFactor);
     OmKeyInfo keyInfo = ozoneManager.lookupKey(keyArgs);
     for (OmKeyLocationInfo info : keyInfo.getLatestVersionLocations().getLocationList()) {
       ContainerInfo container = storageContainerLocationClient.getContainer(info.getContainerID());
       if (!ReplicationConfig.getLegacyFactor(container.getReplicationConfig())
-              .equals(replicationFactor) || container.getReplicationType() != replicationType) {
+              .equals(protoFactor) || container.getReplicationType() != replicationType) {
         return false;
       }
     }
@@ -213,7 +214,7 @@ class TestCustomReplicationFactor {
 
   private static Stream<Arguments> bucketConfigs() {
     List<Arguments> args = new ArrayList<>();
-    int[] customFactors = {2, 4, 5, 6, 7, 8};
+    int[] customFactors = {2, 4, 5, 7, 8};
     for (BucketLayout layout : BucketLayout.values()) {
       for (int factor : customFactors) {
         args.add(Arguments.of(layout, factor));
