@@ -343,7 +343,7 @@ public class TestRatisPipelineProvider {
     largeContainerConf.set(OZONE_SCM_CONTAINER_SIZE, "300TB");
     init(1, largeContainerConf);
     for (ReplicationFactor factor: ReplicationFactor.values()) {
-      if (factor == ReplicationFactor.ZERO) {
+      if (factor == ReplicationFactor.ZERO || factor == ReplicationFactor.CUSTOM) {
         continue;
       }
       try {
@@ -359,7 +359,7 @@ public class TestRatisPipelineProvider {
     largeMetadataConf.set(OZONE_DATANODE_RATIS_VOLUME_FREE_SPACE_MIN, "300TB");
     init(1, largeMetadataConf);
     for (ReplicationFactor factor: ReplicationFactor.values()) {
-      if (factor == ReplicationFactor.ZERO) {
+      if (factor == ReplicationFactor.ZERO || factor == ReplicationFactor.CUSTOM) {
         continue;
       }
       try {

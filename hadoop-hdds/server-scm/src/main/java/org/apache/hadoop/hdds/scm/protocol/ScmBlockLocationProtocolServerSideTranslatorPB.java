@@ -195,7 +195,9 @@ public final class ScmBlockLocationProtocolServerSideTranslatorPB
             ReplicationConfig.fromProto(
                 request.getType(),
                 request.getFactor(),
-                request.getEcReplicationConfig()),
+                request.getEcReplicationConfig(),
+                request.getCustomFactor()),
+
             request.getOwner(),
             ExcludeList.getFromProtoBuf(request.getExcludeList()),
             request.getClient(), new HashSet<>(request.getDatacentersList()));

@@ -172,6 +172,7 @@ public class RatisPipelineProvider
       break;
     case THREE:
     case SIX:
+    case CUSTOM:
       List<DatanodeDetails> excludeDueToEngagement = filterPipelineEngagement();
       if (!excludeDueToEngagement.isEmpty()) {
         if (excludedNodes.isEmpty()) {
@@ -180,23 +181,29 @@ public class RatisPipelineProvider
           excludedNodes.addAll(excludeDueToEngagement);
         }
       }
-      dns = placementPolicy.chooseDatanodes(excludedNodes,
+      if (factor == ReplicationFactor.CUSTOM) {
+        dns = placementPolicy.chooseDatanodes(excludedNodes,
+                favoredNodes, datacenters, replicationConfig.getRequiredNodes(), minRatisVolumeSizeBytes,
+                containerSizeBytes);
+      } else {
+        dns = placementPolicy.chooseDatanodes(excludedNodes,
           favoredNodes, datacenters, factor.getNumber(), minRatisVolumeSizeBytes,
           containerSizeBytes);
+      }
       break;
     default:
       throw new IllegalStateException("Unknown factor: " + factor.name());
     }
 
     DatanodeDetails suggestedLeader = leaderChoosePolicy.chooseLeader(dns);
-
     Pipeline pipeline = Pipeline.newBuilder()
         .setId(PipelineID.randomId())
         .setState(PipelineState.ALLOCATED)
-        .setReplicationConfig(RatisReplicationConfig.getInstance(factor))
+        .setReplicationConfig(factor == ReplicationFactor.CUSTOM
+          ? RatisReplicationConfig.getInstance(replicationConfig.getRequiredNodes())
+          : RatisReplicationConfig.getInstance(factor))
         .setNodes(dns)
-        .setSuggestedLeaderId(
-            suggestedLeader != null ? suggestedLeader.getUuid() : null)
+        .setSuggestedLeaderId(suggestedLeader != null ? suggestedLeader.getUuid() : null)
         .setDatacenters(datacenters)
         .build();
 

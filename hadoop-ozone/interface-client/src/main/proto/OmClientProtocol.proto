@@ -1023,6 +1023,7 @@ message KeyArgs {
     optional hadoop.hdds.ECReplicationConfig ecReplicationConfig = 19;
     // Force OM to update container cache location from SCL
     optional bool forceUpdateContainerCacheFromSCM = 20;
+    optional int32 intFactor = 21;
 }
 
 message KeyLocation {
@@ -1105,6 +1106,7 @@ message KeyInfo {
     optional hadoop.hdds.ECReplicationConfig ecReplicationConfig = 17;
     optional FileChecksumProto fileChecksum = 18;
     optional bool isFile = 19;
+    optional int32 intFactor = 20;
 }
 
 message BasicKeyInfo {
@@ -1117,6 +1119,7 @@ message BasicKeyInfo {
     optional hadoop.hdds.ECReplicationConfig ecReplicationConfig = 7;
     optional string eTag = 8;
     optional uint64 updateID = 9;
+    optional int32 intFactor = 10;
 }
 
 message DirectoryInfo {
@@ -1580,6 +1583,7 @@ message MultipartKeyInfo {
     optional uint64 updateID = 7;
     optional uint64 parentID = 8;
     optional hadoop.hdds.ECReplicationConfig ecReplicationConfig = 9;
+    optional int32 intFactor = 10;
 }
 
 message PartKeyInfo {
@@ -1658,6 +1662,7 @@ message MultipartUploadListPartsResponse {
     optional bool isTruncated = 5;
     repeated PartInfo partsList = 6;
     optional hadoop.hdds.ECReplicationConfig ecReplicationConfig = 7;
+    optional int32 intFactor = 8;
 }
 
 message ListMultipartUploadsRequest {
@@ -1680,6 +1685,7 @@ message MultipartUploadInfo {
     required hadoop.hdds.ReplicationType type = 6;
     optional hadoop.hdds.ReplicationFactor factor = 7;
     optional hadoop.hdds.ECReplicationConfig ecReplicationConfig = 8;
+    optional int32 intFactor = 9;
 }
 
 message PartInfo {

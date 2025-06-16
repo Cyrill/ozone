@@ -129,17 +129,23 @@ public class OMKeyCreateRequest extends OMKeyRequest {
 
       HddsProtos.ReplicationFactor factor = keyArgs.getFactor();
       HddsProtos.ReplicationType type = keyArgs.getType();
+      int intFactor = keyArgs.getIntFactor();
 
       final OmBucketInfo bucketInfo = ozoneManager
           .getBucketInfo(keyArgs.getVolumeName(), keyArgs.getBucketName());
 
       Set<String> datacenters = resolveDatacenterMetadata(bucketInfo.getMetadata().get(OzoneConsts.DATACENTERS));
 
-      final ReplicationConfig repConfig = OzoneConfigUtil
+      final ReplicationConfig repConfig;
+      if (intFactor != 0) {
+        repConfig = ReplicationConfig.fromProtoTypeAndCustomFactor(intFactor);
+      } else {
+        repConfig = OzoneConfigUtil
           .resolveReplicationConfigPreference(type, factor,
               keyArgs.getEcReplicationConfig(),
               bucketInfo.getDefaultReplicationConfig(),
               ozoneManager);
+      }
 
       // TODO: Here we are allocating block with out any check for
       //  bucket/key/volume or not and also with out any authorization checks.

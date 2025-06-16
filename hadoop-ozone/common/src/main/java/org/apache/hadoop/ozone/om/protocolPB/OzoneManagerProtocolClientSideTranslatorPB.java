@@ -32,6 +32,7 @@ import org.apache.hadoop.fs.SafeModeAction;
 import org.apache.hadoop.hdds.annotation.InterfaceAudience;
 import org.apache.hadoop.hdds.client.ECReplicationConfig;
 import org.apache.hadoop.hdds.client.ReplicationConfig;
+import org.apache.hadoop.hdds.protocol.proto.HddsProtos;
 import org.apache.hadoop.hdds.protocol.proto.HddsProtos.TransferLeadershipRequestProto;
 import org.apache.hadoop.hdds.protocol.proto.HddsProtos.UpgradeFinalizationStatus;
 import org.apache.hadoop.hdds.scm.container.common.helpers.ExcludeList;
@@ -695,6 +696,9 @@ public final class OzoneManagerProtocolClientSideTranslatorPB
       } else {
         keyArgs.setFactor(
             ReplicationConfig.getLegacyFactor(args.getReplicationConfig()));
+        if (ReplicationConfig.getLegacyFactor(args.getReplicationConfig()) == HddsProtos.ReplicationFactor.CUSTOM) {
+          keyArgs.setIntFactor(args.getReplicationConfig().getRequiredNodes());
+        }
       }
       keyArgs.setType(args.getReplicationConfig().getReplicationType());
     }
@@ -759,6 +763,9 @@ public final class OzoneManagerProtocolClientSideTranslatorPB
       } else {
         keyArgs.setFactor(
             ReplicationConfig.getLegacyFactor(args.getReplicationConfig()));
+        if (ReplicationConfig.getLegacyFactor(args.getReplicationConfig()) == HddsProtos.ReplicationFactor.CUSTOM) {
+          keyArgs.setIntFactor(args.getReplicationConfig().getRequiredNodes());
+        }
       }
       keyArgs.setType(args.getReplicationConfig().getReplicationType());
     }
@@ -798,6 +805,9 @@ public final class OzoneManagerProtocolClientSideTranslatorPB
       b.setEcReplicationConfig(((ECReplicationConfig) replication).toProto());
     } else {
       b.setFactor(ReplicationConfig.getLegacyFactor(replication));
+      if (ReplicationConfig.getLegacyFactor(replication) == HddsProtos.ReplicationFactor.CUSTOM) {
+        b.setIntFactor(replication.getRequiredNodes());
+      }
     }
     b.setType(replication.getReplicationType());
   }
@@ -1731,7 +1741,7 @@ public final class OzoneManagerProtocolClientSideTranslatorPB
         new OmMultipartUploadListParts(
             ReplicationConfig.fromProto(
                 response.getType(), response.getFactor(),
-                response.getEcReplicationConfig()),
+                response.getEcReplicationConfig(), response.getIntFactor()),
             response.getNextPartNumberMarker(), response.getIsTruncated());
     omMultipartUploadListParts.addProtoPartList(response.getPartsListList());
 
@@ -1767,7 +1777,7 @@ public final class OzoneManagerProtocolClientSideTranslatorPB
                 proto.getUploadId(),
                 Instant.ofEpochMilli(proto.getCreationTime()),
                 ReplicationConfig.fromProto(proto.getType(), proto.getFactor(),
-                    proto.getEcReplicationConfig())
+                    proto.getEcReplicationConfig(), proto.getIntFactor())
             ))
             .collect(Collectors.toList());
 
@@ -2219,6 +2229,9 @@ public final class OzoneManagerProtocolClientSideTranslatorPB
       } else {
         keyArgsBuilder.setFactor(
             ReplicationConfig.getLegacyFactor(args.getReplicationConfig()));
+        if (ReplicationConfig.getLegacyFactor(args.getReplicationConfig()) == HddsProtos.ReplicationFactor.CUSTOM) {
+          keyArgsBuilder.setIntFactor(args.getReplicationConfig().getRequiredNodes());
+        }
       }
       keyArgsBuilder.setType(args.getReplicationConfig().getReplicationType());
     }

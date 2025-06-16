@@ -177,6 +177,9 @@ public final class ScmBlockLocationProtocolClientSideTranslatorPB
     case RATIS:
       requestBuilder.setFactor(
           ((RatisReplicationConfig) replicationConfig).getReplicationFactor());
+      if (requestBuilder.getFactor() == HddsProtos.ReplicationFactor.CUSTOM) {
+        requestBuilder.setCustomFactor(replicationConfig.getRequiredNodes());
+      }
       break;
     case EC:
       // We do not check for server support here, as this call is used only

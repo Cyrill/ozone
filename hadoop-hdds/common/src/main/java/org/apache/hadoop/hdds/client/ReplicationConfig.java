@@ -55,6 +55,10 @@ public interface ReplicationConfig {
     }
   }
 
+  static ReplicationConfig fromProtoTypeAndCustomFactor(int factor) {
+    return RatisReplicationConfig.getInstance(factor);
+  }
+
   /**
    * Helper method to create proper replication method from old-style
    * factor+type definition.
@@ -68,6 +72,10 @@ public interface ReplicationConfig {
     return fromProtoTypeAndFactor(
         HddsProtos.ReplicationType.valueOf(type.name()),
         HddsProtos.ReplicationFactor.valueOf(factor.name()));
+  }
+
+  static ReplicationConfig fromTypeAndCustomFactor(int factor) {
+    return fromProtoTypeAndCustomFactor(factor);
   }
 
   static ReplicationConfig getDefault(ConfigurationSource config) {
@@ -96,12 +104,16 @@ public interface ReplicationConfig {
   static ReplicationConfig fromProto(
       HddsProtos.ReplicationType type,
       HddsProtos.ReplicationFactor factor,
-      HddsProtos.ECReplicationConfig ecConfig) {
+      HddsProtos.ECReplicationConfig ecConfig,
+      int customFactor) {
     switch (type) {
     case EC:
       return new ECReplicationConfig(ecConfig);
     case RATIS:
     case STAND_ALONE:
+      if (factor == HddsProtos.ReplicationFactor.CUSTOM) {
+        return fromProtoTypeAndCustomFactor(customFactor);
+      }
       return fromProtoTypeAndFactor(type, factor);
     default:
       throw new UnsupportedOperationException(
@@ -190,17 +202,23 @@ public interface ReplicationConfig {
     case RATIS:
     case STAND_ALONE:
       ReplicationFactor factor;
+      int customFactor;
       try {
         factor = ReplicationFactor.valueOf(Integer.parseInt(replication));
-      } catch (NumberFormatException ex) {
+      } catch (NumberFormatException e) {
         try {
           factor = ReplicationFactor.valueOf(replication);
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException ex) {
           throw new IllegalArgumentException(replication +
               " is not supported for " + type + " replication type", e);
         }
       }
-      replicationConfig = fromTypeAndFactor(type, factor);
+      if (factor == ReplicationFactor.CUSTOM && type == ReplicationType.RATIS) {
+        customFactor = Integer.parseInt(replication);
+        replicationConfig = fromTypeAndCustomFactor(customFactor);
+      } else {
+        replicationConfig = fromTypeAndFactor(type, factor);
+      }
       break;
     case EC:
       replicationConfig = new ECReplicationConfig(replication);

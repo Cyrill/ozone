@@ -127,7 +127,7 @@ public final class ContainerInfo implements Comparable<ContainerInfo> {
     ContainerInfo.Builder builder = new ContainerInfo.Builder();
     final ReplicationConfig config = ReplicationConfig
         .fromProto(info.getReplicationType(), info.getReplicationFactor(),
-            info.getEcReplicationConfig());
+            info.getEcReplicationConfig(), info.getIntFactor());
     builder.setUsedBytes(info.getUsedBytes())
         .setNumberOfKeys(info.getNumberOfKeys())
         .setState(info.getState())
@@ -287,6 +287,9 @@ public final class ContainerInfo implements Comparable<ContainerInfo> {
     } else {
       builder.setReplicationFactor(
           ReplicationConfig.getLegacyFactor(replicationConfig));
+      if (ReplicationConfig.getLegacyFactor(replicationConfig) == HddsProtos.ReplicationFactor.CUSTOM) {
+        builder.setIntFactor(replicationConfig.getRequiredNodes());
+      }
     }
 
     builder.setReplicationType(replicationConfig.getReplicationType());

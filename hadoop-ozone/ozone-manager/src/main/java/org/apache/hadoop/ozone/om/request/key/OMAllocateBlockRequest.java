@@ -116,7 +116,7 @@ public class OMAllocateBlockRequest extends OMKeyRequest {
 
     UserInfo userInfo = getUserInfo();
     ReplicationConfig repConfig = ReplicationConfig.fromProto(keyArgs.getType(),
-        keyArgs.getFactor(), keyArgs.getEcReplicationConfig());
+        keyArgs.getFactor(), keyArgs.getEcReplicationConfig(), 0);
     // To allocate atleast one block passing requested size and scmBlockSize
     // as same value. When allocating block requested size is same as
     // scmBlockSize.

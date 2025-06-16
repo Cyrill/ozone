@@ -32,6 +32,7 @@ import org.apache.hadoop.fs.FileEncryptionInfo;
 import org.apache.hadoop.hdds.client.ContainerBlockID;
 import org.apache.hadoop.hdds.client.ECReplicationConfig;
 import org.apache.hadoop.hdds.client.ReplicationConfig;
+import org.apache.hadoop.hdds.protocol.proto.HddsProtos;
 import org.apache.hadoop.hdds.utils.db.Codec;
 import org.apache.hadoop.hdds.utils.db.DelegatedCodec;
 import org.apache.hadoop.hdds.utils.db.CopyObject;
@@ -669,6 +670,9 @@ public final class OmKeyInfo extends WithParentObjectId
           ((ECReplicationConfig) replicationConfig).toProto());
     } else {
       kb.setFactor(ReplicationConfig.getLegacyFactor(replicationConfig));
+      if (ReplicationConfig.getLegacyFactor(replicationConfig) == HddsProtos.ReplicationFactor.CUSTOM) {
+        kb.setIntFactor(replicationConfig.getRequiredNodes());
+      }
     }
     kb.setLatestVersion(latestVersion)
         .addAllKeyLocationList(keyLocations)
@@ -717,7 +721,7 @@ public final class OmKeyInfo extends WithParentObjectId
         .setModificationTime(keyInfo.getModificationTime())
         .setReplicationConfig(ReplicationConfig
             .fromProto(keyInfo.getType(), keyInfo.getFactor(),
-                keyInfo.getEcReplicationConfig()))
+                keyInfo.getEcReplicationConfig(), keyInfo.getIntFactor()))
         .addAllMetadata(KeyValueUtil.getFromProtobuf(keyInfo.getMetadataList()))
         .setFileEncryptionInfo(keyInfo.hasFileEncryptionInfo() ?
             OMPBHelper.convert(keyInfo.getFileEncryptionInfo()) : null)
