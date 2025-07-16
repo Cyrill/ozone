@@ -130,7 +130,7 @@ public abstract class AbstractFindTargetGreedy implements FindTargetStrategy {
 
       sourceDC = getDCForDatanode(source);
 
-      if (!Objects.equals(sourceDC, source.getNetworkFullPath()) && !isNotSameDatacenter(sourceDC, target)) {
+      if (isNotSameDatacenter(sourceDC, target)) {
         continue;
       }
 
