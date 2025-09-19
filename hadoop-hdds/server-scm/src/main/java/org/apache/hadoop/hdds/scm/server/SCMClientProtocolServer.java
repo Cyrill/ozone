@@ -359,7 +359,7 @@ public class SCMClientProtocolServer implements
 
     Set<String> containerDcs = container.getDatacenters();
 
-    String targetDc = networkTopology.getAncestor(targetNode, 1).getNetworkFullPath();
+    String targetDc = networkTopology.getRegionAncestor(targetNode).getNetworkFullPath();
 
     if (!containerDcs.isEmpty() && !containerDcs.contains(targetDc)) {
       String msg = String.format("Can't restore container %s to the target datanode %s located in datacenter %s. " +
