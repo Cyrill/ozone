@@ -131,13 +131,7 @@ public class NetworkTopologyImpl implements NetworkTopology {
       throw new IllegalArgumentException(
           "Not allowed to add an inner node: " + node.getNetworkFullPath());
     }
-    int newDepth = NetUtils.locationToDepth(node.getNetworkLocation()) + 1;
 
-    // Check depth
-    if (maxLevel != newDepth) {
-      throw new InvalidTopologyException("Failed to add " +
-          node.getNetworkFullPath() + ": Its path depth is not " + maxLevel);
-    }
     netlock.writeLock().lock();
     boolean add;
     try {

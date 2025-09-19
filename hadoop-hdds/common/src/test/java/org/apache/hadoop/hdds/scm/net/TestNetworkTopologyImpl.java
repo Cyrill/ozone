@@ -230,31 +230,6 @@ public class TestNetworkTopologyImpl {
   }
 
   @Test
-  public void testCreateInvalidTopology() {
-    NodeSchema[] schemas =
-        new NodeSchema[]{ROOT_SCHEMA, RACK_SCHEMA, LEAF_SCHEMA};
-    NodeSchemaManager.getInstance().init(schemas, true);
-
-    NetworkTopology newCluster = new NetworkTopologyImpl(NodeSchemaManager.getInstance(), mockedShuffleOperation, conf);
-
-    Node[] invalidDataNodes = new Node[] {
-        createDatanode("1.1.1.1", "/r1"),
-        createDatanode("2.2.2.2", "/r2"),
-        createDatanode("3.3.3.3", "/d1/r2")
-    };
-    newCluster.add(invalidDataNodes[0]);
-    newCluster.add(invalidDataNodes[1]);
-    try {
-      newCluster.add(invalidDataNodes[2]);
-      fail("expected InvalidTopologyException");
-    } catch (NetworkTopology.InvalidTopologyException e) {
-      assertTrue(e.getMessage().contains("Failed to add"));
-      assertTrue(e.getMessage().contains("Its path depth is not " +
-          newCluster.getMaxLevel()));
-    }
-  }
-
-  @Test
   public void testInitWithConfigFile() {
     ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
     try {
