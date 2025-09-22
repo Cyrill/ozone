@@ -302,8 +302,8 @@ public final class SCMContainerPlacementRackScatter
     LOG.debug("Available racks excluding racks with used nodes: {}.", racks);
     if (racks.size() < additionalRacksRequired) {
       String reason = "Number of existing racks: " + racks.size()
-              + "is less than additional required number of racks to choose: "
-              + additionalRacksRequired + " do not match.";
+              + ". It is less than additional required number of racks to choose: "
+              + additionalRacksRequired + ". They do not match.";
       LOG.warn("Placement policy cannot choose the enough racks. {}"
                       + "Total number of Required Racks: {} Used Racks Count:" +
                       " {}, Required Nodes count: {}",
