@@ -111,6 +111,9 @@ public final class SCMContainerPlacementRandom extends SCMCommonPlacementPolicy
    */
   @Override
   public DatanodeDetails chooseNode(final List<DatanodeDetails> healthyNodes) {
+    if (healthyNodes == null || healthyNodes.isEmpty()) {
+        return null;
+    }
     DatanodeDetails selectedNode =
         healthyNodes.get(getRand().nextInt(healthyNodes.size()));
     healthyNodes.remove(selectedNode);
