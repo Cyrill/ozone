@@ -47,6 +47,8 @@ import org.apache.hadoop.ipc.ProtobufHelper;
 import org.apache.hadoop.ipc.ProtocolTranslator;
 import org.apache.hadoop.ipc.RPC;
 import org.apache.hadoop.ozone.protocol.StorageContainerDatanodeProtocol;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -59,6 +61,9 @@ import java.util.function.Consumer;
  */
 public class StorageContainerDatanodeProtocolClientSideTranslatorPB
     implements StorageContainerDatanodeProtocol, ProtocolTranslator, Closeable {
+
+  private static final Logger LOG =
+      LoggerFactory.getLogger(StorageContainerDatanodeProtocolClientSideTranslatorPB.class);
 
   /**
    * RpcController is not used and hence is set to null.
@@ -174,6 +179,7 @@ public class StorageContainerDatanodeProtocolClientSideTranslatorPB
     req.setContainerReport(containerReportsRequestProto);
     req.setPipelineReports(pipelineReportsProto);
     req.setNodeReport(nodeReport);
+    LOG.debug("Register datanode request: {}", req.build());
     if (layoutInfo != null) {
       req.setDataNodeLayoutVersion(layoutInfo);
     }
