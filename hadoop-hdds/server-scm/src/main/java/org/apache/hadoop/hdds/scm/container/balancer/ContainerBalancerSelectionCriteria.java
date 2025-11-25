@@ -24,6 +24,7 @@ import org.apache.hadoop.hdds.scm.container.ContainerInfo;
 import org.apache.hadoop.hdds.scm.container.ContainerManager;
 import org.apache.hadoop.hdds.scm.container.ContainerNotFoundException;
 import org.apache.hadoop.hdds.scm.container.ContainerReplica;
+import org.apache.hadoop.hdds.scm.container.replication.ContainerHealthResult;
 import org.apache.hadoop.hdds.scm.container.replication.ReplicationManager;
 import org.apache.hadoop.hdds.scm.node.NodeManager;
 import org.apache.hadoop.hdds.scm.node.states.NodeNotFoundException;
@@ -168,11 +169,23 @@ public class ContainerBalancerSelectionCriteria {
         && replicationManager.getConfig().isLegacyEnabled();
   }
 
+  private boolean skipUnhealthyContainers() {
+    return balancerConfiguration.getSkipUnhealthyContainers();
+  }
+
   private boolean shouldBeExcluded(ContainerID containerID,
       DatanodeDetails node, long sizeMovedAlready) {
     ContainerInfo container;
     try {
       container = containerManager.getContainer(containerID);
+      if (skipUnhealthyContainers()) {
+        Set<ContainerReplica> replicas = containerManager.getContainerReplicas(containerID);
+        ContainerHealthResult healthResult = replicationManager.getContainerReplicationHealth(container, replicas);
+        if (healthResult.getHealthState() != ContainerHealthResult.HealthState.HEALTHY) {
+          LOG.warn("Excluding container {} because it is not healthy : {}", containerID, healthResult.getHealthState());
+          return true;
+        }
+      }
     } catch (ContainerNotFoundException e) {
       LOG.warn("Could not find Container {} to check if it should be a " +
           "candidate container. Excluding it.", containerID);

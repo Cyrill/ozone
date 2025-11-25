@@ -142,6 +142,11 @@ public final class ContainerBalancerConfiguration {
           "data node is very high")
   private boolean triggerDuEnable = false;
 
+  @Config(key = "skip.unhealthy.containers", type = ConfigType.BOOLEAN,
+          defaultValue = "false", tags = {ConfigTag.BALANCER},
+          description = "whether to skip replication of unhealthy containers")
+  private boolean skipUnhealthy = false;
+
   /**
    * Gets the threshold value for Container Balancer.
    *
@@ -222,6 +227,19 @@ public final class ContainerBalancerConfiguration {
 
   public void setTriggerDuEnable(boolean enable) {
     triggerDuEnable = enable;
+  }
+
+  /**
+   * Get the skipUnhealthyContainers value for Container Balancer.
+   *
+   * @return the boolean value of skipUnhealthy
+   */
+  public Boolean getSkipUnhealthyContainers() {
+    return skipUnhealthy;
+  }
+
+  public void setSkipUnhealthyContainers(boolean skip) {
+    skipUnhealthy = skip;
   }
 
   /**
@@ -441,6 +459,8 @@ public final class ContainerBalancerConfiguration {
         networkTopologyEnable,
         "Whether to Trigger Refresh Datanode Usage Info",
         triggerDuEnable,
+        "Whether to skip replication of unhealthy containers",
+        skipUnhealthy,
         "Container IDs to Exclude from Balancing",
         excludeContainers.equals("") ? "None" : excludeContainers,
         "Datanodes Specified to be Balanced",
@@ -467,6 +487,7 @@ public final class ContainerBalancerConfiguration {
         .setExcludeDatanodes(excludeNodes)
         .setMoveNetworkTopologyEnable(networkTopologyEnable)
         .setTriggerDuBeforeMoveEnable(triggerDuEnable)
+        .setSkipUnhealthyContainers(skipUnhealthy)
         .setMoveReplicationTimeout(moveReplicationTimeout);
     return builder;
   }
@@ -515,6 +536,9 @@ public final class ContainerBalancerConfiguration {
     }
     if (proto.hasTriggerDuBeforeMoveEnable()) {
       config.setTriggerDuEnable(proto.getTriggerDuBeforeMoveEnable());
+    }
+    if (proto.hasSkipUnhealthyContainers()) {
+      config.setSkipUnhealthyContainers(proto.getSkipUnhealthyContainers());
     }
     if (proto.hasMoveReplicationTimeout()) {
       config.setMoveReplicationTimeout(proto.getMoveReplicationTimeout());
