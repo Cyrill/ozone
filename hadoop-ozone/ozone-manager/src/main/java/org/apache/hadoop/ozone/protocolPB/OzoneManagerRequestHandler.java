@@ -373,6 +373,18 @@ public class OzoneManagerRequestHandler implements RequestHandler {
             getSnapshotInfo(request.getSnapshotInfoRequest());
         responseBuilder.setSnapshotInfoResponse(snapshotInfoResponse);
         break;
+      case GetQuotaRepairStatus:
+        OzoneManagerProtocolProtos.GetQuotaRepairStatusResponse
+            getQuotaRepairStatusResponse = getQuotaRepairStatus();
+        responseBuilder.setGetQuotaRepairStatusResponse(
+            getQuotaRepairStatusResponse);
+        break;
+      case StartQuotaRepair:
+        OzoneManagerProtocolProtos.StartQuotaRepairResponse
+            startQuotaRepairResponse =
+                startQuotaRepair(request.getStartQuotaRepairRequest());
+        responseBuilder.setStartQuotaRepairResponse(startQuotaRepairResponse);
+        break;
       default:
         responseBuilder.setSuccess(false);
         responseBuilder.setMessage("Unrecognized Command Type: " + cmdType);
@@ -1509,5 +1521,21 @@ public class OzoneManagerRequestHandler implements RequestHandler {
       throw new IllegalArgumentException("Unexpected safe mode action " +
           safeMode);
     }
+  }
+
+  private OzoneManagerProtocolProtos.GetQuotaRepairStatusResponse
+      getQuotaRepairStatus() throws IOException {
+    String status = impl.getQuotaRepairStatus();
+    return OzoneManagerProtocolProtos.GetQuotaRepairStatusResponse.newBuilder()
+        .setStatus(status)
+        .build();
+  }
+
+  private OzoneManagerProtocolProtos.StartQuotaRepairResponse
+      startQuotaRepair(OzoneManagerProtocolProtos.StartQuotaRepairRequest req)
+          throws IOException {
+    impl.startQuotaRepair(req.getBucketsList());
+    return OzoneManagerProtocolProtos.StartQuotaRepairResponse.newBuilder()
+        .build();
   }
 }

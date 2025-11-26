@@ -310,6 +310,43 @@ public final class OzoneManagerRatisServer {
     return createOmResponse(omRequest, raftClientReply);
   }
 
+  /**
+   * Submit request to Ratis server with explicit clientId and callId.
+   * This is used for internal requests that don't come from RPC context.
+   * @param omRequest
+   * @param clientId
+   * @param callId
+   * @return OMResponse - response returned to the client.
+   * @throws ServiceException
+   */
+  public OMResponse submitRequest(OMRequest omRequest,
+      ClientId clientId, long callId) throws ServiceException {
+    // In prepare mode, only prepare and cancel requests are allowed to go
+    // through.
+    if (ozoneManager.getPrepareState().requestAllowed(omRequest.getCmdType())) {
+      RaftClientRequest raftClientRequest = RaftClientRequest.newBuilder()
+          .setClientId(clientId)
+          .setServerId(server.getId())
+          .setGroupId(raftGroupId)
+          .setCallId(callId)
+          .setMessage(
+              Message.valueOf(
+                  OMRatisHelper.convertRequestToByteString(omRequest)))
+          .setType(RaftClientRequest.writeRequestType())
+          .build();
+      RaftClientReply raftClientReply = submitRequestToRatis(raftClientRequest);
+      return createOmResponse(omRequest, raftClientReply);
+    }
+    String message = "OM is in prepare mode and cannot accept write requests.";
+    OMResponse.Builder omResponse = OMResponse.newBuilder()
+        .setMessage(message)
+        .setStatus(Status.NOT_SUPPORTED_OPERATION_WHEN_PREPARED)
+        .setCmdType(omRequest.getCmdType())
+        .setTraceID(omRequest.getTraceID())
+        .setSuccess(false);
+    return omResponse.build();
+  }
+
   private RaftClientReply submitRequestToRatisImpl(
       RaftClientRequest raftClientRequest) throws ServiceException {
     try {

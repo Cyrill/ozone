@@ -146,6 +146,9 @@ enum Type {
   SetSnapshotProperty = 128;
   ListStatusLight = 129;
   GetSnapshotInfo = 130;
+  QuotaRepair = 133;
+  GetQuotaRepairStatus = 135;
+  StartQuotaRepair = 136;
 }
 
 enum SafeMode {
@@ -281,6 +284,9 @@ message OMRequest {
   optional MultipartUploadsExpiredAbortRequest multipartUploadsExpiredAbortRequest = 126;
   optional SetSnapshotPropertyRequest       SetSnapshotPropertyRequest     = 127;
   optional SnapshotInfoRequest              SnapshotInfoRequest            = 128;
+  optional QuotaRepairRequest               QuotaRepairRequest             = 131;
+  optional GetQuotaRepairStatusRequest      GetQuotaRepairStatusRequest    = 133;
+  optional StartQuotaRepairRequest          StartQuotaRepairRequest        = 134;
 }
 
 message OMResponse {
@@ -403,6 +409,9 @@ message OMResponse {
   optional ListStatusLightResponse           listStatusLightResponse       = 129;
   optional SnapshotInfoResponse              SnapshotInfoResponse          = 130;
   optional OMLockDetailsProto                omLockDetails                 = 131;
+  optional QuotaRepairResponse               QuotaRepairResponse           = 134;
+  optional GetQuotaRepairStatusResponse      GetQuotaRepairStatusResponse  = 136;
+  optional StartQuotaRepairResponse          StartQuotaRepairResponse      = 137;
 }
 
 enum Status {
@@ -2120,6 +2129,36 @@ message OMLockDetailsProto {
   optional uint64 waitLockNanos    = 2;
   optional uint64 readLockNanos    = 3;
   optional uint64 writeLockNanos   = 4;
+}
+
+message QuotaRepairRequest {
+    repeated BucketQuotaCount bucketCount = 1;
+    required bool supportVolumeOldQuota = 2 [default=false];
+}
+
+message BucketQuotaCount {
+    required string volName = 1;
+    required string bucketName = 2;
+    required int64 diffUsedBytes = 3;
+    required int64 diffUsedNamespace = 4;
+    required bool supportOldQuota = 5 [default=false];
+}
+
+message QuotaRepairResponse {
+}
+
+message GetQuotaRepairStatusRequest {
+}
+
+message GetQuotaRepairStatusResponse {
+    optional string status = 1;
+}
+
+message StartQuotaRepairRequest {
+    repeated string buckets = 1;
+}
+
+message StartQuotaRepairResponse {
 }
 
 /**
