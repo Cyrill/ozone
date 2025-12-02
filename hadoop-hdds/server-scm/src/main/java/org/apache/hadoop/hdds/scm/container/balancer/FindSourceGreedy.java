@@ -40,6 +40,7 @@ public class FindSourceGreedy implements FindSourceStrategy {
   private static final Logger LOG =
       LoggerFactory.getLogger(FindSourceGreedy.class);
   private Map<DatanodeDetails, Long> sizeLeavingNode;
+  private Map<DatanodeDetails, DatanodeUsageInfo> usageInfoCache;
   private PriorityQueue<DatanodeUsageInfo> potentialSources;
   private NodeManager nodeManager;
   private ContainerBalancerConfiguration config;
@@ -47,6 +48,7 @@ public class FindSourceGreedy implements FindSourceStrategy {
 
   FindSourceGreedy(NodeManager nodeManager) {
     sizeLeavingNode = new HashMap<>();
+    usageInfoCache = new HashMap<>();
     potentialSources = new PriorityQueue<>((a, b) -> {
       double currentUsageOfA = a.calculateUtilization(
           -sizeLeavingNode.get(a.getDatanodeDetails()));
@@ -85,11 +87,14 @@ public class FindSourceGreedy implements FindSourceStrategy {
    */
   private void resetSources(Collection<DatanodeUsageInfo> sources) {
     potentialSources.clear();
+    usageInfoCache.clear();
     /* since sizeLeavingNode map is being used to track how much data has
     left a DN in an iteration, put keys only if they don't already exist
      */
     sources.forEach(source -> {
-      sizeLeavingNode.putIfAbsent(source.getDatanodeDetails(), 0L);
+      DatanodeDetails dn = source.getDatanodeDetails();
+      sizeLeavingNode.putIfAbsent(dn, 0L);
+      usageInfoCache.putIfAbsent(dn, source);
       potentialSources.add(source);
     });
   }
@@ -107,11 +112,20 @@ public class FindSourceGreedy implements FindSourceStrategy {
     if (currentSize != null) {
       sizeLeavingNode.put(dui, currentSize + size);
       //reorder according to the latest sizeLeavingNode
-      potentialSources.add(nodeManager.getUsageInfo(dui));
+      potentialSources.add(getDatanodeUsageInfo(dui));
       return;
     }
     LOG.warn("Cannot find datanode {} in candidate source datanodes",
         dui.getUuid());
+  }
+
+  private DatanodeUsageInfo getDatanodeUsageInfo(DatanodeDetails dn) {
+    DatanodeUsageInfo usageInfo = usageInfoCache.get(dn);
+    if (usageInfo != null) {
+      return usageInfo;
+    }
+
+    return nodeManager.getUsageInfo(dn);
   }
 
   /**
@@ -164,8 +178,9 @@ public class FindSourceGreedy implements FindSourceStrategy {
             sizeLeavingNode.get(source));
         return false;
       }
-      if (Double.compare(nodeManager.getUsageInfo(source)
-          .calculateUtilization(-sizeLeavingAfterMove), lowerLimit) < 0) {
+      DatanodeUsageInfo usageInfo = getDatanodeUsageInfo(source);
+      if (Double.compare(usageInfo.calculateUtilization(-sizeLeavingAfterMove),
+          lowerLimit) < 0) {
         LOG.debug("{} bytes cannot leave datanode {} because its utilization " +
                 "will drop below the lower limit of {}.", size,
             source.getUuidString(), lowerLimit);
