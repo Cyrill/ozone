@@ -147,6 +147,15 @@ public final class ContainerBalancerConfiguration {
           description = "whether to skip replication of unhealthy containers")
   private boolean skipUnhealthy = false;
 
+  @Config(key = "move.priority.normal", type = ConfigType.BOOLEAN,
+          defaultValue = "false", tags = {ConfigTag.BALANCER},
+          description = "When set to true, container move commands will be " +
+          "sent with NORMAL priority instead of LOW priority. This allows " +
+          "balancer moves to compete fairly with ReplicationManager's " +
+          "replication commands. Use with caution as it may slow down " +
+          "fixing of under/over replicated containers.")
+  private boolean moveNormalPriority = false;
+
   /**
    * Gets the threshold value for Container Balancer.
    *
@@ -240,6 +249,19 @@ public final class ContainerBalancerConfiguration {
 
   public void setSkipUnhealthyContainers(boolean skip) {
     skipUnhealthy = skip;
+  }
+
+  /**
+   * Get the moveNormalPriority value for Container Balancer.
+   *
+   * @return the boolean value of moveNormalPriority
+   */
+  public Boolean getMoveNormalPriority() {
+    return moveNormalPriority;
+  }
+
+  public void setMoveNormalPriority(boolean normalPriority) {
+    moveNormalPriority = normalPriority;
   }
 
   /**
@@ -438,6 +460,8 @@ public final class ContainerBalancerConfiguration {
             "%-50s %s%n" +
             "%-50s %s%n" +
             "%-50s %s%n" +
+            "%-50s %s%n" +
+            "%-50s %s%n" +
             "%-50s %s%n", "Key", "Value", "Threshold",
         threshold, "Max Datanodes to Involve per Iteration(percent)",
         maxDatanodesPercentageToInvolvePerIteration,
@@ -461,6 +485,8 @@ public final class ContainerBalancerConfiguration {
         triggerDuEnable,
         "Whether to skip replication of unhealthy containers",
         skipUnhealthy,
+        "Whether to use NORMAL priority for move commands",
+        moveNormalPriority,
         "Container IDs to Exclude from Balancing",
         excludeContainers.equals("") ? "None" : excludeContainers,
         "Datanodes Specified to be Balanced",
@@ -488,7 +514,8 @@ public final class ContainerBalancerConfiguration {
         .setMoveNetworkTopologyEnable(networkTopologyEnable)
         .setTriggerDuBeforeMoveEnable(triggerDuEnable)
         .setSkipUnhealthyContainers(skipUnhealthy)
-        .setMoveReplicationTimeout(moveReplicationTimeout);
+        .setMoveReplicationTimeout(moveReplicationTimeout)
+        .setMoveNormalPriority(moveNormalPriority);
     return builder;
   }
 
@@ -542,6 +569,9 @@ public final class ContainerBalancerConfiguration {
     }
     if (proto.hasMoveReplicationTimeout()) {
       config.setMoveReplicationTimeout(proto.getMoveReplicationTimeout());
+    }
+    if (proto.hasMoveNormalPriority()) {
+      config.setMoveNormalPriority(proto.getMoveNormalPriority());
     }
     return config;
   }

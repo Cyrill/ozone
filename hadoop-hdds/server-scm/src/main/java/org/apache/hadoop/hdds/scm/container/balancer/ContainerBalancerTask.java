@@ -143,6 +143,7 @@ public class ContainerBalancerTask implements Runnable {
     this.moveManager.setMoveTimeout(config.getMoveTimeout().toMillis());
     this.moveManager.setReplicationTimeout(
         config.getMoveReplicationTimeout().toMillis());
+    this.moveManager.setNormalPriority(config.getMoveNormalPriority());
     this.delayStart = delayStart;
     this.ozoneConfiguration = scm.getConfiguration();
     this.containerBalancer = containerBalancer;

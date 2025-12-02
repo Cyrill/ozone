@@ -648,10 +648,31 @@ public class ReplicationManager implements SCMService, ContainerReplicaPendingOp
       final ContainerInfo container, int replicaIndex, DatanodeDetails source,
       DatanodeDetails target, long scmDeadlineEpochMs)
       throws NotLeaderException {
+    sendReplicateContainerCommand(container, replicaIndex, source, target,
+        scmDeadlineEpochMs, ReplicationCommandPriority.LOW);
+  }
+
+  /**
+   * Send a push replication command to the given source datanode, instructing
+   * it to copy the given container to the target.
+   * @param container Container to replicate.
+   * @param replicaIndex Replica Index of the container to replicate. Zero for
+   *                     Ratis and greater than zero for EC.
+   * @param source The source hosting the container, which is where the command
+   *               will be sent.
+   * @param target The target to push container replica to
+   * @param scmDeadlineEpochMs The epoch time in ms, after which the command
+   *                           will be discarded from the SCMPendingOps table.
+   */
+  public void sendReplicateContainerCommand(
+      final ContainerInfo container, int replicaIndex, DatanodeDetails source,
+      DatanodeDetails target, long scmDeadlineEpochMs,
+      ReplicationCommandPriority priority)
+      throws NotLeaderException {
     final ReplicateContainerCommand command = ReplicateContainerCommand
         .toTarget(container.getContainerID(), target);
     command.setReplicaIndex(replicaIndex);
-    command.setPriority(ReplicationCommandPriority.LOW);
+    command.setPriority(priority);
     sendDatanodeCommand(command, container, source, scmDeadlineEpochMs);
   }
   /**

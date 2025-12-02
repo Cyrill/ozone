@@ -468,6 +468,7 @@ message ContainerBalancerConfigurationProto {
     optional int32 nextIterationIndex = 19;
     optional int64 moveReplicationTimeout = 20;
 
+    optional bool moveNormalPriority = 98;
     optional bool skipUnhealthyContainers = 99;
 }
 

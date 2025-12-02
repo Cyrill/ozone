@@ -47,6 +47,9 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.hadoop.hdds.protocol.proto.StorageContainerDatanodeProtocolProtos.ReplicationCommandPriority;
+import org.apache.hadoop.ozone.protocol.commands.ReplicateContainerCommand;
+
 /**
  * A class which schedules, tracks and completes moves scheduled by the
  * balancer.
@@ -110,10 +113,12 @@ public final class MoveManager implements
   //        delete after the move, but before anything else can, eg RM?
 
   /*
-  moveTimeout and replicationTimeout are set by ContainerBalancer.
+  moveTimeout, replicationTimeout, and normalPriority are set by
+  ContainerBalancer.
    */
   private long moveTimeout = 1000 * 65 * 60;
   private long replicationTimeout = 1000 * 50 * 60;
+  private boolean normalPriority = false;
 
   private final ReplicationManager replicationManager;
   private final ContainerManager containerManager;
@@ -451,8 +456,13 @@ public final class MoveManager implements
     int replicaIndex = getContainerReplicaIndex(
         containerInfo.containerID(), src);
     long now = clock.millis();
-    replicationManager.sendLowPriorityReplicateContainerCommand(containerInfo,
-        replicaIndex, src, tgt, now + replicationTimeout);
+
+    ReplicationCommandPriority priority = normalPriority
+        ? ReplicationCommandPriority.NORMAL
+        : ReplicationCommandPriority.LOW;
+
+    replicationManager.sendReplicateContainerCommand(containerInfo,
+        replicaIndex, src, tgt, now + replicationTimeout, priority);
   }
 
   /**
@@ -502,5 +512,9 @@ public final class MoveManager implements
 
   void setReplicationTimeout(long replicationTimeout) {
     this.replicationTimeout = replicationTimeout;
+  }
+
+  void setNormalPriority(boolean normalPriority) {
+    this.normalPriority = normalPriority;
   }
 }

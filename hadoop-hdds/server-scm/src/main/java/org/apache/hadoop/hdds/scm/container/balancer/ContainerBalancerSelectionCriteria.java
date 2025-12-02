@@ -182,7 +182,7 @@ public class ContainerBalancerSelectionCriteria {
         Set<ContainerReplica> replicas = containerManager.getContainerReplicas(containerID);
         ContainerHealthResult healthResult = replicationManager.getContainerReplicationHealth(container, replicas);
         if (healthResult.getHealthState() != ContainerHealthResult.HealthState.HEALTHY) {
-          LOG.warn("Excluding container {} because it is not healthy : {}", containerID, healthResult.getHealthState());
+          LOG.debug("Excluding container {} because it is not healthy : {}", containerID, healthResult.getHealthState());
           return true;
         }
       }
