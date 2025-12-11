@@ -1969,8 +1969,8 @@ public class KeyManagerImpl implements KeyManager {
   }
 
   @Override
-  public List<OmKeyInfo> getPendingDeletionSubDirs(long volumeId, long bucketId,
-      OmKeyInfo parentInfo, long numEntries) throws IOException {
+  public DeleteKeysResult getPendingDeletionSubDirs(long volumeId, long bucketId,
+      OmKeyInfo parentInfo, long remainingBufLimit) throws IOException {
     String seekDirInDB = metadataManager.getOzonePathKey(volumeId, bucketId,
         parentInfo.getObjectID(), "");
     long countEntries = 0;
@@ -1979,30 +1979,37 @@ public class KeyManagerImpl implements KeyManager {
     try (TableIterator<String,
         ? extends Table.KeyValue<String, OmDirectoryInfo>>
         iterator = dirTable.iterator()) {
-      return gatherSubDirsWithIterator(parentInfo, numEntries,
-          seekDirInDB, countEntries, iterator);
+      return gatherSubDirsWithIterator(parentInfo,
+          seekDirInDB, countEntries, iterator, remainingBufLimit);
     }
 
   }
 
-  private List<OmKeyInfo> gatherSubDirsWithIterator(OmKeyInfo parentInfo,
-      long numEntries, String seekDirInDB,
+  private DeleteKeysResult gatherSubDirsWithIterator(OmKeyInfo parentInfo,
+       String seekDirInDB,
       long countEntries,
       TableIterator<String,
-          ? extends Table.KeyValue<String, OmDirectoryInfo>> iterator)
+          ? extends Table.KeyValue<String, OmDirectoryInfo>> iterator, long remainingBufLimit)
       throws IOException {
     List<OmKeyInfo> directories = new ArrayList<>();
     iterator.seek(seekDirInDB);
+    long consumedSize = 0;
+    boolean processedSubDirs = false;
 
-    while (iterator.hasNext() && numEntries - countEntries > 0) {
+    while (iterator.hasNext() && remainingBufLimit > 0) {
       Table.KeyValue<String, OmDirectoryInfo> entry = iterator.next();
       OmDirectoryInfo dirInfo = entry.getValue();
+      long objectSerializedSize = entry.getRawValue().length;
       if (!OMFileRequest.isImmediateChild(dirInfo.getParentObjectID(),
           parentInfo.getObjectID())) {
+        processedSubDirs = true;
         break;
       }
       if (!metadataManager.getDirectoryTable().isExist(entry.getKey())) {
         continue;
+      }
+      if (remainingBufLimit - objectSerializedSize < 0) {
+        break;
       }
       String dirName = OMFileRequest.getAbsolutePath(parentInfo.getKeyName(),
           dirInfo.getName());
@@ -2011,19 +2018,24 @@ public class KeyManagerImpl implements KeyManager {
           dirName);
       directories.add(omKeyInfo);
       countEntries++;
+      remainingBufLimit -= objectSerializedSize;
+      consumedSize += objectSerializedSize;
     }
 
-    return directories;
+    processedSubDirs = processedSubDirs || (!iterator.hasNext());
+
+    return new DeleteKeysResult(directories, consumedSize, processedSubDirs);
   }
 
   @Override
-  public List<OmKeyInfo> getPendingDeletionSubFiles(long volumeId,
-      long bucketId, OmKeyInfo parentInfo, long numEntries)
+  public DeleteKeysResult getPendingDeletionSubFiles(long volumeId,
+      long bucketId, OmKeyInfo parentInfo, long remainingBufLimit)
           throws IOException {
     List<OmKeyInfo> files = new ArrayList<>();
     String seekFileInDB = metadataManager.getOzonePathKey(volumeId, bucketId,
         parentInfo.getObjectID(), "");
-    long countEntries = 0;
+    long consumedSize = 0;
+    boolean processedSubFiles = false;
 
     Table fileTable = metadataManager.getFileTable();
     try (TableIterator<String, ? extends Table.KeyValue<String, OmKeyInfo>>
@@ -2031,15 +2043,20 @@ public class KeyManagerImpl implements KeyManager {
 
       iterator.seek(seekFileInDB);
 
-      while (iterator.hasNext() && numEntries - countEntries > 0) {
+      while (iterator.hasNext() && remainingBufLimit > 0) {
         Table.KeyValue<String, OmKeyInfo> entry = iterator.next();
         OmKeyInfo fileInfo = entry.getValue();
+        long objectSerializedSize = entry.getRawValue().length;
         if (!OMFileRequest.isImmediateChild(fileInfo.getParentObjectID(),
             parentInfo.getObjectID())) {
+          processedSubFiles = true;
           break;
         }
         if (!metadataManager.getFileTable().isExist(entry.getKey())) {
           continue;
+        }
+        if (remainingBufLimit - objectSerializedSize < 0) {
+          break;
         }
         fileInfo.setFileName(fileInfo.getKeyName());
         String fullKeyPath = OMFileRequest.getAbsolutePath(
@@ -2047,11 +2064,13 @@ public class KeyManagerImpl implements KeyManager {
         fileInfo.setKeyName(fullKeyPath);
 
         files.add(fileInfo);
-        countEntries++;
+        remainingBufLimit -= objectSerializedSize;
+        consumedSize += objectSerializedSize;
       }
+      processedSubFiles = processedSubFiles || (!iterator.hasNext());
     }
 
-    return files;
+    return new DeleteKeysResult(files, consumedSize, processedSubFiles);
   }
 
   public boolean isBucketFSOptimized(String volName, String buckName)

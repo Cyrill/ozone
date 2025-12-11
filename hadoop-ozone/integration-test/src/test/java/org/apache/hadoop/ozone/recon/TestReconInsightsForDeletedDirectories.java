@@ -54,6 +54,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.Response;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -62,10 +64,11 @@ import static org.apache.hadoop.ozone.OzoneConfigKeys.OZONE_BLOCK_DELETING_SERVI
 import static org.apache.hadoop.ozone.OzoneConfigKeys.OZONE_FS_ITERATE_BATCH_SIZE;
 
 import static org.apache.hadoop.ozone.om.OMConfigKeys.OZONE_DIR_DELETING_SERVICE_INTERVAL;
-import static org.apache.hadoop.ozone.om.OMConfigKeys.OZONE_PATH_DELETING_LIMIT_PER_TASK;
 import static org.apache.hadoop.ozone.om.OMConfigKeys.OZONE_OM_RATIS_ENABLE_KEY;
-
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -89,7 +92,6 @@ public class TestReconInsightsForDeletedDirectories {
   public static void init() throws Exception {
     OzoneConfiguration conf = new OzoneConfiguration();
     conf.setInt(OZONE_DIR_DELETING_SERVICE_INTERVAL, 1000000);
-    conf.setInt(OZONE_PATH_DELETING_LIMIT_PER_TASK, 0);
     conf.setTimeDuration(OZONE_BLOCK_DELETING_SERVICE_INTERVAL, 10000000,
         TimeUnit.MILLISECONDS);
     conf.setBoolean(OZONE_OM_RATIS_ENABLE_KEY, omRatisEnabled);
@@ -423,24 +425,31 @@ public class TestReconInsightsForDeletedDirectories {
     OMMetadataManager metadataManager =
         cluster.getOzoneManager().getMetadataManager();
 
-    try (TableIterator<?, ?> it = metadataManager.getDeletedDirTable()
-        .iterator()) {
-      removeAllFromDB(it);
+    Table<String, OmKeyInfo> deletedDirTable =
+        metadataManager.getDeletedDirTable();
+    try (TableIterator<String, ? extends Table.KeyValue<String, ?>> it = deletedDirTable.iterator()) {
+      removeAllFromDB(it, deletedDirTable);
     }
-    try (TableIterator<?, ?> it = metadataManager.getFileTable().iterator()) {
-      removeAllFromDB(it);
+    Table<String, OmKeyInfo> fileTable = metadataManager.getFileTable();
+    try (TableIterator<String, ? extends Table.KeyValue<String, ?>> it = fileTable.iterator()) {
+      removeAllFromDB(it, fileTable);
     }
-    try (TableIterator<?, ?> it = metadataManager.getDirectoryTable()
-        .iterator()) {
-      removeAllFromDB(it);
+    Table<String, OmDirectoryInfo> directoryTable =
+        metadataManager.getDirectoryTable();
+    try (TableIterator<String, ? extends Table.KeyValue<String, ?>> it = directoryTable.iterator()) {
+      removeAllFromDB(it, directoryTable);
     }
   }
 
-  private static void removeAllFromDB(TableIterator<?, ?> iterator)
-      throws IOException {
+  private static void removeAllFromDB(
+      TableIterator<String, ? extends Table.KeyValue<String, ?>> iterator,
+      Table<String, ?> table) throws IOException {
+    List<String> keysToDelete = new ArrayList<>();
     while (iterator.hasNext()) {
-      iterator.next();
-      iterator.removeFromDB();
+      keysToDelete.add(iterator.next().getKey());
+    }
+    for (String keyToDelete : keysToDelete) {
+      table.delete(keyToDelete);
     }
   }
 

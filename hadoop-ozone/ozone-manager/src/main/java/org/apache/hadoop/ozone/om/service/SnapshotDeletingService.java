@@ -378,11 +378,11 @@ public class SnapshotDeletingService extends AbstractKeyDeletingService {
       long dirNum = 0L;
       long subDirNum = 0L;
       long subFileNum = 0L;
-      long remainNum = keyLimitPerSnapshot;
+      long remainingBufLimit = ratisByteLimit;
       int consumedSize = 0;
       List<PurgePathRequest> purgePathRequestList = new ArrayList<>();
       List<Pair<String, OmKeyInfo>> allSubDirList
-          = new ArrayList<>(keyLimitPerSnapshot);
+          = new ArrayList<>();
       try (TableIterator<String, ? extends
           Table.KeyValue<String, OmKeyInfo>> deletedDirIterator =
                snapshotDeletedDirTable.iterator()) {
@@ -390,7 +390,7 @@ public class SnapshotDeletingService extends AbstractKeyDeletingService {
         long startTime = Time.monotonicNow();
         deletedDirIterator.seek(dbBucketKeyForDir);
 
-        while (deletedDirIterator.hasNext()) {
+        while (remainingBufLimit > 0 && deletedDirIterator.hasNext()) {
           Table.KeyValue<String, OmKeyInfo> deletedDir =
               deletedDirIterator.next();
           String deletedDirKey = deletedDir.getKey();
@@ -404,26 +404,12 @@ public class SnapshotDeletingService extends AbstractKeyDeletingService {
               renamedTable, renamedList)) {
             // Reclaim here
             PurgePathRequest request = prepareDeleteDirRequest(
-                remainNum, deletedDir.getValue(), deletedDir.getKey(),
-                allSubDirList, omSnapshot.getKeyManager());
-            if (isBufferLimitCrossed(ratisByteLimit, consumedSize,
-                request.getSerializedSize())) {
-              if (purgePathRequestList.size() != 0) {
-                // if message buffer reaches max limit, avoid sending further
-                remainNum = 0;
-                break;
-              }
-              // if directory itself is having a lot of keys / files,
-              // reduce capacity to minimum level
-              remainNum = MIN_ERR_LIMIT_PER_TASK;
-              request = prepareDeleteDirRequest(
-                  remainNum, deletedDir.getValue(), deletedDir.getKey(),
-                  allSubDirList, omSnapshot.getKeyManager());
-            }
+                deletedDir.getValue(), deletedDir.getKey(),
+                allSubDirList, omSnapshot.getKeyManager(), remainingBufLimit);
+
             consumedSize += request.getSerializedSize();
+            remainingBufLimit -= consumedSize;
             purgePathRequestList.add(request);
-            remainNum = remainNum - request.getDeletedSubFilesCount();
-            remainNum = remainNum - request.getMarkDeletedSubDirsCount();
             // Count up the purgeDeletedDir, subDirs and subFiles
             if (request.getDeletedDir() != null
                 && !request.getDeletedDir().isEmpty()) {
@@ -436,9 +422,9 @@ public class SnapshotDeletingService extends AbstractKeyDeletingService {
           }
         }
 
-        remainNum = optimizeDirDeletesAndSubmitRequest(remainNum, dirNum,
-            subDirNum, subFileNum, allSubDirList, purgePathRequestList,
-            snapInfo.getTableKey(), startTime, ratisByteLimit - consumedSize,
+        optimizeDirDeletesAndSubmitRequest(dirNum, subDirNum,
+            subFileNum, allSubDirList, purgePathRequestList,
+            snapInfo.getTableKey(), startTime, remainingBufLimit,
             omSnapshot.getKeyManager(), null, getRunCount().get());
       } catch (IOException e) {
         LOG.error("Error while running delete directories and files for " +
@@ -446,7 +432,8 @@ public class SnapshotDeletingService extends AbstractKeyDeletingService {
             "background task. Will retry at next run.", e);
       }
 
-      return remainNum;
+      // Return remaining keys to process based on what was consumed
+      return keyLimitPerSnapshot - (subDirNum + subFileNum);
     }
 
     private void submitSnapshotPurgeRequest(List<String> purgeSnapshotKeys) {
