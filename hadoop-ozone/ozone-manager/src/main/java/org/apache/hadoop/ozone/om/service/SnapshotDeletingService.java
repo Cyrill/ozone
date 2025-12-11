@@ -439,7 +439,7 @@ public class SnapshotDeletingService extends AbstractKeyDeletingService {
         remainNum = optimizeDirDeletesAndSubmitRequest(remainNum, dirNum,
             subDirNum, subFileNum, allSubDirList, purgePathRequestList,
             snapInfo.getTableKey(), startTime, ratisByteLimit - consumedSize,
-            omSnapshot.getKeyManager());
+            omSnapshot.getKeyManager(), null, getRunCount().get());
       } catch (IOException e) {
         LOG.error("Error while running delete directories and files for " +
             "snapshot " + snapInfo.getTableKey() + " in snapshot deleting " +
