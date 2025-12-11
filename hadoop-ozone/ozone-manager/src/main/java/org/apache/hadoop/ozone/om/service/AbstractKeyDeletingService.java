@@ -55,6 +55,7 @@ import org.apache.ratis.util.Preconditions;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -376,6 +377,8 @@ public abstract class AbstractKeyDeletingService extends BackgroundService
         keyManager.getPendingDeletionSubDirs(volumeId, bucketId,
             pendingDeletedDirInfo, remainingBufLimit);
     List<OmKeyInfo> subDirs = subDirDeleteResult.getKeysToDelete();
+    // Prune ACLs to reduce Ratis message size
+    subDirs.forEach(omKeyInfo -> omKeyInfo.setAcls(Collections.emptyList()));
     remainingBufLimit -= subDirDeleteResult.getConsumedSize();
 
     OMMetadataManager omMetadataManager = keyManager.getMetadataManager();
@@ -393,6 +396,8 @@ public abstract class AbstractKeyDeletingService extends BackgroundService
         keyManager.getPendingDeletionSubFiles(volumeId, bucketId,
             pendingDeletedDirInfo, remainingBufLimit);
     List<OmKeyInfo> subFiles = subFileDeleteResult.getKeysToDelete();
+    // Prune ACLs to reduce Ratis message size
+    subFiles.forEach(omKeyInfo -> omKeyInfo.setAcls(Collections.emptyList()));
 
     if (LOG.isDebugEnabled()) {
       for (OmKeyInfo fileInfo : subFiles) {
